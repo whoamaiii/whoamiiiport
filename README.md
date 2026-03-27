@@ -1,6 +1,6 @@
 # Whoamiii — Psychedelic Art Portfolio
 
-A psychedelic artist portfolio built with React 19, Vite, Tailwind CSS 4, and a custom glassmorphism engine with interactive physics.
+A psychedelic artist portfolio built with React 19, Vite, Tailwind CSS 4, responsive local artwork assets, and a preserved custom glassmorphism subsystem for future use.
 
 ## Quick Start
 
@@ -22,6 +22,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run preview` | Preview production build |
 | `npm run clean` | Remove `dist/` directory |
 | `npm run lint` | Type-check with TypeScript |
+| `npm run test` | Run Vitest unit checks |
+| `npm run test:e2e` | Run Playwright smoke tests |
 
 ## Project Structure
 
@@ -183,7 +185,7 @@ Defined in `src/index.css`:
 
 ### Fonts
 
-The project uses [Inter](https://fonts.google.com/specimen/Inter) (body) and [Space Grotesk](https://fonts.google.com/specimen/Space+Grotesk) (display), loaded from Google Fonts in `index.html` and configured as Tailwind theme tokens in `index.css`.
+The live app keeps [Inter](https://fonts.google.com/specimen/Inter) as the body copy font and loads Adobe Fonts `pd-donut` from Typekit in `index.html` for display typography. The display face is exposed through the `font-display` utility in `src/index.css`.
 
 ### Path Aliases
 
@@ -194,7 +196,8 @@ The project uses [Inter](https://fonts.google.com/specimen/Inter) (body) and [Sp
 | Issue | Solution |
 |-------|---------|
 | Glass effect looks flat (no refraction) | Check browser — SVG displacement only works in Chromium. Firefox/Safari use the CSS shimmer fallback. |
-| Fonts look like system default | Verify `index.html` has the Google Fonts `<link>` tags and you have internet access. |
-| Images not loading in gallery | The gallery uses Unsplash URLs — requires internet. Replace with local assets for offline use. |
+| Display font is missing | Verify `index.html` still includes the Adobe Fonts `<link rel="stylesheet" href="https://use.typekit.net/hqx2rsx.css">` tag and you have internet access. |
+| Gallery images not loading | The gallery uses generated local assets from `public/images`. Re-run `npm run optimize-images` if the generated files are missing. |
+| About image not loading | The About section now uses generated local assets from `public/images`. Re-run `npm run optimize-images` if those generated files are missing. |
 | Build fails on displacement maps | The base64 texture file is large. Ensure sufficient memory for the bundler. |
 | HMR not working | Check if `DISABLE_HMR=true` is set in your environment (used by AI Studio). |

@@ -1,5 +1,12 @@
-import { useState, useRef, useEffect, type RefObject } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { useState, useRef, useEffect, type RefObject, type MouseEvent } from 'react';
+import {
+  motion,
+  AnimatePresence,
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from 'motion/react';
 import { X } from 'lucide-react';
 import type { ImageSlug } from '../utils/images';
 import {
@@ -71,23 +78,18 @@ function useFocusTrap(
 
     window.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
 
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
       (restoreFocusRef.current ?? previousFocusRef.current)?.focus?.();
     };
   }, [isActive, onEscape, initialFocusRef, restoreFocusRef]);
 
   return containerRef;
-}
-
-function clampPreview(body?: string) {
-  if (!body) return '';
-  const firstParagraph = body.split('\n\n')[0]?.replace(/\s+/g, ' ').trim() ?? '';
-  if (firstParagraph.length <= 150) return firstParagraph;
-  return `${firstParagraph.slice(0, 147).trimEnd()}...`;
 }
 
 export default function InteractiveArtworkCard({
@@ -98,9 +100,46 @@ export default function InteractiveArtworkCard({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
   const [isDesktopLayout, setIsDesktopLayout] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const prefersReducedMotion = useReducedMotion();
+
+  // Mouse tracking for glare effect
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+
+  const springConfig = { damping: 25, stiffness: 200 };
+  const glareX = useSpring(mouseX, springConfig);
+  const glareY = useSpring(mouseY, springConfig);
+
+  const rotateX = useTransform(glareY, [0, 1], [8, -8]);
+  const rotateY = useTransform(glareX, [0, 1], [-8, 8]);
+  const glowPositionX = useTransform(glareX, [0, 1], ['0%', '100%']);
+  const glowPositionY = useTransform(glareY, [0, 1], ['0%', '100%']);
+  const glowBackground = useMotionTemplate`radial-gradient(circle at ${glowPositionX} ${glowPositionY}, rgba(168,85,247,0.28), rgba(236,72,153,0.14) 18%, rgba(249,115,22,0.1) 34%, transparent 58%)`;
+  const glareBackground = useTransform([glareX, glareY], ([x, y]) => {
+    const angle = Math.atan2((y as number) - 0.5, (x as number) - 0.5) * (180 / Math.PI);
+    return `linear-gradient(${angle + 90}deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)`;
+  });
+
+  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
+    if (prefersReducedMotion || !cardRef.current) return;
+
+    const rect = cardRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    const y = (e.clientY - rect.top) / rect.height;
+
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(min-width: 1024px)');
@@ -140,80 +179,103 @@ export default function InteractiveArtworkCard({
     : title.primary;
 
   const modalTitleId = `artwork-modal-title-${imageSlug}`;
-  const previewText = clampPreview(sections[0]?.body);
 
   return (
     <>
-      <motion.button
-        ref={triggerRef}
-        type="button"
-        onClick={() => {
-          setShowInfo(isDesktopLayout);
-          setIsModalOpen(true);
+      <motion.div
+        ref={cardRef}
+        className="group relative aspect-[4/5] w-full rounded-3xl overflow-hidden glass p-2 cursor-pointer"
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          transformPerspective: 1200,
+          rotateX: prefersReducedMotion ? 0 : rotateX,
+          rotateY: prefersReducedMotion ? 0 : rotateY,
         }}
-        className="group relative aspect-[4/5] w-full text-left rounded-3xl overflow-hidden glass p-2 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-zinc-950"
-        aria-label={`View ${displayTitle} artwork details and notes`}
-        whileHover={
+        animate={
           prefersReducedMotion
             ? undefined
-            : { y: -8, scale: 1.015, rotateX: 2, rotateY: -2 }
+            : {
+                boxShadow: isHovered
+                  ? '0 30px 80px -36px rgba(0,0,0,0.92), 0 0 0 1px rgba(255,255,255,0.08)'
+                  : '0 18px 54px -40px rgba(0,0,0,0.86), 0 0 0 1px rgba(255,255,255,0.04)',
+              }
         }
-        whileTap={prefersReducedMotion ? undefined : { scale: 0.99 }}
         transition={{ type: 'spring', stiffness: 280, damping: 24 }}
-        style={{ transformPerspective: 1200 }}
       >
-        <div className="w-full h-full rounded-2xl overflow-hidden relative">
-          <img
-            src={fallbackUrl}
-            srcSet={gallerySrcset}
-            sizes={sizes}
-            alt={imageMeta.alt}
-            loading="lazy"
-            decoding="async"
-            width={800}
-            height={1000}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
+        <motion.button
+          ref={triggerRef}
+          type="button"
+          onClick={() => {
+            setShowInfo(isDesktopLayout);
+            setIsModalOpen(true);
+          }}
+          className="group w-full h-full text-left rounded-2xl overflow-hidden relative focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-zinc-950"
+          aria-label={`View ${displayTitle} artwork details and notes`}
+          whileHover={
+            prefersReducedMotion
+              ? undefined
+              : { scale: 1.02 }
+          }
+          whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+        >
+          <div className="w-full h-full rounded-2xl overflow-hidden relative">
+            <img
+              src={fallbackUrl}
+              srcSet={gallerySrcset}
+              sizes={sizes}
+              alt={imageMeta.alt}
+              loading="lazy"
+              decoding="async"
+              width={800}
+              height={1000}
+              className={`w-full h-full object-cover ${
+                prefersReducedMotion ? '' : 'transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]'
+              }`.trim()}
+            />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/15 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-visible:opacity-100 transition-opacity duration-500 flex items-end p-4 md:p-6">
-            <div className="glass w-full p-4 rounded-2xl transform translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 lg:group-focus-visible:translate-y-0 transition-transform duration-500">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <p className="text-[10px] uppercase tracking-[0.3em] text-purple-300/80 mb-2">
-                    Selected work
-                  </p>
-                  <p className="font-medium text-white">{title.primary}</p>
-                  {title.secondary && (
-                    <p className="text-sm text-zinc-400">{title.secondary}</p>
-                  )}
-                </div>
-                <span className="shrink-0 rounded-full border border-white/10 bg-black/25 px-3 py-1 text-[11px] uppercase tracking-[0.2em] text-zinc-300">
-                  View + notes
-                </span>
-              </div>
+            {!prefersReducedMotion && (
+              <motion.div
+                className="absolute inset-0 pointer-events-none z-10 mix-blend-screen"
+                style={{ background: glowBackground }}
+                initial={false}
+                animate={{ opacity: isHovered ? 0.95 : 0 }}
+                transition={{ duration: 0.25 }}
+              />
+            )}
 
-              {previewText && (
-                <p
-                  className="mt-3 text-sm leading-6 text-zinc-200/90"
-                  style={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: 3,
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                  }}
-                >
-                  {previewText}
+            {/* Glare effect overlay */}
+            {!prefersReducedMotion && (
+              <motion.div
+                className="absolute inset-0 pointer-events-none z-20"
+                style={{ background: glareBackground }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: isHovered ? 0.6 : 0 }}
+                transition={{ duration: 0.3 }}
+              />
+            )}
+
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-visible:opacity-100 transition-opacity duration-500 flex items-end p-4 md:p-6 z-30">
+              <div className="w-full transform translate-y-0 lg:translate-y-3 lg:group-hover:translate-y-0 lg:group-focus-visible:translate-y-0 transition-transform duration-500">
+                <p className="text-[10px] uppercase tracking-[0.32em] text-purple-200/75 mb-2">
+                  Selected work
                 </p>
-              )}
+                <p className="font-medium text-white text-lg md:text-xl">{title.primary}</p>
+                {title.secondary && (
+                  <p className="mt-1 text-sm text-zinc-400">{title.secondary}</p>
+                )}
 
-              <div className="mt-4 flex items-center justify-between text-xs tracking-wide text-zinc-400">
-                <span>{isDesktopLayout ? 'Opens with notes visible' : 'Tap for artwork details'}</span>
-                <span className="text-purple-300">Meaning + process</span>
+                <div className="mt-4 flex items-center gap-3 text-sm text-zinc-200">
+                  <span className="h-px w-8 bg-gradient-to-r from-purple-400 via-pink-400 to-transparent" />
+                  <span>View artwork</span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </motion.button>
+        </motion.button>
+      </motion.div>
 
       <AnimatePresence>
         {isModalOpen && (
@@ -255,9 +317,9 @@ export default function InteractiveArtworkCard({
               <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex flex-col lg:flex-row gap-6 lg:gap-8 items-stretch justify-center">
                 <div className="relative flex-1 min-h-0 flex items-center justify-center">
                   <motion.img
-                    initial={{ scale: 0.96, opacity: 0 }}
+                    initial={prefersReducedMotion ? false : { scale: 0.96, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.3 }}
+                    transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
                     src={modalImageUrl}
                     srcSet={modalSrcset}
                     sizes="(max-width: 1024px) 100vw, 70vw"
@@ -283,10 +345,18 @@ export default function InteractiveArtworkCard({
                   {showInfo && (
                     <motion.aside
                       id="artwork-info-panel"
-                      initial={{ x: isDesktopLayout ? 40 : 0, y: isDesktopLayout ? 0 : 24, opacity: 0 }}
+                      initial={
+                        prefersReducedMotion
+                          ? false
+                          : { x: isDesktopLayout ? 40 : 0, y: isDesktopLayout ? 0 : 24, opacity: 0 }
+                      }
                       animate={{ x: 0, y: 0, opacity: 1 }}
-                      exit={{ x: isDesktopLayout ? 40 : 0, y: isDesktopLayout ? 0 : 24, opacity: 0 }}
-                      transition={{ duration: 0.3 }}
+                      exit={
+                        prefersReducedMotion
+                          ? { opacity: 0 }
+                          : { x: isDesktopLayout ? 40 : 0, y: isDesktopLayout ? 0 : 24, opacity: 0 }
+                      }
+                      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
                       className="lg:w-[26rem] w-full lg:max-w-none max-h-[42vh] lg:max-h-[80vh] overflow-y-auto glass-dark rounded-3xl p-6 md:p-7 custom-scrollbar"
                       onClick={(e) => e.stopPropagation()}
                     >

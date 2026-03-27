@@ -9,7 +9,8 @@ export type ImageSlug =
   | 'jennysno'
   | 'dimensiontripp'
   | 'loongdrive'
-  | 'eye-figure';
+  | 'eye-figure'
+  | 'about-portrait';
 
 export interface ArtworkImage {
   slug: ImageSlug;
@@ -37,6 +38,10 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
     slug: 'eye-figure', 
     alt: 'The One Who Looks Back - Den som ser tilbake' 
   },
+  'about-portrait': {
+    slug: 'about-portrait',
+    alt: 'Portrait of the artist in a hooded sweatshirt'
+  },
 };
 
 // Available widths by profile
@@ -49,6 +54,7 @@ const MODAL_FALLBACK_WIDTH_BY_SLUG: Record<ImageSlug, number> = {
   dimensiontripp: 1600,
   loongdrive: 1200,
   'eye-figure': 1600,
+  'about-portrait': 1600,
 };
 
 /**
@@ -124,6 +130,13 @@ export function getHeroSizes(): string {
  */
 export function getGallerySizes(): string {
   return '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw';
+}
+
+/**
+ * Get appropriate sizes attribute for the About portrait.
+ */
+export function getAboutSizes(): string {
+  return '(max-width: 768px) calc(100vw - 3rem), (max-width: 1280px) calc(50vw - 5rem), 32rem';
 }
 
 /**

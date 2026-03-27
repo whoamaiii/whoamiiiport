@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "pd-donut", "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer utilities {
@@ -27,6 +28,34 @@ html {
 
 body {
   @apply bg-zinc-950 text-zinc-100 antialiased overflow-x-hidden;
+}
+
+/* Custom cursor - hide default on desktop */
+@media (pointer: fine) {
+  body.has-custom-cursor {
+    cursor: none;
+  }
+  
+  body.has-custom-cursor a,
+  body.has-custom-cursor button,
+  body.has-custom-cursor [role="button"],
+  body.has-custom-cursor input,
+  body.has-custom-cursor textarea,
+  body.has-custom-cursor select,
+  body.has-custom-cursor [tabindex]:not([tabindex="-1"]) {
+    cursor: none;
+  }
+}
+
+/* Show default cursor on mobile/touch devices */
+@media (pointer: coarse) {
+  body {
+    cursor: auto;
+  }
+  
+  a, button, [role="button"], input, textarea, select, [tabindex]:not([tabindex="-1"]) {
+    cursor: auto;
+  }
 }
 
 *:focus-visible {
@@ -136,5 +165,16 @@ body {
 
   html {
     scroll-behavior: auto !important;
+  }
+
+  body,
+  a,
+  button,
+  [role="button"],
+  input,
+  textarea,
+  select,
+  [tabindex]:not([tabindex="-1"]) {
+    cursor: auto !important;
   }
 }

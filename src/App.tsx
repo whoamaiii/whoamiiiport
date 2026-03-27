@@ -1,22 +1,44 @@
 import { useEffect, useState, useRef, lazy, Suspense, type RefObject } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, useMotionValue, useSpring } from 'motion/react';
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useInView,
+} from 'motion/react';
 import { Instagram, Twitter, Mail, Menu, X } from 'lucide-react';
 import { 
   getHeroSrcset, 
   getHeroSizes, 
   getGallerySrcset, 
   getGallerySizes, 
+  getAboutSizes,
+  getGalleryImageUrl,
   getImageUrl, 
   getImageMetadata 
 } from './utils/images';
 import { derSnoenHolderTiden, detAttendeIndre, derVerdenGlir, denSomSerTilbake, type SpecialArtwork } from './components/artworkData';
 import { useReducedMotion } from './hooks/useReducedMotion';
 
+// Micro-animation components
+import { TextScramble } from './components/TextScramble';
+import { MagneticButton } from './components/MagneticButton';
+import { ImageReveal } from './components/ImageReveal';
+import { UnderlineLink } from './components/UnderlineLink';
+import { StaggerContainer, StaggerItem } from './components/StaggerContainer';
+import { NoiseOverlay } from './components/NoiseOverlay';
+import { CustomCursor } from './components/CustomCursor';
+import { ScrollProgress } from './components/ScrollProgress';
+
 const InteractiveArtworkCard = lazy(() => import('./components/InteractiveArtworkCard'));
 
 // Hero image configuration
 const HERO_SLUG = 'joetrip2' as const;
+const ABOUT_SLUG = 'about-portrait' as const;
 const heroMetadata = getImageMetadata(HERO_SLUG);
+const aboutMetadata = getImageMetadata(ABOUT_SLUG);
 
 const specialArtworks: Record<string, SpecialArtwork> = {
   'derSnoen': derSnoenHolderTiden,
@@ -45,7 +67,7 @@ function MobileMenuButton({
   return (
     <button
       ref={buttonRef}
-      className="md:hidden text-white hover:text-white p-2"
+      className="md:hidden text-white hover:text-white p-2 cursor-pointer"
       onClick={onClick}
       aria-label={isOpen ? 'Close menu' : 'Open menu'}
       aria-expanded={isOpen}
@@ -157,13 +179,13 @@ function MobileMenu({
           </h2>
           <button
             ref={closeButtonRef}
-            className="absolute top-8 right-8 text-white hover:text-white p-2"
+            className="absolute top-8 right-8 text-white hover:text-white p-2 cursor-pointer"
             onClick={onClose}
             aria-label="Close menu"
           >
             <X size={32} />
           </button>
-          <nav className="flex flex-col gap-8 text-2xl font-bold text-center" aria-label="Mobile menu">
+          <nav className="flex flex-col gap-8 text-2xl text-center" aria-label="Mobile menu">
             <a 
               href="#work" 
               onClick={(e) => {
@@ -173,7 +195,7 @@ function MobileMenu({
                   scrollToSection('work');
                 }, 100);
               }} 
-              className="text-white/90 hover:text-white hover:text-gradient transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 rounded px-4 py-2"
+              className="text-white/90 hover:text-white hover:text-gradient transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 rounded px-4 py-2 cursor-pointer"
             >
               Work
             </a>
@@ -186,7 +208,7 @@ function MobileMenu({
                   scrollToSection('about');
                 }, 100);
               }} 
-              className="text-white/90 hover:text-white hover:text-gradient transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 rounded px-4 py-2"
+              className="text-white/90 hover:text-white hover:text-gradient transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 rounded px-4 py-2 cursor-pointer"
             >
               About
             </a>
@@ -199,7 +221,7 @@ function MobileMenu({
                   scrollToSection('contact');
                 }, 100);
               }} 
-              className="text-white/90 hover:text-white hover:text-gradient transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 rounded px-4 py-2"
+              className="text-white/90 hover:text-white hover:text-gradient transition-colors focus:outline-none focus:ring-2 focus:ring-purple-400 rounded px-4 py-2 cursor-pointer"
             >
               Contact
             </a>
@@ -207,6 +229,30 @@ function MobileMenu({
         </motion.div>
       )}
     </AnimatePresence>
+  );
+}
+
+// Animated Section Heading Component
+function AnimatedHeading({
+  children,
+  className = '',
+  delay = 0,
+}: {
+  children: string;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useRef<HTMLHeadingElement>(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
+
+  return (
+    <h2 ref={ref} className={className}>
+      {isInView ? (
+        <TextScramble text={children} delay={delay} duration={1200} />
+      ) : (
+        <span style={{ opacity: 0 }}>{children}</span>
+      )}
+    </h2>
   );
 }
 
@@ -242,6 +288,7 @@ export default function App() {
   const blobY3 = useTransform(smoothY, v => prefersReducedMotion ? 0 : v * -0.03);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
   const heroReveal = (delay = 0) =>
     prefersReducedMotion
       ? { initial: false as const, animate: { opacity: 1, y: 0 }, transition: { duration: 0 } }
@@ -249,20 +296,6 @@ export default function App() {
           initial: { opacity: 0, y: 30 },
           animate: { opacity: 1, y: 0 },
           transition: { duration: 1, delay },
-        };
-  const sectionReveal = (delay = 0) =>
-    prefersReducedMotion
-      ? {
-          initial: false as const,
-          whileInView: { opacity: 1, y: 0 },
-          viewport: { once: true },
-          transition: { duration: 0 },
-        }
-      : {
-          initial: { opacity: 0, y: 20 },
-          whileInView: { opacity: 1, y: 0 },
-          viewport: { once: true },
-          transition: { duration: 0.5, delay },
         };
 
   useEffect(() => {
@@ -279,6 +312,15 @@ export default function App() {
 
   return (
     <div ref={containerRef} className="relative min-h-screen bg-zinc-950 font-sans selection:bg-purple-500/30">
+      {/* Custom Cursor */}
+      <CustomCursor />
+
+      {/* Scroll Progress */}
+      <ScrollProgress />
+      
+      {/* Noise Overlay */}
+      <NoiseOverlay />
+      
       {/* Skip to content link for keyboard users */}
       <a
         href="#main-content"
@@ -307,15 +349,33 @@ export default function App() {
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 w-full max-w-7xl px-6 z-50">
         <div className="glass relative overflow-hidden rounded-full px-6 py-4 flex items-center justify-between">
           <div className="absolute inset-0 rounded-full bg-black/35 pointer-events-none" />
-          <span className="relative z-10 text-xl font-bold tracking-tighter text-white whitespace-nowrap">Whoamiii<span className="text-purple-400">.</span></span>
+          <motion.span 
+            className="relative z-10 text-xl font-display tracking-tight text-white whitespace-nowrap cursor-pointer"
+            whileHover={prefersReducedMotion ? undefined : { scale: 1.05 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+          >
+            Whoamiii<span className="text-purple-400">.</span>
+          </motion.span>
           <div className="relative z-10 hidden md:flex gap-8 text-sm font-medium text-white/90">
-            <a href="#work" className="hover:text-white transition-colors">Work</a>
-            <a href="#about" className="hover:text-white transition-colors">About</a>
-            <a href="#contact" className="hover:text-white transition-colors">Contact</a>
+            <UnderlineLink href="#work" className="hover:text-white transition-colors cursor-pointer">
+              Work
+            </UnderlineLink>
+            <UnderlineLink href="#about" className="hover:text-white transition-colors cursor-pointer">
+              About
+            </UnderlineLink>
+            <UnderlineLink href="#contact" className="hover:text-white transition-colors cursor-pointer">
+              Contact
+            </UnderlineLink>
           </div>
-          <a href="#contact" className="relative z-10 hidden md:block px-6 py-2 rounded-full text-sm font-medium bg-white text-black hover:bg-zinc-200 transition-colors whitespace-nowrap">
-            Get in touch
-          </a>
+          <MagneticButton
+            href="#contact"
+            strength={0.2}
+            className="relative z-10 hidden md:block"
+          >
+            <span className="px-6 py-2 rounded-full text-sm font-medium bg-white text-black hover:bg-zinc-200 transition-colors whitespace-nowrap cursor-pointer inline-block">
+              Get in touch
+            </span>
+          </MagneticButton>
           <MobileMenuButton 
             buttonRef={menuButtonRef}
             isOpen={isMobileMenuOpen} 
@@ -360,24 +420,49 @@ export default function App() {
         <div className="relative z-20 text-center px-4 max-w-5xl mx-auto mt-20">
           {/* Backlight Glow for perfect contrast */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-black/60 filter blur-[100px] rounded-full pointer-events-none -z-10" />
-          
-          <motion.div
-            {...heroReveal(0.2)}
-            className="glass-dark inline-block px-10 py-4 rounded-full mb-8 relative border-purple-500/30"
-          >
-            <span className="inline-block text-2xl md:text-3xl font-bold uppercase text-purple-200 animate-psychedelic-breathe">WHOAMIII</span>
-          </motion.div>
-          
+
           <motion.h1 
-            {...heroReveal(0.4)}
-            className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-none mb-6 text-white drop-shadow-2xl"
+            {...heroReveal(0.28)}
+            aria-label="Altered Perceptions."
+            className="text-6xl md:text-8xl lg:text-9xl font-display tracking-tight leading-[0.9] mb-8 text-white drop-shadow-2xl"
           >
-            Altered <br className="hidden md:block" />
-            <span className="text-gradient">Perceptions.</span>
+            <TextScramble text="Altered" delay={700} duration={1200} />
+            <br className="hidden md:block" />
+            <span className="text-gradient relative inline-block">
+              <TextScramble text="Perceptions" delay={1100} duration={1200} />
+              <motion.span
+                className="inline-block"
+                aria-hidden="true"
+                animate={
+                  prefersReducedMotion
+                    ? undefined
+                    : {
+                        opacity: [0.55, 1, 0.55],
+                        scale: [1, 1.08, 1],
+                        textShadow: [
+                          '0 0 14px rgba(168,85,247,0.45)',
+                          '0 0 28px rgba(236,72,153,0.75)',
+                          '0 0 14px rgba(249,115,22,0.45)',
+                        ],
+                      }
+                }
+                transition={
+                  prefersReducedMotion
+                    ? undefined
+                    : {
+                        duration: 3.2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }
+                }
+              >
+                .
+              </motion.span>
+            </span>
           </motion.h1>
           
           <motion.p 
-            {...heroReveal(0.6)}
+            {...heroReveal(0.46)}
             className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md"
           >
             Exploring the boundaries of consciousness through vibrant colors, intricate patterns, and surreal landscapes.
@@ -388,37 +473,49 @@ export default function App() {
       {/* Gallery Section */}
       <section id="work" className="relative py-32 px-6 bg-zinc-950 z-20" aria-labelledby="selected-works-heading">
         <div className="max-w-7xl mx-auto">
-          <motion.div 
-            {...sectionReveal()}
-            className="mb-16"
-          >
-            <h2 id="selected-works-heading" className="text-4xl md:text-5xl font-bold tracking-tight mb-4">Selected Works</h2>
-            <div className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
-          </motion.div>
+          <div className="mb-16">
+            <AnimatedHeading
+              delay={0}
+              className="text-4xl md:text-5xl font-display tracking-tight mb-4"
+            >
+              Selected Works
+            </AnimatedHeading>
+            <motion.div 
+              className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+              initial={prefersReducedMotion ? false : { scaleX: 0, originX: 0 }}
+              whileInView={{ scaleX: 1 }}
+              viewport={{ once: true }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.8, delay: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }
+              }
+            />
+          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            {artworks.map((art, index) => {
+          <StaggerContainer 
+            className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
+            staggerDelay={0.15}
+          >
+            {artworks.map((art) => {
               const data = specialArtworks[art.dataKey as string];
               if (!data) return null;
               return (
-                <motion.div
+                <Suspense
                   key={art.id}
-                  initial={prefersReducedMotion ? false : { opacity: 0, y: 50 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, margin: prefersReducedMotion ? '0px' : '-100px' }}
-                  transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, delay: index * 0.1 }}
+                  fallback={<div className="aspect-[4/5] rounded-3xl glass p-2 animate-pulse bg-zinc-800/50" />}
                 >
-                  <Suspense fallback={<div className="aspect-[4/5] rounded-3xl glass p-2 animate-pulse bg-zinc-800/50" />}>
+                  <StaggerItem>
                     <InteractiveArtworkCard 
                       imageSlug={data.imageSlug} 
                       title={data.title}
                       sections={data.sections} 
                     />
-                  </Suspense>
-                </motion.div>
+                  </StaggerItem>
+                </Suspense>
               );
             })}
-          </div>
+          </StaggerContainer>
         </div>
       </section>
 
@@ -431,7 +528,12 @@ export default function App() {
             
             <div className="grid md:grid-cols-2 gap-16 relative z-10">
               <div>
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-8">The Mind Behind the Canvas</h2>
+                <AnimatedHeading
+                  delay={0}
+                  className="text-4xl md:text-5xl font-display tracking-tight mb-8"
+                >
+                  The Mind Behind the Canvas
+                </AnimatedHeading>
                 <p className="text-zinc-300 text-lg leading-relaxed mb-6">
                   My work is deeply influenced by the exploration of altered states of consciousness. I aim to capture the fleeting, geometric, and profoundly vibrant visions that exist just beyond our everyday perception.
                 </p>
@@ -439,26 +541,47 @@ export default function App() {
                   Using a mix of traditional painting and digital manipulation, I create pieces that feel both organic and synthetic, inviting the viewer to step into a different reality.
                 </p>
                 <div className="flex gap-4">
-                  <a href="https://instagram.com/whoamiii" target="_blank" rel="noopener noreferrer" className="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all shadow-lg text-zinc-300 hover:text-white" aria-label="Instagram">
-                    <Instagram size={20} />
-                  </a>
-                  <a href="https://twitter.com/whoamiii" target="_blank" rel="noopener noreferrer" className="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all shadow-lg text-zinc-300 hover:text-white" aria-label="Twitter">
-                    <Twitter size={20} />
-                  </a>
+                  <MagneticButton strength={0.4}>
+                    <a 
+                      href="https://instagram.com/whoamiii" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all shadow-lg text-zinc-300 hover:text-white cursor-pointer"
+                      aria-label="Instagram"
+                    >
+                      <Instagram size={20} />
+                    </a>
+                  </MagneticButton>
+                  <MagneticButton strength={0.4}>
+                    <a 
+                      href="https://twitter.com/whoamiii" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="glass w-12 h-12 rounded-full flex items-center justify-center hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all shadow-lg text-zinc-300 hover:text-white cursor-pointer"
+                      aria-label="Twitter"
+                    >
+                      <Twitter size={20} />
+                    </a>
+                  </MagneticButton>
                 </div>
               </div>
-              <div className="relative aspect-square rounded-3xl overflow-hidden glass p-2">
+              <ImageReveal
+                className="relative w-full max-w-sm mx-auto md:mx-0 md:ml-auto aspect-[4/5] rounded-3xl glass p-2"
+                delay={0.2}
+                direction="up"
+              >
                 <img
-                  src="https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=800&auto=format&fit=crop"
-                  alt="Artist in studio"
+                  src={getGalleryImageUrl(ABOUT_SLUG)}
+                  srcSet={getGallerySrcset(ABOUT_SLUG)}
+                  sizes={getAboutSizes()}
+                  alt={aboutMetadata.alt}
                   loading="lazy"
                   decoding="async"
                   width={800}
-                  height={800}
-                  className="w-full h-full object-cover rounded-2xl filter contrast-125 saturate-150"
-                  referrerPolicy="no-referrer"
+                  height={1200}
+                  className="w-full h-full object-cover object-[center_16%] rounded-2xl filter contrast-125 saturate-150"
                 />
-              </div>
+              </ImageReveal>
             </div>
           </div>
         </div>
@@ -471,19 +594,24 @@ export default function App() {
             initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            transition={prefersReducedMotion ? { duration: 0 } : undefined}
+            transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="glass-dark rounded-[3rem] p-12 md:p-20 relative pointer-events-auto"
           >
-            <h2 className="text-4xl md:text-6xl font-bold tracking-tighter mb-6 relative z-10">Let's Create Something <span className="text-gradient">Trippy.</span></h2>
+            <h2 className="text-4xl md:text-6xl font-display tracking-tight mb-6 relative z-10">
+              <TextScramble text="Let's Create Something" delay={200} duration={1200} />
+              <span className="text-gradient"> <TextScramble text="Trippy." delay={800} duration={800} /></span>
+            </h2>
             <p className="text-xl text-zinc-400 mb-10 relative z-10">Open for commissions, collaborations, and exhibitions.</p>
             
-            <a href="mailto:hello@whoamiii.art" className="group relative z-10 inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-black rounded-full font-semibold text-lg overflow-hidden transition-transform hover:scale-105 pointer-events-auto">
-              <span className="relative z-10 flex items-center gap-2">
-                <Mail size={20} />
-                Send a Message
+            <MagneticButton strength={0.3} href="mailto:hello@whoamiii.art">
+              <span className="group relative z-10 inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-black rounded-full font-semibold text-lg overflow-hidden transition-transform hover:scale-105 pointer-events-auto cursor-pointer">
+                <span className="relative z-10 flex items-center gap-2">
+                  <Mail size={20} />
+                  Send a Message
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-500 to-orange-400 opacity-0 group-hover:opacity-20 transition-opacity" />
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-400 via-pink-500 to-orange-400 opacity-0 group-hover:opacity-20 transition-opacity" />
-            </a>
+            </MagneticButton>
           </motion.div>
         </div>
       </section>
@@ -491,15 +619,37 @@ export default function App() {
       {/* Footer */}
       <footer className="relative z-20 border-t border-white/10 pt-16 pb-8 px-6 flex flex-col items-center bg-zinc-950">
         <div className="flex gap-6 mb-8">
-          <a href="https://instagram.com/whoamiii" target="_blank" rel="noopener noreferrer" className="p-3 glass rounded-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all text-zinc-400 hover:text-white" aria-label="Instagram">
-            <Instagram size={24} />
-          </a>
-          <a href="https://twitter.com/whoamiii" target="_blank" rel="noopener noreferrer" className="p-3 glass rounded-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all text-zinc-400 hover:text-white" aria-label="Twitter">
-            <Twitter size={24} />
-          </a>
-          <a href="mailto:hello@whoamiii.art" className="p-3 glass rounded-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all text-zinc-400 hover:text-white" aria-label="Email">
-            <Mail size={24} />
-          </a>
+          <MagneticButton strength={0.5}>
+            <a 
+              href="https://instagram.com/whoamiii" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="p-3 glass rounded-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all text-zinc-400 hover:text-white cursor-pointer"
+              aria-label="Instagram"
+            >
+              <Instagram size={24} />
+            </a>
+          </MagneticButton>
+          <MagneticButton strength={0.5}>
+            <a 
+              href="https://twitter.com/whoamiii" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="p-3 glass rounded-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all text-zinc-400 hover:text-white cursor-pointer"
+              aria-label="Twitter"
+            >
+              <Twitter size={24} />
+            </a>
+          </MagneticButton>
+          <MagneticButton strength={0.5}>
+            <a 
+              href="mailto:hello@whoamiii.art" 
+              className="p-3 glass rounded-full hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:border-transparent transition-all text-zinc-400 hover:text-white cursor-pointer"
+              aria-label="Email"
+            >
+              <Mail size={24} />
+            </a>
+          </MagneticButton>
         </div>
         <p className="text-zinc-500 text-sm">© {new Date().getFullYear()} Artist Portfolio. All rights reserved.</p>
       </footer>

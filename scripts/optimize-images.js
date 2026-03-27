@@ -53,6 +53,14 @@ const SOURCES = [
     quality: 65,
     modalWidth: 1600,
   },
+  {
+    input: './src/assets/photoshootwhiletripping.png',
+    slug: 'about-portrait',
+    profile: 'gallery',
+    alt: 'Portrait of the artist in a hooded sweatshirt',
+    quality: 68,
+    modalWidth: 1600,
+  },
 ];
 
 // Output directory

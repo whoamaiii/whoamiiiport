@@ -14,12 +14,13 @@ This note is the lightweight contract for the remaining Whoamiii UI/UX completio
 ## Implementation Notes
 
 - The image pipeline uses slug-based helpers in `src/utils/images.ts`.
-- The gallery modal uses generated local variants rather than direct source assets.
+- The gallery and About imagery use generated local variants rather than direct source assets.
 - The preserved glass subsystem is allowed to stay in the codebase even if it is not live yet.
 
 ## Current Release Status
 
 - The gallery is limited to the four local artworks in the slug-based image pipeline.
+- The About section now also resolves through the same generated local image pipeline.
 - `loongdrive` now has an explicit generated modal fallback asset at `/images/loongdrive-modal-1200.webp`.
 - `GlassLayer` is preserved and stabilized at the component level, but it is not live in the navigation for this release.
 

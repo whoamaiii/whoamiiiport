@@ -70,6 +70,22 @@ describe('image contract', () => {
     }
   });
 
+  it('keeps the about portrait on the same generated local asset pipeline', () => {
+    const metadata = getImageMetadata('about-portrait');
+    expect(metadata.alt).toMatch(/portrait of the artist/i);
+
+    const srcset = getGallerySrcset('about-portrait');
+    const urls = splitSrcset(srcset);
+    expect(urls).toEqual([
+      '/images/about-portrait-480.webp',
+      '/images/about-portrait-800.webp',
+      '/images/about-portrait-1200.webp',
+    ]);
+
+    urls.forEach((url) => expect(existsSync(generatedImagePath(url))).toBe(true));
+    expect(existsSync(generatedImagePath(getModalImageUrl('about-portrait')))).toBe(true);
+  });
+
   it('keeps modal URLs aligned with generated files and the loongdrive fallback', () => {
     expect(GALLERY_WIDTHS).toEqual([480, 800, 1200]);
 

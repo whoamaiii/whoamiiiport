@@ -3,7 +3,13 @@ dist/
 test-results/
 playwright-report/
 .claude/
+.agents/
+skills/
+skills-lock.json
 .DS_Store
 *.log
 .env
 .env.*
+hero-after-implementation.png
+hero-desktop-after.png
+selected-works-shader.png

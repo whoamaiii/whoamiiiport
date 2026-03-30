@@ -17,6 +17,209 @@
   }
 }
 
+.hero-glass-title {
+  color: rgb(255 255 255 / 0.96);
+}
+
+.hero-title-period {
+  display: inline-block;
+  color: rgba(245, 231, 216, 0.88);
+  filter:
+    drop-shadow(0 1px 4px rgba(0, 0, 0, 0.18))
+    drop-shadow(0 5px 10px rgba(0, 0, 0, 0.18));
+}
+
+.hero-shader-title {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.02em;
+  isolation: isolate;
+  /* 
+   * Multi-layer shadow system for atmospheric depth
+   * Layers ordered from tight/sharp to wide/soft
+   * Creates realistic depth perception and separation from background
+   */
+  filter:
+    /* Layer 1: Tight inner shadow for edge definition */
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45))
+    /* Layer 2: Mid-range shadow for primary depth */
+    drop-shadow(0 4px 8px rgba(0, 0, 0, 0.40))
+    /* Layer 3: Wide shadow for atmospheric separation */
+    drop-shadow(0 12px 24px rgba(0, 0, 0, 0.30))
+    /* Layer 4: Ambient shadow for background blending */
+    drop-shadow(0 24px 48px rgba(0, 0, 0, 0.20))
+    /* Layer 5: Ultra-wide halo for edge cases */
+    drop-shadow(0 0 80px rgba(0, 0, 0, 0.15));
+}
+
+.hero-shader-title-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.02em;
+}
+
+.hero-shader-word {
+  position: relative;
+  display: inline-block;
+  /* Enhanced word-level shadows for additional depth */
+  filter:
+    drop-shadow(0 2px 4px rgba(0, 0, 0, 0.32))
+    drop-shadow(0 6px 12px rgba(0, 0, 0, 0.18));
+}
+
+.hero-shader-measure {
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+  user-select: none;
+}
+
+.hero-shader-canvas,
+.hero-shader-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.hero-shader-canvas {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.hero-shader-canvas.is-ready {
+  opacity: 1;
+}
+
+.hero-shader-fallback {
+  opacity: 0;
+  transition: opacity 220ms ease;
+  color: transparent;
+  background-image:
+    radial-gradient(circle at 22% 22%, rgba(244, 224, 197, 0.22) 0%, rgba(244, 224, 197, 0) 18%),
+    radial-gradient(circle at 78% 24%, rgba(183, 89, 126, 0.2) 0%, rgba(183, 89, 126, 0) 30%),
+    radial-gradient(circle at 58% 74%, rgba(76, 93, 164, 0.18) 0%, rgba(76, 93, 164, 0) 28%),
+    linear-gradient(128deg, #c98658 4%, #944468 34%, #2f427d 72%, #356771 100%);
+  background-size: 180% 180%;
+  background-position: 50% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.hero-shader-fallback.is-visible {
+  opacity: 1;
+}
+
+.hero-shader-measure,
+.hero-shader-fallback {
+  white-space: pre;
+}
+
+.hero-subtitle {
+  text-wrap: balance;
+}
+
+@media (max-width: 767px) {
+  .hero-shader-title {
+    gap: 0.01em;
+    /* Reduced shadow intensity on mobile for performance and proportion */
+    filter:
+      drop-shadow(0 1px 2px rgba(0, 0, 0, 0.40))
+      drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35))
+      drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25))
+      drop-shadow(0 0 40px rgba(0, 0, 0, 0.12));
+  }
+}
+
+/* ============================================
+   Section Heading Shader Styles
+   ============================================ */
+
+.section-shader-title {
+  position: relative;
+  display: inline-block;
+  isolation: isolate;
+  /* 
+   * Lighter shadow system for section headings (smaller text)
+   * Maintains readability without overpowering the design
+   */
+  filter:
+    /* Layer 1: Tight inner shadow for edge definition */
+    drop-shadow(0 1px 2px rgba(0, 0, 0, 0.40))
+    /* Layer 2: Mid-range shadow for primary depth */
+    drop-shadow(0 3px 6px rgba(0, 0, 0, 0.30))
+    /* Layer 3: Wide shadow for atmospheric separation */
+    drop-shadow(0 8px 16px rgba(0, 0, 0, 0.20))
+    /* Layer 4: Ultra-wide halo */
+    drop-shadow(0 0 50px rgba(0, 0, 0, 0.12));
+}
+
+.section-shader-word {
+  position: relative;
+  display: inline-block;
+}
+
+.section-shader-measure {
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+  user-select: none;
+}
+
+.section-shader-canvas,
+.section-shader-fallback {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.section-shader-canvas {
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+
+.section-shader-canvas.is-ready {
+  opacity: 1;
+}
+
+.section-shader-fallback {
+  opacity: 0;
+  transition: opacity 220ms ease;
+  color: transparent;
+  background-image:
+    radial-gradient(circle at 22% 22%, rgba(244, 224, 197, 0.22) 0%, rgba(244, 224, 197, 0) 18%),
+    radial-gradient(circle at 78% 24%, rgba(183, 89, 126, 0.2) 0%, rgba(183, 89, 126, 0) 30%),
+    radial-gradient(circle at 58% 74%, rgba(76, 93, 164, 0.18) 0%, rgba(76, 93, 164, 0) 28%),
+    linear-gradient(128deg, #c98658 4%, #944468 34%, #2f427d 72%, #356771 100%);
+  background-size: 180% 180%;
+  background-position: 50% 50%;
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+
+.section-shader-fallback.is-visible {
+  opacity: 1;
+}
+
+.section-shader-measure,
+.section-shader-fallback {
+  white-space: pre;
+}
+
+/* Mobile adjustments for section shader */
+@media (max-width: 767px) {
+  .section-shader-title {
+    /* Reduced shadow intensity on mobile */
+    filter:
+      drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35))
+      drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25))
+      drop-shadow(0 0 30px rgba(0, 0, 0, 0.10));
+  }
+}
+
 :root {
   --nav-offset: 6rem;
 }

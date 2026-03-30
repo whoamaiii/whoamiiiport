@@ -6,10 +6,14 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await expect(page).toHaveTitle(/Whoamiii/i);
   await expect(page.getByTestId('scroll-progress')).toHaveCount(1);
   await expect(page.getByRole('heading', { name: /Altered Perceptions\./i })).toBeVisible();
+  await expect(page.getByTestId('hero-shader-title')).toHaveCount(1);
   await expect(page.getByRole('heading', { name: /Selected Works/i })).toBeVisible();
   await expect(page.getByRole('main')).toHaveCount(1);
   await expect(page.getByText('Whoamiii.')).toBeVisible();
   await expect(page.getByText(/^WHOAMIII$/)).toHaveCount(0);
+
+  const heroImage = page.locator('section').first().locator('img').first();
+  await expect(heroImage).not.toHaveClass(/animate-hue-breathe/);
 
   const aboutImage = page.getByRole('img', {
     name: /portrait of the artist in a hooded sweatshirt/i,

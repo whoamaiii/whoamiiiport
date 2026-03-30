@@ -6,6 +6,7 @@ interface TextScrambleProps {
   className?: string;
   delay?: number;
   duration?: number;
+  onComplete?: () => void;
 }
 
 const chars = '!<>-_\\/[]{}—=+*^?#________';
@@ -15,12 +16,14 @@ export function TextScramble({
   className = '',
   delay = 0,
   duration = 1500,
+  onComplete,
 }: TextScrambleProps) {
   const [displayText, setDisplayText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
   const prefersReducedMotion = useReducedMotion();
   const frameRef = useRef<number>();
   const queueRef = useRef<{ from: string; to: string; start: number; end: number; char?: string }[]>([]);
+  const completionNotifiedRef = useRef(false);
 
   const update = useCallback(() => {
     let output = '';
@@ -83,6 +86,7 @@ export function TextScramble({
     // Reset state when text changes
     setDisplayText('');
     setIsComplete(false);
+    completionNotifiedRef.current = false;
     
     const timer = setTimeout(() => {
       startScramble();
@@ -95,6 +99,13 @@ export function TextScramble({
       }
     };
   }, [delay, startScramble, text]);
+
+  useEffect(() => {
+    if (!isComplete || completionNotifiedRef.current) return;
+
+    completionNotifiedRef.current = true;
+    onComplete?.();
+  }, [isComplete, onComplete]);
 
   // Show original text if reduced motion or animation is complete
   if (prefersReducedMotion) {

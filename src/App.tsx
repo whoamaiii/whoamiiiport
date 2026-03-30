@@ -31,6 +31,8 @@ import { StaggerContainer, StaggerItem } from './components/StaggerContainer';
 import { NoiseOverlay } from './components/NoiseOverlay';
 import { CustomCursor } from './components/CustomCursor';
 import { ScrollProgress } from './components/ScrollProgress';
+import { HeroShaderTitle } from './components/HeroShaderTitle';
+import { ShaderHeading } from './components/ShaderHeading';
 
 const InteractiveArtworkCard = lazy(() => import('./components/InteractiveArtworkCard'));
 
@@ -256,6 +258,14 @@ function AnimatedHeading({
   );
 }
 
+function HeroTitlePeriod() {
+  return (
+    <span className="hero-title-period inline-block" aria-hidden="true">
+      .
+    </span>
+  );
+}
+
 export default function App() {
   const containerRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -394,7 +404,7 @@ export default function App() {
 
       <main id="main-content">
       {/* Hero Section */}
-      <section className="relative min-h-[100svh] flex items-center justify-center overflow-hidden z-10 bg-black">
+      <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden z-10 bg-black">
         {/* Parallax Header Image */}
         <motion.div 
           className="absolute inset-0 z-0 origin-center"
@@ -411,59 +421,41 @@ export default function App() {
             alt={heroMetadata.alt}
             fetchPriority="high"
             decoding="async"
-            className="min-w-[120vw] min-h-[120vh] object-cover object-center absolute -top-[10vh] -left-[10vw] animate-hue-breathe"
+            className="min-w-[120vw] min-h-[120vh] object-cover object-center absolute -top-[10vh] -left-[10vw]"
             style={{ y: parallaxY, x: parallaxX }}
           />
         </motion.div>
 
         {/* Hero Content */}
-        <div className="relative z-20 text-center px-4 max-w-5xl mx-auto mt-20">
-          {/* Backlight Glow for perfect contrast */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-black/60 filter blur-[100px] rounded-full pointer-events-none -z-10" />
+        <div className="relative z-20 text-center px-4 max-w-5xl mx-auto mt-8 sm:mt-12 md:mt-16">
+          {/* Enhanced backlight glow for improved text contrast */}
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
+                       w-[140%] h-[140%] 
+                       bg-gradient-to-b from-black/50 via-black/40 to-black/50 
+                       filter blur-[100px] 
+                       rounded-full 
+                       pointer-events-none 
+                       -z-10"
+            aria-hidden="true"
+          />
 
           <motion.h1 
             {...heroReveal(0.28)}
             aria-label="Altered Perceptions."
-            className="text-6xl md:text-8xl lg:text-9xl font-display tracking-tight leading-[0.9] mb-8 text-white drop-shadow-2xl"
+            className="hero-glass-title text-[2.7rem] sm:text-6xl md:text-8xl lg:text-9xl font-display tracking-tight leading-[0.88] mb-6 sm:mb-8"
           >
-            <TextScramble text="Altered" delay={700} duration={1200} />
-            <br className="hidden md:block" />
-            <span className="text-gradient relative inline-block">
-              <TextScramble text="Perceptions" delay={1100} duration={1200} />
-              <motion.span
-                className="inline-block"
-                aria-hidden="true"
-                animate={
-                  prefersReducedMotion
-                    ? undefined
-                    : {
-                        opacity: [0.55, 1, 0.55],
-                        scale: [1, 1.08, 1],
-                        textShadow: [
-                          '0 0 14px rgba(168,85,247,0.45)',
-                          '0 0 28px rgba(236,72,153,0.75)',
-                          '0 0 14px rgba(249,115,22,0.45)',
-                        ],
-                      }
-                }
-                transition={
-                  prefersReducedMotion
-                    ? undefined
-                    : {
-                        duration: 3.2,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                      }
-                }
-              >
-                .
-              </motion.span>
-            </span>
+            <span className="sr-only">Altered Perceptions.</span>
+            <HeroShaderTitle
+              firstLine="Altered"
+              secondLine="Perceptions"
+              trailing={<HeroTitlePeriod />}
+            />
           </motion.h1>
           
           <motion.p 
             {...heroReveal(0.46)}
-            className="text-lg md:text-xl text-zinc-300 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-md"
+            className="hero-subtitle text-base sm:text-lg md:text-xl text-zinc-200/88 max-w-[31ch] sm:max-w-[36ch] md:max-w-2xl mx-auto font-light leading-[1.5] md:leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.34)]"
           >
             Exploring the boundaries of consciousness through vibrant colors, intricate patterns, and surreal landscapes.
           </motion.p>
@@ -474,12 +466,20 @@ export default function App() {
       <section id="work" className="relative py-32 px-6 bg-zinc-950 z-20" aria-labelledby="selected-works-heading">
         <div className="max-w-7xl mx-auto">
           <div className="mb-16">
-            <AnimatedHeading
-              delay={0}
-              className="text-4xl md:text-5xl font-display tracking-tight mb-4"
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="mb-4"
             >
-              Selected Works
-            </AnimatedHeading>
+              <ShaderHeading
+                className="text-4xl md:text-5xl font-display tracking-tight"
+                as="h2"
+              >
+                Selected Works
+              </ShaderHeading>
+            </motion.div>
             <motion.div 
               className="h-1 w-20 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
               initial={prefersReducedMotion ? false : { scaleX: 0, originX: 0 }}

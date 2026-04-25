@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest';
 import {
   GALLERY_WIDTHS,
   HERO_WIDTHS,
-  IMAGE_MANIFEST,
   getGallerySrcset,
   getHeroSrcset,
   getImageMetadata,
@@ -13,10 +12,10 @@ import {
   getModalSrcset,
 } from '../src/utils/images';
 import {
-  denSomSerTilbake,
-  derSnoenHolderTiden,
-  derVerdenGlir,
-  detAttendeIndre,
+  ferdigcopVideoArtwork,
+  nestenferdigTungeVideoArtwork,
+  psychedelicBathroomPortrait,
+  psychedelicBathroomScream,
 } from '../src/components/artworkData';
 
 const generatedImagePath = (urlPath: string) =>
@@ -43,19 +42,19 @@ describe('image contract', () => {
 
   it('maps the four local artworks to the generated gallery assets', () => {
     const artworks = [
-      derSnoenHolderTiden,
-      detAttendeIndre,
-      derVerdenGlir,
-      denSomSerTilbake,
+      nestenferdigTungeVideoArtwork,
+      psychedelicBathroomPortrait,
+      psychedelicBathroomScream,
+      ferdigcopVideoArtwork,
     ];
 
     expect(artworks).toHaveLength(4);
     expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(4);
     expect(artworks.map((artwork) => artwork.imageSlug)).toEqual([
-      'jennysno',
-      'dimensiontripp',
-      'loongdrive',
-      'eye-figure',
+      'nestenferdig-tunge-video-poster',
+      'psychedelic-bathroom-portrait',
+      'psychedelic-bathroom-scream',
+      'ferdigcop-video-poster',
     ]);
 
     for (const artwork of artworks) {
@@ -68,6 +67,13 @@ describe('image contract', () => {
       expect(urls.length).toBeGreaterThan(0);
       urls.forEach((url) => expect(existsSync(generatedImagePath(url))).toBe(true));
     }
+
+    expect(getImageMetadata('psychedelic-bathroom-portrait').galleryObjectPosition).toBe('40% 50%');
+    expect(getImageMetadata('psychedelic-bathroom-scream').galleryObjectPosition).toBe('46% 50%');
+    expect(nestenferdigTungeVideoArtwork.videoSrc).toBe('/videos/nestenferdig-tunge-gallery.mp4');
+    expect(existsSync(resolve('public/videos/nestenferdig-tunge-gallery.mp4'))).toBe(true);
+    expect(ferdigcopVideoArtwork.videoSrc).toBe('/videos/ferdigcop-gallery.mp4');
+    expect(existsSync(resolve('public/videos/ferdigcop-gallery.mp4'))).toBe(true);
   });
 
   it('keeps the about portrait on the same generated local asset pipeline', () => {
@@ -86,23 +92,25 @@ describe('image contract', () => {
     expect(existsSync(generatedImagePath(getModalImageUrl('about-portrait')))).toBe(true);
   });
 
-  it('keeps modal URLs aligned with generated files and the loongdrive fallback', () => {
+  it('keeps modal URLs aligned with generated files for every featured artwork', () => {
     expect(GALLERY_WIDTHS).toEqual([480, 800, 1200]);
 
-    const modalSlugs = ['jennysno', 'dimensiontripp', 'eye-figure'] as const;
+    const modalExpectations = [
+      ['nestenferdig-tunge-video-poster', 1600],
+      ['psychedelic-bathroom-portrait', 1600],
+      ['psychedelic-bathroom-scream', 1600],
+      ['ferdigcop-video-poster', 1600],
+    ] as const;
 
-    for (const slug of modalSlugs) {
+    for (const [slug, width] of modalExpectations) {
       const modalUrl = getModalImageUrl(slug);
+      const modalSrcset = getModalSrcset(slug);
+
+      expect(modalUrl).toBe(`/images/${slug}-modal-${width}.webp`);
+      expect(modalSrcset).toBe(`/images/${slug}-modal-${width}.webp ${width}w`);
       expect(existsSync(generatedImagePath(modalUrl))).toBe(true);
+      expect(existsSync(generatedImagePath(getImageUrl(slug, 1200)))).toBe(true);
+      expect(readFileSync(generatedImagePath(modalUrl)).byteLength).toBeGreaterThan(0);
     }
-
-    const loongdriveModalUrl = getModalImageUrl('loongdrive');
-    const loongdriveSrcset = getModalSrcset('loongdrive');
-    expect(loongdriveModalUrl).toBe('/images/loongdrive-modal-1200.webp');
-    expect(loongdriveSrcset).toBe('/images/loongdrive-modal-1200.webp 1200w');
-    expect(existsSync(generatedImagePath(loongdriveModalUrl))).toBe(true);
-    expect(existsSync(generatedImagePath(getImageUrl('loongdrive', 1200)))).toBe(true);
-
-    expect(readFileSync(generatedImagePath(loongdriveModalUrl)).byteLength).toBeGreaterThan(0);
   });
 });

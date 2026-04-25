@@ -56,7 +56,7 @@ export const ShimmerOverlay: React.FC<{
       // Subtle shimmer animation
       filter: `blur(${6 + aberration}px)`,
     }
-  }, [nx, ny, aberration, radius, width, height])
+  }, [aberration, nx, ny, radius])
 
   return <div className="shimmer-refraction" style={style} />
 }

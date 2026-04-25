@@ -1,44 +1,14 @@
 import { act, render } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TextScramble } from '../src/components/TextScramble';
-
-type MatchMediaListener = (event: MediaQueryListEvent) => void;
-
-function installMatchMediaMock(initialMatches: boolean) {
-  const listeners = new Set<MatchMediaListener>();
-  let matches = initialMatches;
-
-  const mediaQueryList = {
-    get matches() {
-      return matches;
-    },
-    media: '(prefers-reduced-motion: reduce)',
-    onchange: null,
-    addEventListener: (_event: string, listener: MatchMediaListener) => listeners.add(listener),
-    removeEventListener: (_event: string, listener: MatchMediaListener) => listeners.delete(listener),
-    addListener: (listener: MatchMediaListener) => listeners.add(listener),
-    removeListener: (listener: MatchMediaListener) => listeners.delete(listener),
-    dispatchEvent: () => true,
-  } as MediaQueryList;
-
-  Object.defineProperty(window, 'matchMedia', {
-    writable: true,
-    value: vi.fn().mockImplementation(() => mediaQueryList),
-  });
-
-  return {
-    setMatches(nextMatches: boolean) {
-      matches = nextMatches;
-      const event = { matches: nextMatches } as MediaQueryListEvent;
-      listeners.forEach((listener) => listener(event));
-    },
-  };
-}
+import { installMatchMediaMock } from './helpers/matchMedia';
 
 describe('TextScramble', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    installMatchMediaMock(false);
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': false,
+    });
     let now = 0;
 
     vi.spyOn(performance, 'now').mockImplementation(() => now);

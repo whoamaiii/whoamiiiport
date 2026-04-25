@@ -92,6 +92,10 @@ export function LiquidGlassText({
   const [layout, setLayout] = useState<LayoutMetrics | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const readyNotifiedRef = useRef(false);
+  const canvasReadyRef = useRef(false);
+  const rendererRef = useRef<ShaderRenderer | null>(null);
+  const drawFrameRef = useRef<(() => void) | null>(null);
+  const [rendererVersion, setRendererVersion] = useState(0);
 
   const gradientIds = useMemo(
     () => ({
@@ -112,6 +116,7 @@ export function LiquidGlassText({
 
   useEffect(() => {
     readyNotifiedRef.current = false;
+    canvasReadyRef.current = false;
     setCanvasReady(false);
     setUseFallback(false);
   }, [text]);
@@ -274,7 +279,7 @@ export function LiquidGlassText({
     }
 
     const baseScale = window.innerWidth < 768 ? 0.42 : 0.56;
-    const motionScale = prefersReducedMotion || !isInView ? Math.min(baseScale, 0.38) : baseScale;
+    const motionScale = prefersReducedMotion ? Math.min(baseScale, 0.38) : baseScale;
     const shaderWidth = clamp(Math.round(layout.width * dpr * motionScale), 96, 1100);
     const shaderHeight = clamp(Math.round(layout.height * dpr * motionScale), 64, 420);
 
@@ -311,7 +316,8 @@ export function LiquidGlassText({
 
       context.globalCompositeOperation = 'source-over';
 
-      if (!canvasReady) {
+      if (!canvasReadyRef.current) {
+        canvasReadyRef.current = true;
         setCanvasReady(true);
       }
 
@@ -319,25 +325,46 @@ export function LiquidGlassText({
     };
 
     const staticTime = 1.35;
+    renderer.render(staticTime);
+    drawGlassFill();
 
-    if (prefersReducedMotion || !isInView) {
-      renderer.render(staticTime);
-      drawGlassFill();
+    rendererRef.current = renderer;
+    drawFrameRef.current = drawGlassFill;
+    setRendererVersion((version) => version + 1);
+
+    return () => {
+      renderer.stop();
+      renderer.dispose();
+      if (rendererRef.current === renderer) {
+        rendererRef.current = null;
+      }
+      if (drawFrameRef.current === drawGlassFill) {
+        drawFrameRef.current = null;
+      }
+    };
+  }, [layout, notifyReady, prefersReducedMotion, text]);
+
+  useEffect(() => {
+    const renderer = rendererRef.current;
+    const drawFrame = drawFrameRef.current;
+    if (!renderer || !drawFrame) {
+      return;
+    }
+
+    const shouldAnimate = !prefersReducedMotion && isInView;
+    if (shouldAnimate) {
+      renderer.start(() => {
+        drawFrame();
+      });
       return () => {
-        renderer.dispose();
+        renderer.stop();
       };
     }
 
-    renderer.render(0.001);
-    drawGlassFill();
-    renderer.start(() => {
-      drawGlassFill();
-    });
-
-    return () => {
-      renderer.dispose();
-    };
-  }, [isInView, layout, notifyReady, prefersReducedMotion, text]);
+    renderer.stop();
+    renderer.render(1.35);
+    drawFrame();
+  }, [isInView, prefersReducedMotion, rendererVersion]);
 
   const strokeBase = layout ? Math.max(glassThickness, layout.fontSize * 0.055) : glassThickness;
 

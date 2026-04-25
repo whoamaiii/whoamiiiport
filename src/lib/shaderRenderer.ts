@@ -132,6 +132,13 @@ function compileShader(gl: WebGLRenderingContext, type: number, source: string) 
   return shader;
 }
 
+export class ShaderUnavailableError extends Error {
+  constructor(message = 'WebGL is not supported.') {
+    super(message);
+    this.name = 'ShaderUnavailableError';
+  }
+}
+
 export class ShaderRenderer {
   private canvas: HTMLCanvasElement;
   private gl: WebGLRenderingContext;
@@ -162,7 +169,7 @@ export class ShaderRenderer {
     ) as WebGLRenderingContext | null;
 
     if (!gl) {
-      throw new Error('WebGL is not supported.');
+      throw new ShaderUnavailableError();
     }
 
     this.gl = gl;

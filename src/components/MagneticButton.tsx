@@ -1,4 +1,10 @@
-import { useRef, useState, type ReactNode, type MouseEvent } from 'react';
+import {
+  useRef,
+  useState,
+  type ReactNode,
+  type MouseEvent as ReactMouseEvent,
+  type HTMLAttributeAnchorTarget,
+} from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
@@ -8,6 +14,9 @@ interface MagneticButtonProps {
   strength?: number;
   onClick?: () => void;
   href?: string;
+  target?: HTMLAttributeAnchorTarget;
+  rel?: string;
+  ariaLabel?: string;
 }
 
 export function MagneticButton({
@@ -16,8 +25,12 @@ export function MagneticButton({
   strength = 0.3,
   onClick,
   href,
+  target,
+  rel,
+  ariaLabel,
 }: MagneticButtonProps) {
-  const ref = useRef<HTMLDivElement>(null);
+  const anchorRef = useRef<HTMLAnchorElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const prefersReducedMotion = useReducedMotion();
 
@@ -28,10 +41,12 @@ export function MagneticButton({
   const springX = useSpring(x, springConfig);
   const springY = useSpring(y, springConfig);
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (prefersReducedMotion || !ref.current) return;
+  const handleMouseMove = (e: ReactMouseEvent<HTMLElement>) => {
+    const target = href ? anchorRef.current : buttonRef.current;
 
-    const rect = ref.current.getBoundingClientRect();
+    if (prefersReducedMotion || !target) return;
+
+    const rect = target.getBoundingClientRect();
     const centerX = rect.left + rect.width / 2;
     const centerY = rect.top + rect.height / 2;
 
@@ -48,9 +63,44 @@ export function MagneticButton({
     y.set(0);
   };
 
-  const content = (
-    <motion.div
-      ref={ref}
+  const glow = !prefersReducedMotion && (
+    <motion.span
+      className="absolute inset-0 -z-10 rounded-full bg-purple-500/20 blur-xl"
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{
+        opacity: isHovered ? 0.5 : 0,
+        scale: isHovered ? 1.2 : 0.5,
+      }}
+      transition={{ duration: 0.3 }}
+    />
+  );
+
+  if (href) {
+    return (
+      <motion.a
+        ref={anchorRef}
+        href={href}
+        className={`relative ${className}`.trim()}
+        target={target}
+        rel={rel}
+        aria-label={ariaLabel}
+        onClick={onClick}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={handleMouseLeave}
+        style={prefersReducedMotion ? {} : { x: springX, y: springY }}
+        whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
+      >
+        {children}
+        {glow}
+      </motion.a>
+    );
+  }
+
+  return (
+    <motion.button
+      ref={buttonRef}
+      type="button"
       className={`relative inline-block ${className}`.trim()}
       style={prefersReducedMotion ? {} : { x: springX, y: springY }}
       onMouseMove={handleMouseMove}
@@ -60,28 +110,7 @@ export function MagneticButton({
       whileTap={prefersReducedMotion ? undefined : { scale: 0.95 }}
     >
       {children}
-      {/* Magnetic field glow */}
-      {!prefersReducedMotion && (
-        <motion.div
-          className="absolute inset-0 -z-10 rounded-full bg-purple-500/20 blur-xl"
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{
-            opacity: isHovered ? 0.5 : 0,
-            scale: isHovered ? 1.2 : 0.5,
-          }}
-          transition={{ duration: 0.3 }}
-        />
-      )}
-    </motion.div>
+      {glow}
+    </motion.button>
   );
-
-  if (href) {
-    return (
-      <a href={href} className="inline-block" onClick={onClick}>
-        {content}
-      </a>
-    );
-  }
-
-  return content;
 }

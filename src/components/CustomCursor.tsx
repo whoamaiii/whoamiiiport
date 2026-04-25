@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'motion/react';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 export function CustomCursor() {
   const [isHovering, setIsHovering] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const prefersReducedMotion = useReducedMotion();
+  const prefersCoarsePointer = useMediaQuery('(pointer: coarse)', false);
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -15,13 +17,10 @@ export function CustomCursor() {
   const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
-    document.body.classList.remove('has-custom-cursor');
-    if (prefersReducedMotion) return;
-
-    // Only show custom cursor on desktop
-    const isMobile = window.matchMedia('(pointer: coarse)').matches;
-    if (isMobile) return;
-    document.body.classList.add('has-custom-cursor');
+    if (prefersReducedMotion || prefersCoarsePointer) {
+      document.body.classList.remove('has-custom-cursor');
+      return;
+    }
 
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
@@ -46,8 +45,8 @@ export function CustomCursor() {
       setIsVisible(false);
     };
 
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mousemove', moveCursor, { passive: true });
+    window.addEventListener('mouseover', handleMouseOver, { passive: true });
     document.body.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
@@ -56,9 +55,24 @@ export function CustomCursor() {
       window.removeEventListener('mouseover', handleMouseOver);
       document.body.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [cursorX, cursorY, prefersReducedMotion]);
+  }, [cursorX, cursorY, prefersCoarsePointer, prefersReducedMotion]);
 
-  if (prefersReducedMotion) return null;
+  useEffect(() => {
+    if (prefersReducedMotion || prefersCoarsePointer) {
+      return;
+    }
+
+    if (isVisible) {
+      document.body.classList.add('has-custom-cursor');
+      return () => {
+        document.body.classList.remove('has-custom-cursor');
+      };
+    }
+
+    document.body.classList.remove('has-custom-cursor');
+  }, [isVisible, prefersCoarsePointer, prefersReducedMotion]);
+
+  if (prefersReducedMotion || prefersCoarsePointer) return null;
 
   return (
     <>

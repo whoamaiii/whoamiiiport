@@ -1,9 +1,12 @@
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 export function NoiseOverlay() {
   const prefersReducedMotion = useReducedMotion();
+  const prefersFinePointer = useMediaQuery('(pointer: fine)', false);
+  const prefersLargeViewport = useMediaQuery('(min-width: 1024px)', false);
 
-  if (prefersReducedMotion) return null;
+  if (prefersReducedMotion || !prefersFinePointer || !prefersLargeViewport) return null;
 
   return (
     <div

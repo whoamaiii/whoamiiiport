@@ -1,4 +1,4 @@
-import { type CSSProperties, type PropsWithChildren, forwardRef, useEffect, useId, useState } from "react"
+import { type CSSProperties, type KeyboardEvent, type PropsWithChildren, forwardRef, useEffect, useId, useState } from "react"
 import { RefractionFilter, buildComputedDisplacement } from "./svg-filter"
 import { supportsBackdropSvgFilter } from "./browser-detect"
 import ShimmerOverlay from "./shimmer-overlay"
@@ -54,6 +54,7 @@ const FrostedSurface = forwardRef<
   ) => {
     const filterTag = useId()
     const [computedUri, setComputedUri] = useState<string>("")
+    const isClickable = typeof onClick === "function"
 
     const canUseSvgBackdrop = supportsBackdropSvgFilter()
 
@@ -72,8 +73,27 @@ const FrostedSurface = forwardRef<
       WebkitBackdropFilter: `blur(${(brightOverlay ? 12 : 0) + blurStrength * 32}px) saturate(${colorBoost}%)`,
     }
 
+    const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+      if (!isClickable) {
+        return
+      }
+
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault()
+        onClick()
+      }
+    }
+
     return (
-      <div ref={ref} className={`relative ${className} ${pressed ? "active" : ""} ${Boolean(onClick) ? "cursor-pointer" : ""}`} style={style} onClick={onClick}>
+      <div
+        ref={ref}
+        className={`relative ${className} ${pressed ? "active" : ""} ${isClickable ? "cursor-pointer" : ""}`}
+        style={style}
+        onClick={onClick}
+        onKeyDown={handleKeyDown}
+        role={isClickable ? "button" : undefined}
+        tabIndex={isClickable ? 0 : undefined}
+      >
         {/* SVG filter definition — always rendered, used by Chromium */}
         <RefractionFilter
           variant={variant}
@@ -86,6 +106,7 @@ const FrostedSurface = forwardRef<
         />
 
         <div
+          role="presentation"
           className="frost-layer"
           style={{
             borderRadius: `${radius}px`,

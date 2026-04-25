@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
-import { describe, expect, it, vi } from 'vitest';
-import { HeroShaderTitle } from '../src/components/HeroShaderTitle';
+import { motionValue } from 'motion/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { HeroSection } from '../src/sections/HeroSection';
 
 vi.mock('../src/lib/shaderRenderer', () => ({
   ShaderRenderer: class MockShaderRenderer {
@@ -15,21 +16,83 @@ vi.mock('../src/lib/shaderRenderer', () => ({
   },
 }));
 
-describe('Hero hero title accessibility', () => {
-  it('keeps accessible heading text when the visible title is canvas-based', () => {
-    render(
-      <h1 aria-label="Altered Perceptions.">
-        <span className="sr-only">Altered Perceptions.</span>
-        <HeroShaderTitle
-          firstLine="Altered"
-          secondLine="Perceptions"
-          trailing={<span aria-hidden="true">.</span>}
-        />
-      </h1>,
-    );
+function renderHeroSection({ reducedMotion = true }: { reducedMotion?: boolean } = {}) {
+  return render(
+    <HeroSection
+      headerY={motionValue(0)}
+      headerOpacity={motionValue(1)}
+      parallaxX={motionValue(0)}
+      parallaxY={motionValue(0)}
+      reducedMotion={reducedMotion}
+      heroReveal={() => ({
+        initial: false,
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0 },
+      })}
+    />,
+  );
+}
+
+function getHeroTitleVisual() {
+  const visualTitle = screen.getByTestId('hero-title-visual');
+  expect(visualTitle).toBeInTheDocument();
+  return visualTitle;
+}
+
+describe('Hero title accessibility contract', () => {
+  beforeEach(() => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation((type: string) => {
+      if (type !== '2d') {
+        return null;
+      }
+
+      return {
+        font: '',
+        textAlign: 'center',
+        textBaseline: 'alphabetic',
+        fillStyle: '#ffffff',
+        globalCompositeOperation: 'source-over',
+        fontKerning: 'normal',
+        letterSpacing: '0px',
+        setTransform: vi.fn(),
+        clearRect: vi.fn(),
+        save: vi.fn(),
+        restore: vi.fn(),
+        drawImage: vi.fn(),
+        fillText: vi.fn(),
+        strokeText: vi.fn(),
+        fillRect: vi.fn(),
+        measureText: vi.fn().mockReturnValue({
+          actualBoundingBoxAscent: 72,
+          actualBoundingBoxDescent: 18,
+        }),
+        createLinearGradient: vi.fn().mockReturnValue({
+          addColorStop: vi.fn(),
+        }),
+      } as unknown as CanvasRenderingContext2D;
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('keeps a single accessible hero heading while the decorative title stays aria-hidden', () => {
+    renderHeroSection();
 
     expect(
-      screen.getByRole('heading', { name: /altered perceptions/i }),
+      screen.getByRole('heading', { level: 1, name: /altered perceptions\./i }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole('heading', { name: /altered perceptions\./i })).toHaveLength(1);
+    expect(getHeroTitleVisual()).toHaveAttribute('aria-hidden', 'true');
+  });
+
+  it('renders the hero eyebrow and refined subtitle copy', () => {
+    renderHeroSection();
+
+    expect(screen.getByText(/psychedelic art portfolio/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/digital paintings and dream-burned color studies from altered states\./i),
     ).toBeInTheDocument();
   });
 });

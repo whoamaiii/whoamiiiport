@@ -65,6 +65,12 @@ export function TextScramble({
       return;
     }
 
+    if (text.length === 0) {
+      setDisplayText('');
+      setIsComplete(true);
+      return;
+    }
+
     const queue: { from: string; to: string; start: number; end: number; char?: string }[] = [];
     const length = text.length;
     const frameTime = duration / length;

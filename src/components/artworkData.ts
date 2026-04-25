@@ -15,248 +15,128 @@ export type ArtworkTitle = {
 
 export interface SpecialArtwork {
   imageSlug: ImageSlug;
+  videoSrc?: string;
   title: ArtworkTitle;
   sections: ArtworkSection[];
 }
 
-export const derSnoenHolderTiden: SpecialArtwork = {
-  imageSlug: 'jennysno',
+export const dreamyCatNapInSparklingTextiles: SpecialArtwork = {
+  imageSlug: 'dreamy-cat-nap',
   title: {
-    primary: 'Where Snow Holds Time',
-    secondary: 'Der snøen holder tiden',
-    secondaryLanguage: 'no'
+    primary: 'Dreamy Cat Nap',
+    secondary: 'in sparkling textiles',
   },
   sections: [
     {
-      body: `Dette bildet føles som vinter som har snudd seg innover. Portrettet er tett på, stille og nesten litt hellig, men ikke på sånn pyntelig galleri-måte. Hodet er bøyd, hedda er dratt opp, fleecejakka og de svarte hanskene ligger tett rundt kroppen som et lite privat ritual mot kulda. Men snøen er ikke lenger bare snø. Den oppfører seg som stjernestøv, som om himmelen har løst seg opp og drysset kosmisk dritt over et helt vanlig menneskelig øyeblikk.
-
-Det jeg liker best her er spennet mellom det lille og det enorme. Figuren er stille og lukket i seg selv, mens hele lufta rundt antyder at noe mye større presser bak overflaten. Bildet handler for meg om hvordan ensomhet kan være både et skjold og et svart hull. Universet trenger ikke alltid å komme som et episk lysshow. Noen ganger legger det seg bare mykt på jakka di mens du prøver å ikke fryse ræva av deg.`,
+      body: `I dette verket ville jeg holde fast i noe trygt, mykt og ekte, og så la det psykedeliske vokse frem inni det i stedet for å legges oppå det. For meg handler bildet om den tilstanden der noe helt hverdagslig, varmt og nært plutselig begynner å føles uendelig, nesten hellig. Jeg ville at katten fortsatt skulle føles som en virkelig kropp i søvn, men at tekstilene og lyset rundt den skulle oppføre seg som om drømmen hadde begynt å sive ut i rommet.\n\nDet viktige for meg var at bildet aldri skulle miste omsorgen. Jeg ville ikke at verket skulle bli aggressivt, ironisk eller visuelt kåt på sin egen effekt. Hele utgangspunktet mitt var å gjøre søvn, trygghet og stofflighet til selve motoren i bildet, og så la den altererte følelsen oppstå som et trykk under overflaten.`,
     },
     {
-      heading: 'Hvordan jeg lagde bildet',
-      body: `Utgangspunktet var et nøkternt vinterportrett analysert nesten som et åsted: en ung person i fallende snø, svart hoodie med «CherryBomb»-tekst, beige sherpa-fleece, svarte hansker, snødekt bakke, nakne busker og en uskarp bygning i bakgrunnen. Hvert materiale ble lest som sitt eget system. Sherpaen som et tett felt av matte mikrofibre. Hoodien som roligere fleece-strikk. Snøen som lyse partikler med diffus spredning og små blink.
-
-Komposisjonen ble til og med redusert til et lite ASCII-grid som markerte tre ting: silhuetten, tekstsonen og tomrommene der bildet skulle få puste.`,
+      heading: 'Mening',
+      body: `Baktanken min var ikke å lage noe "trippy" bare for å være trippy. Jeg var ute etter kontrasten mellom uskyld, ro og noe som nesten føles kosmisk levende under overflaten. Når jeg ser på bildet, opplever jeg at det handler om hvordan bevisstheten kan gjøre et lite øyeblikk enormt: pels, stoff, pust og lys blir til et helt indre landskap.\n\nJeg ville at verket skulle kjennes omsorgsfullt først, og psykedelisk etterpå. Derfor lar jeg katten være det emosjonelle ankeret, mens mønstrene og glimmeret får bære den mer hallusinatoriske følelsen. Det er egentlig den balansen jeg er ute etter i mye av arbeidet mitt: ikke ren deformasjon, men en tilstand der virkeligheten fortsatt er gjenkjennelig mens den samtidig begynner å overskride seg selv.`,
     },
     {
-      heading: 'Den psykedeliske logikken',
-      body: `Ble bygd inn gjennom tre skalaer. På makronivå fikk bare den uskarpe bakgrunnen en nesten umerkelig pusterytme, en langsom drift rundt 0,2 til 0,4 Hz. På mesonivå fikk frakkens kanter og glidelåssømmer en minimal forskyvning, så liten at du mer kjenner den enn ser den. På mikronivå ble sherpa-jakka behandlet som et biologisk landskap der små rosetter, celleformer og spindelvevslignende mønstre kunne oppstå inne i fibrene, ikke oppå dem.`,
-      formula: `x' = x + A·sin(2πft + φ)·n(x)`,
-      formulaCaption: 'Drift-formel for lavfrekvent romforvrengning',
+      heading: 'Metode',
+      body: `Metoden min her var å starte med et fotorealistisk anker og beskytte det nesten brutalt. Katten måtte få være katt hele veien: søvnen, kroppstyngden, øyelokkene, nesen, varmen i øret, pelsen og den sammenkrøllede stillingen måtte fortsatt leses som noe virkelig observert. Først når det satt, lot jeg de psykedeliske tegnene få slippe inn.\n\nJeg fordelte ikke effekten tilfeldig over hele bildet. Jeg tenkte i materialer og bærere. Teppet fikk bære mesteparten av geometrien fordi tekstil tåler ornament, repetisjon og mønster uten å miste sannheten sin. Pelsen fikk bare små lysende hendelser, glitter og mikrospiraler. Ansiktet fikk nesten ingen fri deformasjon i det hele tatt, fordi ansiktet er der tilliten i bildet bor. Hvis ansiktet kollapser, kollapser hele verket.`,
     },
     {
-      heading: 'Mikrogeometri — Reaction-Diffusion',
-      body: `Mønsterdannelsen i sherpaen ble tenkt gjennom en reaction-diffusion-modell. To størrelser sprer seg og reagerer på hverandre over tid, og ut av det kan det oppstå organiske mønstre. D_u og D_v styrer spredning, mens F og k bestemmer hvor lett mønstre tennes, vokser og dør.`,
-      formula: `∂u/∂t = D_u∇²u − uv² + F(1−u)\n∂v/∂t = D_v∇²v + uv² − (F+k)v`,
-      formulaCaption: 'Gray-Scott reaction-diffusion system',
+      heading: 'Perseptuell modell',
+      body: `Måten jeg tenkte på kan beskrives som en struktur-lås. Jo nærmere et område ligger identitet, kropp og emosjonell lesbarhet, jo mindre frihet får det. Jo mer et område fungerer som carrier-surface, altså en overflate som kan bære mønster og kompleksitet, jo mer visuell frihet får det. Derfor får teppet lov til å være mest ornamentalt, mens ansiktet forblir nesten sober.\n\nJeg jobbet også med dybdehierarki. Det som ligger i fokus kan få detalj og struktur, men blur-soner må ikke plutselig begynne å skrike etter oppmerksomhet. Hvis alt blir like aktivt, slutter bildet å føles fotografisk og begynner å føles som pynt. Derfor måtte glimmeret i forgrunnen oppføre seg som lys og ikke som et nytt motiv.`,
+      formula: `psykedelisk_signal = (tekstil × kurvatur × mønsterkapasitet)\n                   + (pels × glimt × retning)\n                   + (værhår × lyskant)\n\ntroverdighet = identitetslås + materialsannhet + dybdeskarphet - effektstøy\n\ndistorsjon(ansikt) << distorsjon(tekstil)\naktivitet(blur) < aktivitet(pels) < aktivitet(tekstil)`,
+      formulaCaption: `Dette er måten jeg beskriver arbeidslogikken på i etterkant. Det er ikke laboratoriemålinger, men den faktiske komposisjonelle regelen jeg fulgte.`,
     },
     {
-      heading: 'Kontrollpanelet',
-      body: `κ_flat ≈ 0,45 betydde moderat flating av romfølelsen. Π ≈ 0,70Π₀ betydde mindre rigid top-down-kontroll, altså mer rom for at hjernen kunne begynne å låse inn struktur. σ_η ble holdt lav til moderat for å unngå støykaos, og χ_crit ble lagt nær kritisk nivå. På godt norsk: bildet ble dytta akkurat langt nok mot levende struktur, men ikke så langt at det ble neon-suppe.`,
+      heading: 'Prosess',
+      body: `I praksis betydde det at jeg hele tiden jobbet med hva som skulle få lov til å mutere, og hva som måtte holdes nede. Jeg lot teppet gjøre mesteparten av den psykedeliske jobben fordi det både tåler og inviterer til mønsterfortetning. Jeg lot pelsen få små optiske hendelser fordi det gir liv uten å bryte søvnen. Jeg lot nesen, øynene og kroppsformen holde på roen fordi de må fortsette å være følelsesmessig lesbare.\n\nDet jeg prøvde å unngå var den vanlige AI-fellen der alt i bildet blir like spennende samtidig. Jeg ville ikke ha global kaleidoskop-logikk. Jeg ville ha et bilde der noe fortsatt sover, mens noe annet under overflaten er i ferd med å våkne. Hele baktanken i workflowen var egentlig å la det intime og det altererte leve samtidig, slik at verket føles som en ekte drømmetilstand og ikke bare en effektøvelse.`,
     },
     {
-      heading: 'Optikk og snø',
-      body: `Mesteparten ble tenkt som achromatisk halasjon – en myk glød rundt lyse snøpartier og høylys, slik ekte optikk faktisk kan oppføre seg. Det kromatiske avviket ble holdt nesten usynlig og bare lagt langs hetten, håret og frakkens silhuett. Snøen fungerer ikke som pynt, men som et tidslag. Enkelte fnugg får en svak etterhengende persistens, som om nervesystemet bruker et lite øyeblikk for lenge på å slippe dem.
-
-Hele bildet ble bygd som en OEV-dominant struktur: forvrengt virkelighet, ikke erstattet virkelighet. Ingen nye objekter. Ingen fantasivesener. Bare virkelighet som begynner å bøye seg i sine egne fibre, kanter, lysfelt og dybder.`,
-    },
-    {
-      heading: 'Replikasjonsmetoder',
-      body: `For å gjenskape psykedeliske visuelle effekter sånn de faktisk kan føles, ble bildet ikke behandlet som ett flatt lerret, men som et system av bærere, grenser og regler. Tracers ble tenkt som diskrete visuelle ekko. Sherpa-jakka ble brukt som et mikroskopisk landskap for fremvoksende struktur – små rosetter, celleformer og spindelvevslignende forbindelser som allerede lå latent i fibrene.
-
-Bakgrunnens pustende drift ble ikke bygd som dramatisk smelting, men som lavfrekvent romlig modulering. Verden puster. Personen gjør det ikke.`,
-    },
-    {
-      heading: 'Kvalitetskontroll',
-      body: `Hvis geometrien så klistret ut, hadde embedding feilet. Hvis ansiktet driftet, hadde identitetslåsen feilet. Hvis fargene ble for neon, måtte metningen strupes. Verket ble altså ikke bare laga for å se fett ut, men testet mot hvor troverdig det faktisk føltes som psykedelisk persepsjon.`,
+      heading: 'Tilstand, ikke oppskrift',
+      body: `Jeg prøver ikke å redusere slike verk til en offentlig stoffliste eller en dose-tabell, fordi det ville vært både falskt og for grunt i forhold til det jeg faktisk undersøker. Det jeg er ute etter her er fenomenologien: mønsterforsterkning, carrier-surfaces, glimmer i pels, ro i ansiktet, og følelsen av at en vanlig scene begynner å utvide seg innenfra. For meg er dette mer en presis arkitektur av persepsjon enn en enkel "trip report" forkledd som kunsttekst.`,
     },
   ],
 };
 
-export const detAttendeIndre: SpecialArtwork = {
-  imageSlug: 'dimensiontripp',
+export const nestenferdigTungeVideoArtwork: SpecialArtwork = {
+  imageSlug: 'nestenferdig-tunge-video-poster',
+  videoSrc: '/videos/nestenferdig-tunge-gallery.mp4',
   title: {
-    primary: 'The Eighth Interior',
-    secondary: 'Det åttende indre',
-    secondaryLanguage: 'no'
+    primary: 'Nestenferdig Tunge',
+    secondary: 'moving image study',
   },
   sections: [
     {
-      body: `Dette bildet føles som et stup inn i selve synet. Ikke et sted du kan gå til, men et rom som virker som det ligger bak øynene, bak tanken, bak hele den vanlige jævla virkeligheten. Tunnelen er biologisk og kosmisk samtidig. Den ser ut som hud, korall, celler, ornament og katedral på én gang. De sirkulære rosettene gjentar seg som om bildet ikke finner opp mønsteret, men avdekker noe som allerede har ligget og ventet under bevisstheten hele tiden.
-
-Det er det som gjør bildet både vakkert og litt urovekkende. Det føles gammelt, intimt og altfor nært, som om du ikke ser på et landskap, men på innsiden av en tanke som har fått arkitektur. Dette er ikke fantasy i vanlig forstand. Det føles mer som kroppen som drømmer i geometri. For meg handler verket om at bevisstheten kanskje ikke er et vindu i det hele tatt, men et mønstret kammer som folder seg innover og innover og hele tiden bygger nye verdener av seg selv.`,
+      body: `Dette er lagt inn som en levende arbeidspiece i stedet for et stillbilde. Videoen får være hovedverket: bevegelse, kropp, tekstur og rytme får gjøre det et bilde ikke kan gjøre alene.`,
     },
     {
-      heading: 'Hvordan bildet ble bygd',
-      body: `I motsetning til første bildet, som tok utgangspunkt i et faktisk vinterfoto, er dette et fullt syntetisk bilde. Det er ikke en fotografert ting som har blitt vridd. Det er bygd som et CEV-dominant rom fra bunnen av, altså noe som lener seg mer mot lukket-øye-geometri og gjennombruddsaktig tunnelstruktur enn mot vanlig synsforvrengning. Hele scenen ble lest som et system av nivåer: en stor tunnel som ryggrad, foldede membraner som bærerform, og rosetter som et tett mikrolag av gjentatt ornament.
-
-Materialene ble behandlet som om de var en blanding av fløyel, keramikk og levende membran. Overflatene måtte føles glatte og organiske nok til å flyte, men skarpe nok til at rosettene fortsatt kunne leses som struktur og ikke bare som dekorgrøt. Lyset ble holdt delt mellom en varm indre glød i tunnelens lommer og en kjøligere teal-aktig omgivelsesfarge ute i foldene.`,
+      heading: 'Hvorfor video',
+      body: `Cardet bruker bare en poster-frame i galleriet, slik at siden fortsatt holder seg lett. Først når noen åpner verket, lastes selve videoopplevelsen inn med native controls, autoplay og mulighet til å styre avspillingen.`,
     },
     {
-      heading: 'Den psykedeliske logikken',
-      body: `Ble også her bygd i skalaer. På makronivå er hele bildet en tunnel eller trakt, en klassisk formkonstant som gir følelsen av å bli dratt innover. På mesonivå bøyer foldene seg som membraner eller bånd, så rommet føles levende og ikke bare mekanisk. På mikronivå ligger de gjentatte rosettene tett som en slags ornamental cellekultur, med små interne variasjoner som hindrer at alt bare ser kopiert og dødt ut.`,
-    },
-    {
-      heading: 'Tunnelpust — radial forskyvning',
-      body: `Selve tunnelpusten kan tenkes som en radial forskyvning rundt et sentrum. r er avstanden fra sentrum av tunnelen, r' er den samme avstanden etter at rommet har pustet litt, A er amplituden, f er frekvensen og φ er faseforskyvningen. Hele korridoren kan utvide seg og trekke seg sammen på en måte som kjennes levende, uten å miste formen.`,
-      formula: `r'(t) = r · (1 + A sin(2πft + φ))`,
-      formulaCaption: 'Radial breathing / tunnelpust',
-    },
-    {
-      heading: 'Spiraldrift',
-      body: `For å gi bildet en svak spiraldrift kan vinkelen også forskyves. I praksis betyr det at rommet ikke bare puster, men også vrir seg litt rundt sin egen akse. Ikke nok til at du mister lesbarheten, bare nok til at hele tunnelen får den klassiske følelsen av å være en levende korridor.`,
-      formula: `θ'(t) = θ + ωt + α sin(2πft)`,
-      formulaCaption: 'Helisk vinkelforskyvning',
-    },
-    {
-      heading: 'Rosettmønstre',
-      body: `De sirkulære mønstrene ble ikke brukt som pynt, men som et tett ornamental-lattice som følger foldene. Intensiteten i hver rosett bygges som ringer inni ringer, med en vinkelstyrt symmetri som bestemmer hvor mange «kronblad» eller segmenter formen får.`,
-      formula: `I(r,θ) = Σ aₖ exp(−((r−rₖ)² / 2σₖ²)) · (1 + b cos(nθ))`,
-      formulaCaption: 'Rosett-intensitetsfunksjon',
-    },
-    {
-      heading: 'Mikrovariasjon — Reaction-Diffusion',
-      body: `For å hindre at mønsteret ble for sterilt og copy-paste-aktig, ble det tenkt inn en reaction-diffusion-variant. Samme grunnidé: to størrelser sprer seg og påvirker hverandre, og ut av det kan det vokse fram organiske variasjoner. Her ble det brukt til å gi rosettene små avvik i ruhet, dybde og liv.`,
-      formula: `∂U/∂t = D_u∇²U − UV² + F(1−U)\n∂V/∂t = D_v∇²V + UV² − (F+k)V`,
-      formulaCaption: 'Reaction-diffusion for mikrovariasjon',
-    },
-    {
-      heading: 'Farge og lys',
-      body: `Varm kjerne mot kjølig periferi gjør at tunnelen får en nesten religiøs dybde. Det varme ser ut som glød fra innsiden, mens teal-feltene på utsiden holder rommet åpent og kaldere. Glowen ble behandlet som noe som kommer fra hulrom og dybdelommer, ikke som et lag lagt utenpå.`,
-    },
-    {
-      heading: 'Replikasjonsmetoder',
-      body: `1. Tunnelen som formkonstant — gir følelsen av retning, sug og dybde.
-2. Rosetter som levende gitter — geometri og overflate smelter sammen.
-3. Rekursjon som små verdener inni verdener — jo lenger du ser, jo mer åpner bildet seg.
-4. Breathing og spiraldrift — tunnelen både puster og vrir seg litt.
-5. Mikrovariasjon — reaction-diffusion bryter opp repetisjonen.
-6. Lys som portal — glowen kommer fra hulrom, ikke utenpå.
-7. DMT-aktig struktur med kontroll — hyperornament, rekursjon og gjennombruddsfølelse.
-8. Kvalitetskontroll — hvis du ikke kan falle inn i bildet, funker det ikke.`,
+      heading: 'Byggelogikk',
+      body: `Den originale videoen ble komprimert til en webversjon for porteføljen. Målet er at verket skal føles levende i modalvisningen uten å gjøre hele startsiden treg eller tung.`,
     },
   ],
 };
 
-export const derVerdenGlir: SpecialArtwork = {
-  imageSlug: 'loongdrive',
+export const psychedelicBathroomPortrait: SpecialArtwork = {
+  imageSlug: 'psychedelic-bathroom-portrait',
   title: {
-    primary: 'Where the World Glides',
-    secondary: 'Der verden glir gjennom sansene',
-    secondaryLanguage: 'no'
+    primary: 'Psychedelic Bathroom Portrait',
+    secondary: 'in distorted mirror light',
   },
   sections: [
     {
-      body: `Dette bildet er ren terskelmagi. Bilens mørke interiør holder alt fast i noe ordinært og gjenkjennelig, mens verden utenfor eksploderer i blomster, glimt og hastighet. Vinduet blir mer enn glass. Det blir en tynn membran mellom kontroll og overgivelse, mellom det indre og det ytre, mellom det du styrer og det som bare suser forbi og nekter å la seg holde fast.
-
-Det som gjør verket sterkt, er at det ikke føles som flukt. Det føles som overgang. Mange av de kraftigste bevissthetsskiftene skjer ikke når man ankommer, men mens man er midt mellom ting, halvveis i fart, halvveis i tanke, halvveis i ferd med å bli noe annet. Bildet skjønner det. Skjønnheten står ikke alltid og venter ved målet. Noen ganger klistrer den seg til ruta akkurat mens du passerer.`,
+      body: `Dette bildet handler om øyeblikket der et helt vanlig bad slutter å føles som et rom og begynner å oppføre seg som et psykisk trykkammer. Flisene, dusjslangen og kroppen er fortsatt lesbare, men alt er presset gjennom mørke, fargestøy og kromatisk drift. Ansiktet er ikke borte; det er bare fanget midt i en forskyvning, som om synet bruker for lang tid på å samle seg igjen.\n\nJeg ville at bildet skulle kjennes fysisk og ubehagelig nært, ikke som en pen effektøvelse. Det viktige er at kroppen fortsatt er der, tung og tilstede, mens mønstrene i veggen og fargene i huden begynner å lekke inn i hverandre. Det er et portrett av persepsjon som mister fotfestet uten at rommet forsvinner helt.`,
     },
     {
-      heading: 'Hvordan bildet ble bygd',
-      body: `I motsetning til tunnelbildet, som er fullt syntetisk, er dette forankret i en helt konkret fysisk situasjon: innsiden av en bil, et sidevindu, en mørk dørflate i forgrunnen, og et solbelyst felt av blomster og løvverk som streker forbi utenfor. Hele poenget var å bevare den drive-by-sannheten. Interiøret måtte holde seg rigid. Ruta måtte oppføre seg som glass.
-
-Materialene ble delt inn ganske brutalt. Dørpanelet ble lest som matt plast eller vinyl, nesten uten effektbærer. Glasset ble behandlet som en tynn optisk sone med Fresnel-kantlys og små refleksprikker. Utsiden var et fullverdig psykedelisk arbeidsområde: kronblader, blader, høylys og bevegelsesstriper.`,
+      heading: 'Mening',
+      body: `For meg ligger styrken i kontrasten mellom det private og det kosmiske. Badet er et av de mest hverdagslige stedene som finnes, men her blir det nesten seremonielt: mørkt, lukket og elektrisk. Figuren står ikke foran en fantastisk verden. Den fantastiske verdenen presser seg ut av flisene, huden og lyset.\n\nBildet handler ikke bare om å se rart. Det handler om å bli sittende fast i et øyeblikk der kroppen, rommet og signalstøyen i nervesystemet glir over i samme materiale. Det er derfor jeg liker at det er uklart og brutalt mørkt. Ubehaget er ikke en feil; det er selve motoren.`,
     },
     {
-      heading: 'Den psykedeliske logikken',
-      body: `Bygd opp rundt det som allerede finnes i bildet. På makronivå fikk scenen nesten ingen global geometri. Ingen tunnel, ingen kaleidoskop. Bare en nesten usynlig koherens i lyset utenfor. På mesonivå ble blomsterfeltet og løvverket gitt en svak pusterytme og tracerlogikk som følger den eksisterende bevegelsesretningen. På mikronivå fikk høylys, bladoverflater og glasskantene lov til å bære små optiske avvik, prismefringing og organisk filigran.`,
-    },
-    {
-      heading: 'Foliage mesodrift — flow-field',
-      body: `Foliagens mesodrift ble tenkt som et lite flow-field. Et punkt i bildet kan flyttes litt av et mykt strømfelt, styrt av en liten amplitude. Bladene og blomsterstripene får lov til å puste og flyte litt, men uten at formene kollapser. Det må fortsatt se ut som løvverk i fart.`,
-      formula: `p' = p + α·F(p,t)`,
-      formulaCaption: 'Flow-field forskyvning',
-    },
-    {
-      heading: 'Spiralguide for shimmer',
-      body: `Rundt det lyseste feltet kunne det ligge en nesten usynlig spiralguide. Ikke som en synlig spiral, men som en skjult faseguide for hvordan shimmer og oppmerksomhet kan samle seg rundt et hotspot. Usynlig hvis den feiler, men når den fungerer, glir blikket naturlig inn mot et senter.`,
-      formula: `r(θ) = a·e^(bθ)`,
-      formulaCaption: 'Logaritmisk spiralguide',
-    },
-    {
-      heading: 'Mikrovariasjon — Reaction-Diffusion',
-      body: `Mikrostrukturen i bladverket ble tenkt gjennom reaction-diffusion-logikk. Brukt til å tenke fram mikroveiner, små filigranaktige avvik og en levende ruhet i løvverket, så naturen ikke bare ser fargerik ut, men litt for våken.`,
-      formula: `∂u/∂t = D_u∇²u − uv² + F(1−u)\n∂v/∂t = D_v∇²v + uv² − (F+k)v`,
-      formulaCaption: 'Reaction-diffusion for mikrotekstur',
-    },
-    {
-      heading: 'OEV-dominant lavdose',
-      body: `Dose ble holdt lavt, rundt 3 av 10. Forbedringer og forvrengninger fikk lov til å eksistere, men ikke hallusinasjoner. Glasset kunne få mikroprisme. Blomsterstripene kunne få svake motion-echoes. Løvverket kunne få pust og organisk mikrostruktur. Men bilen, ramma og den grunnleggende fysikken måtte holde seg hard og troverdig.`,
-    },
-    {
-      heading: 'Replikasjonsmetoder',
-      body: `1. Vinduet som optisk membran — prismatiske avvik og vinkelavhengig shimmer.
-2. Blomsterstripene som tracers — motion blur brukt som motor for persistens-ekko.
-3. Løvverk som levende tekstur — nesten usynlige pustebevegelser.
-4. Rigid interiør mot levende utside — bilen holdes hard, kontrasten er avgjørende.
-5. Lavdose OEV — virkeligheten glir litt, men holder seg troverdig.
-6. Fargekontroll — mer vibrasjon, mindre ketchupulykke.
-7. Kvalitetskontroll — føles det som et virkelig øyeblikk som glir ut av normal persepsjon?`,
+      heading: 'Byggelogikk',
+      body: `Komposisjonen er holdt stram: figur i front, flislagt vegg som mønsterbærer, dusjslange som hard vertikal kontrast. Den psykedeliske delen fikk ikke lov til å oppfinne nye objekter. Den måtte feste seg til det som allerede finnes i bildet: ansiktsformen, hudflaten, fugene mellom flisene og de geometriske mønstrene i bakgrunnen.\n\nArbeidsregelen var å la veggen bære mest struktur, kroppen bære mest fargeforskyvning, og mørket holde alt samlet. Hvis hele bildet hadde blitt like lyst og detaljert, ville det mistet den klaustrofobiske energien. Derfor måtte store deler få være nesten svarte, slik at fargene føles som signaler som bryter gjennom i stedet for pynt som ligger oppå.`,
     },
   ],
 };
 
-export const denSomSerTilbake: SpecialArtwork = {
-  imageSlug: 'eye-figure',
+export const psychedelicBathroomScream: SpecialArtwork = {
+  imageSlug: 'psychedelic-bathroom-scream',
   title: {
-    primary: 'The One Who Looks Back',
-    secondary: 'Den som ser tilbake',
-    secondaryLanguage: 'no'
+    primary: 'Psychedelic Bathroom Scream',
+    secondary: 'under tiled signal pressure',
   },
   sections: [
     {
-      body: `Dette er et av de mest mytiske og urolige verkene i serien. Figuren sitter i lotusstilling, rolig og sentrert, nesten som en klassisk meditasjonsskikkelse, men hele kroppen er bygd av øyne. Ikke symbolsk. Ikke antydet. Bokstavelig talt dekket av dem. Tunnelen bak fortsetter samme logikk innover i mørket, som om hele rommet er et nervesystem som har lært seg å stirre tilbake.
+      body: `Dette verket er mer eksplosivt enn den mørkere søsterversjonen. Her er ikke kroppen bare fanget i en forskyvning; den ser ut som den blir gjennomlyst av mønsteret rundt seg. Flisene, dusjslangen, huden og munnen danner ett hardt optisk felt, som om hele badet har blitt en skjerm for nervesystemet.\n\nJeg ville at bildet skulle føles som et visuelt skrik, men fortsatt være fysisk forankret. Det er ikke et abstrakt monsterbilde. Det er et bad, en kropp, en vegg og en dusj, presset så langt inn i kromatisk støy og konturlinjer at virkeligheten begynner å se ut som den har fått for mye signalstyrke.`,
+    },
+    {
+      heading: 'Mening',
+      body: `Det sterke her er at bildet ikke prøver å være rolig. Det lar panikken, intensiteten og mønsterpresset være hele poenget. Ansiktet oppløses ikke i tilfeldige effekter; det blir nesten et topografisk kart over overbelastning. Munnen blir et sentrum, ikke fordi den er realistisk, men fordi hele komposisjonen peker mot den.\n\nFor meg handler bildet om den typen indre trykk der rommet ikke lenger er passivt. Veggene begynner å svare. Overflatene begynner å stirre tilbake. Kroppen og omgivelsene slutter å være separate ting og blir ett felt av lys, frykt, mønster og energi.`,
+    },
+    {
+      heading: 'Byggelogikk',
+      body: `Komposisjonen fungerer fordi den bruker badet som et strukturert rutenett. Flisene holder bildet på plass mens mønsteret får lov til å bli voldsomt. Kroppen ligger foran dette systemet som en mørk, organisk motform, og dusjslangen gir en hard metallisk kurve som holder høyresiden stram.\n\nArbeidsregelen var å la konturlinjene følge materialene i stedet for å ligge som en løs effekt. Veggen får presise geometriske felt. Huden får tettere og mer kroppslig kromatikk. Munnen og ansiktet får høyest signalstyrke. Derfor leses bildet fortsatt som et rom, selv når alt i rommet skriker optisk.`,
+    },
+  ],
+};
 
-Det er det som gjør bildet så jævlig sterkt. Det handler ikke bare om å se. Det handler om å være fullstendig sett. Verket føles som et portrett av bevissthet under total eksponering, der oppmerksomhet ikke er passiv, men aktiv, hellig og litt nådeløs. Den som ser, blir selv sett. Den som prøver å betrakte, blir dratt inn i en katedral av blikk.`,
+export const ferdigcopVideoArtwork: SpecialArtwork = {
+  imageSlug: 'ferdigcop-video-poster',
+  videoSrc: '/videos/ferdigcop-gallery.mp4',
+  title: {
+    primary: 'Ferdigcop',
+    secondary: 'moving image study',
+  },
+  sections: [
+    {
+      body: `Dette er lagt inn som en levende arbeidspiece i stedet for et stillbilde. Videoen får beholde følelsen av en ferdig sekvens: bevegelse, lys, rytme og overgang står i sentrum, mens gallerikortet bruker en rolig poster-frame slik at siden fortsatt laster kontrollert.`,
     },
     {
-      heading: 'Hvordan bildet ble bygd',
-      body: `I motsetning til bilbildet og vinterportrettet, som fortsatt var forankret i noe ytre og gjenkjennelig, er dette et fullt hallusinert rom. Det er ikke OEV, altså virkelighet som bøyer seg litt. Det er CEV-dominant og mye nærmere en faktisk erstatningsverden. Hele scenen ble bygd som en hyperspace-ikonografi: en menneskelignende skikkelse i sentrum, et tunnelrom som trekker alt bakover mot et forsvinningspunkt, og øyne som grunnmodul både i kroppen og i miljøet.
-
-Kroppen ble behandlet som om hud var byttet ut med okulære moduler. Hver enhet måtte lese som et ekte øye, med våt korneaglans, matte sclera-flater, fibrøse iriser og små kantsoner som oppfører seg nesten som øyelokk mellom flisene. Det er en umulig anatomi, selvfølgelig, men den måtte likevel kjennes fysisk plausibel.`,
+      heading: 'Hvorfor det fungerer',
+      body: `Et stillbilde kan vise komposisjon, men video kan vise hvordan en visuell tilstand utvikler seg. Derfor passer denne som fjerde kort: den avslutter rekken med noe som beveger seg, uten å gjøre hele galleriet tungt eller kaotisk.`,
     },
     {
-      heading: 'Rommet og figuren',
-      body: `Tunnelveggene er ikke bare mørke vegger, men et massivt felt av øye-sokler og blikkmoduler som forsvinner innover i dybden. Mellom dem ligger små lommer av stjernestøv, nebula og svart kosmisk tomrom. Det gjør at bildet ikke bare leses som en figur foran en bakgrunn, men som om figuren og rommet er laget av samme stoff. Som om bevisstheten ikke står i universet, men universet er sydd av bevissthet.`,
-    },
-    {
-      heading: 'Tunnelstruktur — polarkoordinater',
-      body: `Tunnelstrukturen ble tenkt i polarkoordinater. Når radius r blir oversatt til en logaritmisk dybde z, får du en følelse av at rommet strekker seg uendelig innover uten at alt må tegnes realistisk som vanlig arkitektur.`,
-      formula: `r = √(x² + y²)\nθ = atan2(y,x)\nz = −log(r/r₀ + ε)`,
-      formulaCaption: 'Polar til logaritmisk dybde',
-    },
-    {
-      heading: 'Tunnelpust',
-      body: `Selve tunnelpusten ble tenkt som en koherent radial forskyvning. Rommet kan trekke seg sammen og utvide seg med én samlet rytme. Ikke jitter. Ikke kaos. Bare en dyp, langsom puls som holder tunnelen levende.`,
-      formula: `Δr(x,y,t) = A sin(2πft + φ) · g(r)`,
-      formulaCaption: 'Koherent radial forskyvning',
-    },
-    {
-      heading: 'Øyegitter — heksagonal pakking',
-      body: `Øyefeltene ble tenkt gjennom et gitter, omtrent som heksagonal pakking. Det lar tusenvis av øyne sitte tett sammen på en måte som føles strukturert i stedet for tilfeldig kasta utover.`,
-      formula: `a₁ = (d,0)\na₂ = (d/2, √3d/2)\npₘ,ₙ = m·a₁ + n·a₂`,
-      formulaCaption: 'Heksagonal øyeposisjonering',
-    },
-    {
-      heading: 'Mikrovariasjon — Reaction-Diffusion',
-      body: `For å hindre at hele greia blir for steril, ble det tenkt inn en veldig liten reaction-diffusion-modulering i irisglans og kantsoner. Øynene får mikroskopiske avvik i tekstur, fuktighet og liv, akkurat nok til at de slutter å se fabrikkprodusert ut og begynner å føles som noe som faktisk stirrer.`,
-      formula: `∂u/∂t = D_u∇²u − uv² + F(1−u)\n∂v/∂t = D_v∇²v + uv² − (F+k)v`,
-      formulaCaption: 'Reaction-diffusion for iris-variasjon',
-    },
-    {
-      heading: 'Lys og corneahøylys',
-      body: `Corneahøylysene måtte følge én koherent lyskilde, ellers hadde hele illusjonen kollapset. Nebulaen måtte holde seg svak nok til at øynene fortsatt er hovedsaken. Den våte glansen måtte balanseres mot matte sclera-flater og mykere kantsoner, så bildet ikke ble til plastikkporno med rombakgrunn.`,
-    },
-    {
-      heading: 'Replikasjonsmetoder',
-      body: `1. Figuren som stillpunkt i kaoset — den mediterende kroppen er et stabilt sentrum.
-2. Øyne som materiale, ikke symbol — selve byggesteinen i kropp og rom.
-3. Tunnelen som psykisk arkitektur — retning, sug, dybde og innsuging.
-4. Brystvortex som sekundær portal — kroppen og rommet kobles sammen.
-5. Heksagonal pakking for orden i galskapen — strukturert, ikke tilfeldig.
-6. Mikrovariasjon for å unngå plastikkhelvete — liv uten å miste kontroll.
-7. CEV fremfor OEV — et nytt rom, ikke en forvrengt versjon av denne verden.
-8. Kvalitetskontroll — føles det som om bildet ser på deg også?`,
+      heading: 'Byggelogikk',
+      body: `Den originale filen ble komprimert til en webversjon for porteføljen og får native video controls i modalvisningen. Kortet viser bare posterbildet, slik at nettsiden ikke begynner å laste en stor video før noen faktisk velger å åpne den.`,
     },
   ],
 };

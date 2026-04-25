@@ -6,33 +6,9 @@ import {
   getProximityIntensity,
 } from "./interaction-physics"
 import type { GlassLayerConfig, Point2D, DisplacementMode } from "./types"
+import { useReducedMotion } from "../hooks/useReducedMotion"
 
 export type { GlassLayerConfig, Point2D, DisplacementMode }
-
-function usePrefersReducedMotion(): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false)
-
-  useEffect(() => {
-    if (typeof window === "undefined" || typeof window.matchMedia === "undefined") {
-      return
-    }
-
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)")
-    const update = () => setPrefersReducedMotion(mediaQuery.matches)
-
-    update()
-
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", update)
-      return () => mediaQuery.removeEventListener("change", update)
-    }
-
-    mediaQuery.addListener(update)
-    return () => mediaQuery.removeListener(update)
-  }, [])
-
-  return prefersReducedMotion
-}
 
 export default function GlassLayer({
   children,
@@ -58,7 +34,7 @@ export default function GlassLayer({
   const [dimensions, setDimensions] = useState({ width: 270, height: 69 })
   const [localCursor, setLocalCursor] = useState<Point2D>({ x: 0, y: 0 })
   const [localOffset, setLocalOffset] = useState<Point2D>({ x: 0, y: 0 })
-  const prefersReducedMotion = usePrefersReducedMotion()
+  const prefersReducedMotion = useReducedMotion()
 
   // Decide source of cursor data
   const cursor = prefersReducedMotion ? { x: 0, y: 0 } : externalCursor || localCursor

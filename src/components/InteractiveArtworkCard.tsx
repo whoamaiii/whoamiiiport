@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect, type RefObject, type MouseEvent } from 'react';
+import { useEffect, useState, useRef, type MouseEvent } from 'react';
+import { createPortal } from 'react-dom';
 import {
   motion,
   AnimatePresence,
@@ -7,7 +8,7 @@ import {
   useSpring,
   useTransform,
 } from 'motion/react';
-import { X } from 'lucide-react';
+import { Play, X } from 'lucide-react';
 import type { ImageSlug } from '../utils/images';
 import {
   getGallerySrcset,
@@ -18,93 +19,33 @@ import {
   getImageMetadata,
 } from '../utils/images';
 import type { ArtworkSection, ArtworkTitle } from './artworkData';
+import { useMediaQuery } from '../hooks/useMediaQuery';
+import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 interface InteractiveArtworkCardProps {
   imageSlug: ImageSlug;
+  videoSrc?: string;
   title: ArtworkTitle;
   sections: ArtworkSection[];
 }
 
-function useFocusTrap(
-  isActive: boolean,
-  onEscape: () => void,
-  initialFocusRef: RefObject<HTMLElement | null>,
-  restoreFocusRef: RefObject<HTMLElement | null>,
-) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const previousFocusRef = useRef<HTMLElement | null>(null);
-
-  useEffect(() => {
-    if (!isActive) return;
-
-    previousFocusRef.current = document.activeElement as HTMLElement;
-
-    const raf = requestAnimationFrame(() => {
-      initialFocusRef.current?.focus?.();
-      if (document.activeElement !== initialFocusRef.current) {
-        containerRef.current?.focus();
-      }
-    });
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onEscape();
-        return;
-      }
-
-      if (e.key === 'Tab' && containerRef.current) {
-        const focusableElements = containerRef.current.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        );
-        const focusable = Array.from(focusableElements).filter(
-          (el) => !(el as HTMLElement).hasAttribute('disabled'),
-        ) as HTMLElement[];
-
-        if (focusable.length === 0) return;
-
-        const firstElement = focusable[0];
-        const lastElement = focusable[focusable.length - 1];
-
-        if (e.shiftKey && document.activeElement === firstElement) {
-          e.preventDefault();
-          lastElement.focus();
-        } else if (!e.shiftKey && document.activeElement === lastElement) {
-          e.preventDefault();
-          firstElement.focus();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
-
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-      document.documentElement.style.overflow = '';
-      (restoreFocusRef.current ?? previousFocusRef.current)?.focus?.();
-    };
-  }, [isActive, onEscape, initialFocusRef, restoreFocusRef]);
-
-  return containerRef;
-}
-
 export default function InteractiveArtworkCard({
   imageSlug,
+  videoSrc,
   title,
   sections,
 }: InteractiveArtworkCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
-  const [isDesktopLayout, setIsDesktopLayout] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const prefersReducedMotion = useReducedMotion();
+  const isDesktopLayout = useMediaQuery('(min-width: 1024px)', false);
 
   // Mouse tracking for glare effect
   const mouseX = useMotionValue(0.5);
@@ -141,33 +82,33 @@ export default function InteractiveArtworkCard({
     mouseY.set(0.5);
   };
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(min-width: 1024px)');
-    const sync = (matches: boolean) => setIsDesktopLayout(matches);
-    sync(mediaQuery.matches);
-
-    const handleChange = (event: MediaQueryListEvent) => sync(event.matches);
-
-    if (typeof mediaQuery.addEventListener === 'function') {
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
-
-    mediaQuery.addListener(handleChange);
-    return () => mediaQuery.removeListener(handleChange);
-  }, []);
-
-  const modalRef = useFocusTrap(
-    isModalOpen,
-    () => {
+  useOverlayBehavior({
+    isOpen: isModalOpen,
+    containerRef: modalRef,
+    initialFocusRef: closeButtonRef,
+    restoreFocusRef: triggerRef,
+    onClose: () => {
       setIsModalOpen(false);
       setShowInfo(false);
     },
-    closeButtonRef,
-    triggerRef,
-  );
+  });
+
+  useEffect(() => {
+    if (!isModalOpen || !videoSrc) {
+      return;
+    }
+
+    const animationFrame = requestAnimationFrame(() => {
+      void videoRef.current?.play().catch(() => {
+        // The visible controls remain available if a browser blocks autoplay.
+      });
+    });
+
+    return () => cancelAnimationFrame(animationFrame);
+  }, [isModalOpen, videoSrc]);
 
   const imageMeta = getImageMetadata(imageSlug);
+  const isVideoArtwork = Boolean(videoSrc);
   const gallerySrcset = getGallerySrcset(imageSlug);
   const modalSrcset = getModalSrcset(imageSlug);
   const sizes = getGallerySizes();
@@ -212,7 +153,7 @@ export default function InteractiveArtworkCard({
             setIsModalOpen(true);
           }}
           className="group w-full h-full text-left rounded-2xl overflow-hidden relative focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-zinc-950"
-          aria-label={`View ${displayTitle} artwork details and notes`}
+          aria-label={`View ${displayTitle} ${isVideoArtwork ? 'video' : 'artwork'} details and notes`}
           whileHover={
             prefersReducedMotion
               ? undefined
@@ -231,6 +172,7 @@ export default function InteractiveArtworkCard({
               decoding="async"
               width={800}
               height={1000}
+              style={{ objectPosition: imageMeta.galleryObjectPosition }}
               className={`w-full h-full object-cover ${
                 prefersReducedMotion ? '' : 'transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]'
               }`.trim()}
@@ -269,7 +211,8 @@ export default function InteractiveArtworkCard({
 
                 <div className="mt-4 flex items-center gap-3 text-sm text-zinc-200">
                   <span className="h-px w-8 bg-gradient-to-r from-purple-400 via-pink-400 to-transparent" />
-                  <span>View artwork</span>
+                  {isVideoArtwork && <Play size={14} aria-hidden="true" />}
+                  <span>{isVideoArtwork ? 'View video' : 'View artwork'}</span>
                 </div>
               </div>
             </div>
@@ -277,8 +220,9 @@ export default function InteractiveArtworkCard({
         </motion.button>
       </motion.div>
 
-      <AnimatePresence>
-        {isModalOpen && (
+      {createPortal(
+        <AnimatePresence>
+          {isModalOpen && (
           <motion.div
             ref={modalRef}
             role="dialog"
@@ -289,7 +233,11 @@ export default function InteractiveArtworkCard({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center outline-none"
-            onClick={() => {
+            onClick={(event) => {
+              if (event.target !== event.currentTarget) {
+                return;
+              }
+
               setIsModalOpen(false);
               setShowInfo(false);
             }}
@@ -310,22 +258,38 @@ export default function InteractiveArtworkCard({
               <X size={24} />
             </button>
 
-            <div
-              className="w-full h-full flex items-center justify-center p-4 md:p-8 lg:p-12"
-              onClick={(e) => e.stopPropagation()}
-            >
+            <div className="w-full h-full flex items-center justify-center p-4 md:p-8 lg:p-12">
               <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex flex-col lg:flex-row gap-6 lg:gap-8 items-stretch justify-center">
                 <div className="relative flex-1 min-h-0 flex items-center justify-center">
-                  <motion.img
-                    initial={prefersReducedMotion ? false : { scale: 0.96, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
-                    src={modalImageUrl}
-                    srcSet={modalSrcset}
-                    sizes="(max-width: 1024px) 100vw, 70vw"
-                    alt={imageMeta.alt}
-                    className="max-w-full max-h-[68vh] lg:max-h-full object-contain rounded-lg"
-                  />
+                  {isVideoArtwork ? (
+                    <motion.video
+                      ref={videoRef}
+                      initial={prefersReducedMotion ? false : { scale: 0.96, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
+                      poster={modalImageUrl}
+                      autoPlay
+                      controls
+                      muted
+                      playsInline
+                      preload="metadata"
+                      aria-label={`${displayTitle} video`}
+                      className="max-w-full max-h-[68vh] lg:max-h-full object-contain rounded-lg bg-black"
+                    >
+                      <source src={videoSrc} type="video/mp4" />
+                    </motion.video>
+                  ) : (
+                    <motion.img
+                      initial={prefersReducedMotion ? false : { scale: 0.96, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
+                      src={modalImageUrl}
+                      srcSet={modalSrcset}
+                      sizes="(max-width: 1024px) 100vw, 70vw"
+                      alt={imageMeta.alt}
+                      className="max-w-full max-h-[68vh] lg:max-h-full object-contain rounded-lg"
+                    />
+                  )}
 
                   {!isDesktopLayout && !showInfo && (
                     <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4">
@@ -343,7 +307,7 @@ export default function InteractiveArtworkCard({
 
                 <AnimatePresence initial={false}>
                   {showInfo && (
-                    <motion.aside
+                    <motion.div
                       id="artwork-info-panel"
                       initial={
                         prefersReducedMotion
@@ -358,7 +322,6 @@ export default function InteractiveArtworkCard({
                       }
                       transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
                       className="lg:w-[26rem] w-full lg:max-w-none max-h-[42vh] lg:max-h-[80vh] overflow-y-auto glass-dark rounded-3xl p-6 md:p-7 custom-scrollbar"
-                      onClick={(e) => e.stopPropagation()}
                     >
                       <div className="mb-6 flex items-start justify-between gap-4">
                         <div>
@@ -412,7 +375,7 @@ export default function InteractiveArtworkCard({
                           </div>
                         ))}
                       </div>
-                    </motion.aside>
+                    </motion.div>
                   )}
                 </AnimatePresence>
 
@@ -437,8 +400,10 @@ export default function InteractiveArtworkCard({
               </div>
             </div>
           </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body,
+      )}
     </>
   );
 }

@@ -6,15 +6,17 @@
 
 export type ImageSlug =
   | 'joetrip2'
-  | 'jennysno'
-  | 'dimensiontripp'
-  | 'loongdrive'
-  | 'eye-figure'
+  | 'dreamy-cat-nap'
+  | 'nestenferdig-tunge-video-poster'
+  | 'psychedelic-bathroom-portrait'
+  | 'psychedelic-bathroom-scream'
+  | 'ferdigcop-video-poster'
   | 'about-portrait';
 
 export interface ArtworkImage {
   slug: ImageSlug;
   alt: string;
+  galleryObjectPosition?: string;
 }
 
 export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
@@ -22,21 +24,28 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
     slug: 'joetrip2', 
     alt: 'Hero artwork - psychedelic portrait' 
   },
-  jennysno: { 
-    slug: 'jennysno', 
-    alt: 'Where Snow Holds Time - Der snøen holder tiden' 
+  'dreamy-cat-nap': {
+    slug: 'dreamy-cat-nap',
+    alt: 'Sleeping cat wrapped in ornate green textiles with shimmering psychedelic fur highlights'
   },
-  dimensiontripp: { 
-    slug: 'dimensiontripp', 
-    alt: 'The Eighth Interior - Det åttende indre' 
+  'nestenferdig-tunge-video-poster': {
+    slug: 'nestenferdig-tunge-video-poster',
+    alt: 'Poster frame from Nestenferdig Tunge moving image artwork',
+    galleryObjectPosition: '50% 50%',
   },
-  loongdrive: { 
-    slug: 'loongdrive', 
-    alt: 'Where the World Glides - Der verden glir gjennom sansene' 
+  'psychedelic-bathroom-portrait': {
+    slug: 'psychedelic-bathroom-portrait',
+    alt: 'Dark psychedelic bathroom portrait with rainbow distortion and patterned tiled wall',
+    galleryObjectPosition: '40% 50%',
   },
-  'eye-figure': { 
-    slug: 'eye-figure', 
-    alt: 'The One Who Looks Back - Den som ser tilbake' 
+  'psychedelic-bathroom-scream': {
+    slug: 'psychedelic-bathroom-scream',
+    alt: 'Psychedelic bathroom portrait with screaming figure covered in rainbow contour patterns',
+    galleryObjectPosition: '46% 50%',
+  },
+  'ferdigcop-video-poster': {
+    slug: 'ferdigcop-video-poster',
+    alt: 'Poster frame from Ferdigcop video artwork'
   },
   'about-portrait': {
     slug: 'about-portrait',
@@ -50,10 +59,11 @@ export const GALLERY_WIDTHS = [480, 800, 1200] as const;
 
 const MODAL_FALLBACK_WIDTH_BY_SLUG: Record<ImageSlug, number> = {
   joetrip2: 1600,
-  jennysno: 1600,
-  dimensiontripp: 1600,
-  loongdrive: 1200,
-  'eye-figure': 1600,
+  'dreamy-cat-nap': 1200,
+  'nestenferdig-tunge-video-poster': 1600,
+  'psychedelic-bathroom-portrait': 1600,
+  'psychedelic-bathroom-scream': 1600,
+  'ferdigcop-video-poster': 1600,
   'about-portrait': 1600,
 };
 

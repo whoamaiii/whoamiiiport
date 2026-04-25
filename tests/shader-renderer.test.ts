@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { ShaderRenderer } from '../src/lib/shaderRenderer';
+import { ShaderRenderer, ShaderUnavailableError } from '../src/lib/shaderRenderer';
 
 function createMockWebGlContext() {
   return {
@@ -85,6 +85,12 @@ describe('ShaderRenderer', () => {
     expect(renderer.element).toBeInstanceOf(HTMLCanvasElement);
     expect(renderer.element.width).toBe(320);
     expect(renderer.element.height).toBe(180);
+  });
+
+  it('uses a typed fallback error when WebGL is unavailable', () => {
+    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue(null);
+
+    expect(() => new ShaderRenderer(320, 180)).toThrow(ShaderUnavailableError);
   });
 
   it('resizes the internal canvas', () => {

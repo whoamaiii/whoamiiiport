@@ -1,10 +1,14 @@
-# Whoamiii — Psychedelic Art Portfolio
+# Whoamiii Portfolio
 
-A psychedelic artist portfolio built with React 19, Vite, Tailwind CSS 4, responsive local artwork assets, and a preserved custom glassmorphism subsystem for future use.
+A static React 19 + Vite portfolio for a psychedelic art brand, hardened around accessibility, motion control, rendering fallbacks, and local image contracts.
 
-## Quick Start
+## Runtime
 
-**Prerequisites:** Node.js 18+
+- Recommended Node.js: `24.13.1`
+- Recommended npm: `11.8.0`
+- Version pin: [`.nvmrc`](./.nvmrc)
+
+## Getting Started
 
 ```bash
 npm install
@@ -13,191 +17,87 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Scripts
+## Commands
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server on port 3000 |
-| `npm run build` | Production build to `dist/` |
-| `npm run preview` | Preview production build |
-| `npm run clean` | Remove `dist/` directory |
-| `npm run lint` | Type-check with TypeScript |
-| `npm run test` | Run Vitest unit checks |
-| `npm run test:e2e` | Run Playwright smoke tests |
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Vite dev server on port `3000`. |
+| `npm run build` | Build the production bundle into `dist/`. |
+| `npm run preview` | Preview the production build locally. |
+| `npm run clean` | Remove `dist/`. |
+| `npm run typecheck` | Run TypeScript without emitting files. |
+| `npm run lint` | Run ESLint across app, tests, and config files. |
+| `npm run test` | Run the Vitest unit and integration suite. |
+| `npm run test:e2e` | Run the Playwright browser regression suite. |
+| `npm run check` | Run typecheck, lint, unit/integration tests, and build. |
+| `npm run check:ci` | Run the full local CI gate, including Playwright. |
+| `npm run optimize-images` | Regenerate the responsive local image assets in `public/images`. |
 
-## Project Structure
+## Architecture Overview
 
-```
-src/
-├── main.tsx              # React entry point
-├── App.tsx               # Main portfolio layout (hero, gallery, about, contact)
-├── index.css             # Tailwind config, glass utilities, animations
-├── assets/               # Local artwork images
-│   └── first10/          # Curated selection
-└── glass-effect/         # Glassmorphism engine (see below)
-    ├── index.tsx          # GlassLayer — public component
-    ├── types.ts           # TypeScript interfaces
-    ├── glass-surface.tsx  # Frosted surface renderer
-    ├── shader-engine.ts   # Canvas displacement map generator
-    ├── interaction-physics.ts  # Elastic deformation & spring math
-    ├── svg-filter.tsx     # SVG feDisplacementMap filter chain
-    ├── browser-detect.ts  # Chromium / WebKit / Gecko detection
-    ├── shimmer-overlay.tsx # CSS fallback for non-Chromium browsers
-    └── displacement-maps.ts # Base64 displacement textures
-```
+- App shell: [`src/App.tsx`](./src/App.tsx) coordinates skip-link focus, background motion, and section composition.
+- Sections: [`src/sections/`](./src/sections) owns page structure and local copy placement.
+- Shared behavior: [`src/hooks/`](./src/hooks) centralizes reduced motion, media queries, document visibility, and overlay focus handling.
+- Visual effects: shader and glass systems live in [`src/components/shared/`](./src/components/shared), [`src/components/`](./src/components), and [`src/glass-effect/`](./src/glass-effect).
+- Content contracts: section copy lives in [`src/content/siteCopy.ts`](./src/content/siteCopy.ts), featured artwork wiring lives in [`src/content/featuredArtworks.ts`](./src/content/featuredArtworks.ts), and image metadata lives in [`src/utils/images.ts`](./src/utils/images.ts).
+- Fallback and resilience: [`src/components/fallback/RenderErrorBoundary.tsx`](./src/components/fallback/RenderErrorBoundary.tsx) and [`src/lib/reportError.ts`](./src/lib/reportError.ts) keep effect failures from blanking content.
 
-## Tech Stack
+## Quality Gates
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | React 19 |
-| Build | Vite 6 |
-| Styling | Tailwind CSS 4 |
-| Animation | Motion (Framer Motion) 12 |
-| Icons | Lucide React |
-| Language | TypeScript 5.8 |
+The repo is considered healthy when all of the following pass:
 
----
-
-## GlassLayer Component
-
-The `glass-effect/` module provides an interactive glassmorphism component with cursor-driven physics, SVG displacement refraction, and chromatic aberration.
-
-### Basic Usage
-
-```tsx
-import GlassLayer from './glass-effect';
-
-<GlassLayer>
-  <p>Content rendered on the glass surface</p>
-</GlassLayer>
+```bash
+npm run check
+npm run test:e2e
 ```
 
-### With Custom Settings
+The browser suite specifically protects:
 
-```tsx
-const containerRef = useRef<HTMLDivElement>(null);
+- skip-link focus transfer to `main`
+- stable heading and landmark naming
+- modal focus restoration
+- mobile menu focus trapping
+- base-page and modal accessibility scans
 
-<div ref={containerRef}>
-  <GlassLayer
-    mouseContainer={containerRef}
-    displacementScale={70}
-    blurAmount={0.06}
-    saturation={125}
-    aberrationIntensity={1.5}
-    elasticity={0.2}
-    cornerRadius={999}
-    padding="16px 32px"
-    mode="standard"
-    style={{ width: '100%', display: 'flex' }}
-  >
-    <span>Glass nav bar</span>
-  </GlassLayer>
-</div>
-```
+## Documentation
 
-### Props (`GlassLayerConfig`)
+The current implementation docs live in [`docs/README.md`](./docs/README.md).
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode` | — | Content rendered inside the glass surface |
-| `displacementScale` | `number` | `70` | Strength of the SVG displacement refraction effect |
-| `blurAmount` | `number` | `0.0625` | Backdrop blur multiplier (actual blur = value * 32px) |
-| `saturation` | `number` | `140` | Backdrop saturation percentage |
-| `aberrationIntensity` | `number` | `2` | Chromatic aberration strength at glass edges |
-| `elasticity` | `number` | `0.15` | How much the surface stretches toward the cursor |
-| `cornerRadius` | `number` | `999` | Border radius in pixels (999 = pill shape) |
-| `padding` | `string` | `"24px 32px"` | CSS padding for inner content |
-| `mode` | `DisplacementMode` | `"standard"` | Displacement texture variant |
-| `overLight` | `boolean` | `false` | Enable bright-background mode (adds dimming overlay) |
-| `mouseContainer` | `RefObject \| null` | `null` | Element to track mouse movement on (defaults to self) |
-| `globalMousePos` | `Point2D` | — | External cursor position (bypasses internal tracking) |
-| `mouseOffset` | `Point2D` | — | External normalised offset (bypasses internal tracking) |
-| `className` | `string` | `""` | Additional CSS classes |
-| `style` | `CSSProperties` | `{}` | Inline styles merged into the surface |
-| `onClick` | `() => void` | — | Click handler (also enables hover/press visual states) |
+- Baseline and acceptance contract: [`docs/implementation-baseline.md`](./docs/implementation-baseline.md)
+- Architecture: [`docs/architecture.md`](./docs/architecture.md)
+- Accessibility rules: [`docs/accessibility.md`](./docs/accessibility.md)
+- Testing strategy: [`docs/testing.md`](./docs/testing.md)
+- Release workflow: [`docs/release-checklist.md`](./docs/release-checklist.md)
+- Maintenance and asset updates: [`docs/maintenance.md`](./docs/maintenance.md)
+- Architecture decision log: [`docs/adr-001-static-portfolio-architecture.md`](./docs/adr-001-static-portfolio-architecture.md)
 
-### Displacement Modes
+## Asset Pipeline
 
-| Mode | Description |
-|------|-------------|
-| `"standard"` | Default refraction pattern — subtle, balanced distortion |
-| `"polar"` | Radial coordinate variant — circular distortion from center |
-| `"prominent"` | Stronger, more noticeable displacement |
-| `"shader"` | Dynamically computed via canvas SDF (signed distance field) |
+- Source inputs live under [`src/assets/`](./src/assets).
+- Generated runtime images live under [`public/images/`](./public/images).
+- The runtime source of truth is the image manifest in [`src/utils/images.ts`](./src/utils/images.ts).
+- When adding or replacing artwork, regenerate responsive images with `npm run optimize-images` and then run `npm run test`.
 
-### Exported Types
+## CI
 
-```ts
-import type { GlassLayerConfig, Point2D, DisplacementMode } from './glass-effect';
+GitHub Actions runs the same validation gate in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml):
 
-interface Point2D {
-  x: number;
-  y: number;
-}
+1. `npm ci`
+2. Playwright browser install
+3. `npm run check:ci`
 
-type DisplacementMode = "standard" | "polar" | "prominent" | "shader";
-```
+## Static Deployment Notes
 
-### How It Works
+This project is intentionally frontend-only. The expected host should support:
 
-The glass effect is a multi-layer rendering pipeline:
-
-1. **Backdrop blur + saturation** — CSS `backdrop-filter` for the frosted base
-2. **SVG displacement filter** — `feDisplacementMap` with per-channel offsets creates chromatic aberration at edges (Chromium only)
-3. **CSS shimmer fallback** — Conic/radial gradient overlay for Firefox and Safari
-4. **Border shimmer** — Two gradient `<span>`s with mask-composite for the light-catching edge highlight
-5. **Interaction physics** — Elastic deformation (scaleX/scaleY) and spring offset (translateX/Y) driven by cursor proximity
-
-### Browser Support
-
-| Browser | Rendering Strategy |
-|---------|-------------------|
-| Chrome / Edge / Opera | Full SVG filter with feDisplacementMap + chromatic aberration |
-| Firefox | Backdrop blur + CSS shimmer overlay (blob URL conversion for feImage) |
-| Safari | Backdrop blur + CSS shimmer overlay |
-
-### Performance Notes
-
-- The `displacement-maps.ts` file contains large base64-encoded textures (~35KB). These are bundled into JS to avoid extra network requests but increase initial bundle size.
-- The `"shader"` mode renders a canvas-based displacement map on mount — avoid using it on many simultaneous instances.
-- `will-change` is not applied to the glass surface to avoid compositor layer explosion; CSS transitions handle smoothing.
-- The `mouseContainer` prop is recommended when embedding GlassLayer inside a larger interactive area — it prevents the cursor tracking from being limited to the small surface bounds.
-
----
-
-## CSS Utilities
-
-Defined in `src/index.css`:
-
-| Class | Description |
-|-------|-------------|
-| `.glass` | Glassmorphism: `bg-white/10`, 2xl backdrop blur, saturate 200%, white border, shadow |
-| `.glass-dark` | Dark variant: `bg-black/40`, 3xl backdrop blur, subtle border |
-| `.text-gradient` | Purple-to-orange gradient text via `bg-clip-text` |
-| `.animate-blob` | 10s morphing translation + scale animation |
-| `.animate-hue-breathe` | 20s subtle hue rotation + saturation shift |
-| `.animate-psychedelic-breathe` | 10s scale + drop-shadow + hue-rotate pulse |
-| `.animation-delay-2000` | 2s animation delay |
-| `.animation-delay-4000` | 4s animation delay |
-
-## Configuration
-
-### Fonts
-
-The live app keeps [Inter](https://fonts.google.com/specimen/Inter) as the body copy font and loads Adobe Fonts `pd-donut` from Typekit in `index.html` for display typography. The display face is exposed through the `font-display` utility in `src/index.css`.
-
-### Path Aliases
-
-`@/` resolves to the project root (configured in both `tsconfig.json` and `vite.config.ts`).
+- serving the Vite `dist/` output as a static site
+- immutable caching for hashed assets
+- preview deployments for pull requests if available
+- configurable security headers and CSP, especially for Adobe Fonts plus any `data:` or `blob:` URLs needed by visual effects
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|---------|
-| Glass effect looks flat (no refraction) | Check browser — SVG displacement only works in Chromium. Firefox/Safari use the CSS shimmer fallback. |
-| Display font is missing | Verify `index.html` still includes the Adobe Fonts `<link rel="stylesheet" href="https://use.typekit.net/hqx2rsx.css">` tag and you have internet access. |
-| Gallery images not loading | The gallery uses generated local assets from `public/images`. Re-run `npm run optimize-images` if the generated files are missing. |
-| About image not loading | The About section now uses generated local assets from `public/images`. Re-run `npm run optimize-images` if those generated files are missing. |
-| Build fails on displacement maps | The base64 texture file is large. Ensure sufficient memory for the bundler. |
-| HMR not working | Check if `DISABLE_HMR=true` is set in your environment (used by AI Studio). |
+- Missing generated images: run `npm run optimize-images` and then `npm run test`.
+- Browser regression failure: run `npm run test:e2e` locally and inspect the Playwright trace under `test-results/`.
+- Lint or typecheck drift: run `npm run check` before opening a PR.
+- Visual effect fallback issues: inspect [`src/components/shared/ShaderTextWord.tsx`](./src/components/shared/ShaderTextWord.tsx), [`src/components/HeroShaderTitle.tsx`](./src/components/HeroShaderTitle.tsx), and [`src/components/ShaderHeading.tsx`](./src/components/ShaderHeading.tsx).

@@ -39,7 +39,7 @@ The project is considered acceptable only when these are true:
 - Modal and menu overlays trap focus and restore it correctly.
 - Reduced-motion users do not depend on decorative motion for readability or navigation.
 - Visual-effect failures degrade to readable static content instead of blank UI.
-- Image URLs, `srcset` values, and manifest metadata remain aligned.
+- Image URLs, video URLs, `srcset` values, and manifest metadata remain aligned.
 
 ## Current Guardrails
 

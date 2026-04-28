@@ -91,31 +91,40 @@ export function ImageReveal(props: ImageRevealProps) {
         : direction === 'left'
           ? 'left'
           : 'right';
+  const imageMotionProps = prefersReducedMotion
+    ? {
+        initial: false as const,
+        animate: { scale: 1 },
+        transition: imageTransition,
+      }
+    : {
+        initial: { clipPath: clipPaths.hidden, scale: 1.2 },
+        animate: isInView
+          ? { clipPath: clipPaths.visible, scale: 1 }
+          : { clipPath: clipPaths.hidden, scale: 1.2 },
+        transition: imageTransition,
+      };
 
   return (
     <div ref={ref} className={`relative overflow-hidden ${className}`}>
-      {/* Reveal mask */}
-      <motion.div
-        className="absolute inset-0 z-10 bg-purple-500 origin-bottom"
-        initial={overlayInitial}
-        animate={isInView ? overlayAnimate : overlayInitial}
-        transition={{
-          ...transition,
-          delay: (prefersReducedMotion ? 0 : delay) + 0.1,
-        }}
-        style={{ transformOrigin: overlayOrigin }}
-      />
+      {!prefersReducedMotion && (
+        <motion.div
+          className="absolute inset-0 z-10 bg-purple-500 origin-bottom"
+          data-testid="image-reveal-mask"
+          initial={overlayInitial}
+          animate={isInView ? overlayAnimate : overlayInitial}
+          transition={{
+            ...transition,
+            delay: delay + 0.1,
+          }}
+          style={{ transformOrigin: overlayOrigin }}
+        />
+      )}
 
-      {/* Image with parallax scale */}
       <motion.div
         className="w-full h-full"
-        initial={{ clipPath: clipPaths.hidden, scale: 1.2 }}
-        animate={
-          isInView
-            ? { clipPath: clipPaths.visible, scale: 1 }
-            : { clipPath: clipPaths.hidden, scale: 1.2 }
-        }
-        transition={imageTransition}
+        data-testid="image-reveal-content"
+        {...imageMotionProps}
       >
         {'children' in props ? (
           props.children

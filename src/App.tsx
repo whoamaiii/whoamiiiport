@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type MouseEvent } from 'react';
 import { useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
 import { ScrollProgress } from './components/ScrollProgress';
 import RenderErrorBoundary from './components/fallback/RenderErrorBoundary';
@@ -66,9 +66,27 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [enableReactivePointerEffects, mouseX, mouseY]);
 
-  const handleSkipLinkClick = () => {
+  const handleSkipLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+
+    const main = mainRef.current;
+    if (!main) {
+      window.history.pushState(null, '', '#main-content');
+      return;
+    }
+
+    const previousHtmlScrollBehavior = document.documentElement.style.scrollBehavior;
+    const previousBodyScrollBehavior = document.body.style.scrollBehavior;
+
+    document.documentElement.style.scrollBehavior = 'auto';
+    document.body.style.scrollBehavior = 'auto';
+    window.history.pushState(null, '', '#main-content');
+    main.scrollIntoView({ behavior: 'auto', block: 'start', inline: 'nearest' });
+    main.focus({ preventScroll: true });
+
     window.requestAnimationFrame(() => {
-      mainRef.current?.focus();
+      document.documentElement.style.scrollBehavior = previousHtmlScrollBehavior;
+      document.body.style.scrollBehavior = previousBodyScrollBehavior;
     });
   };
 

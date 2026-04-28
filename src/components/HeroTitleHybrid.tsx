@@ -33,7 +33,8 @@ export function HeroTitleHybrid({
   const isDocumentVisible = useDocumentVisibility();
   const ids = useId().replace(/:/g, '');
   const reportedRef = useRef(false);
-  const visualSupported = !forceFallback && matchesHeroWordmark(titleLines);
+  const titleMatchesWordmark = matchesHeroWordmark(titleLines);
+  const visualSupported = !forceFallback && titleMatchesWordmark;
   const shouldAnimate = visualSupported && !reducedMotion && isDocumentVisible;
   const baseGradientId = `${ids}-hero-title-base`;
   const edgeGradientId = `${ids}-hero-title-edge`;
@@ -45,7 +46,7 @@ export function HeroTitleHybrid({
   const secondLineTransform = `translate(${HERO_WORDMARK_LINES.second.x} ${HERO_WORDMARK_LINES.second.y + HERO_WORDMARK_LINES.second.height}) scale(1 -1)`;
 
   useEffect(() => {
-    if (visualSupported || reportedRef.current) {
+    if (titleMatchesWordmark || reportedRef.current) {
       return;
     }
 
@@ -54,7 +55,7 @@ export function HeroTitleHybrid({
       semanticTitle,
       titleLines,
     });
-  }, [semanticTitle, titleLines, visualSupported]);
+  }, [semanticTitle, titleLines, titleMatchesWordmark]);
 
   return (
     <>

@@ -160,16 +160,19 @@ function MobileMenuButton({
   onClick,
   buttonRef,
 }: MobileMenuButtonProps) {
+  const triggerLabel = isOpen ? 'Navigation menu open' : 'Open menu';
+
   return (
     <button
       ref={buttonRef}
       className="site-reference-menu-trigger absolute grid place-items-center rounded-full text-white transition-transform duration-300 ease-out focus:outline-none focus:ring-2 focus:ring-purple-300"
       onClick={onClick}
-      aria-label="Open menu"
+      aria-label={triggerLabel}
       aria-expanded={isOpen}
+      aria-haspopup="dialog"
       aria-controls="mobile-menu"
     >
-      <span className="sr-only">Open menu</span>
+      <span className="sr-only">{triggerLabel}</span>
     </button>
   );
 }

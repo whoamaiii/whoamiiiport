@@ -9,7 +9,7 @@ import {
   useTransform,
 } from 'motion/react';
 import { Play, X } from 'lucide-react';
-import type { ImageSlug } from '../utils/images';
+import type { ModalImageSlug } from '../utils/images';
 import {
   getGallerySrcset,
   getModalSrcset,
@@ -24,7 +24,7 @@ import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 interface InteractiveArtworkCardProps {
-  imageSlug: ImageSlug;
+  imageSlug: ModalImageSlug;
   videoSrc?: string;
   title: ArtworkTitle;
   sections: ArtworkSection[];

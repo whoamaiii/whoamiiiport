@@ -11,6 +11,16 @@ export interface GalleryCopy {
   subtitle: string;
 }
 
+export interface ContactCopy {
+  heading: string;
+  headingParts: {
+    lead: string;
+    accent: string;
+  };
+  body: string;
+  cta: string;
+}
+
 export const HERO_COPY: HeroCopy = {
   eyebrow: 'Psychedelic Art Portfolio',
   titleSemantic: 'Altered Perceptions.',
@@ -32,8 +42,14 @@ export const ABOUT_COPY = {
     'Using a mix of traditional painting and digital manipulation, I create pieces that feel both organic and synthetic, inviting the viewer to step into a different reality.',
 } as const;
 
-export const CONTACT_COPY = {
-  heading: "Let's Create Something Trippy.",
+const CONTACT_HEADING_PARTS = {
+  lead: "Let's Create Something",
+  accent: 'Trippy.',
+} as const;
+
+export const CONTACT_COPY: ContactCopy = {
+  heading: `${CONTACT_HEADING_PARTS.lead} ${CONTACT_HEADING_PARTS.accent}`,
+  headingParts: CONTACT_HEADING_PARTS,
   body: 'Open for commissions, collaborations, and exhibitions.',
   cta: 'Send a Message',
 } as const;

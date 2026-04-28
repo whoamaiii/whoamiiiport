@@ -1,16 +1,59 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type SyntheticEvent } from 'react';
 import { motion, type MotionValue } from 'motion/react';
 import { getHeroSizes, getHeroSrcset, getImageMetadata, getImageUrl } from '../utils/images';
 import { HERO_COPY } from '../content/siteCopy';
 import { HeroTitleHybrid } from '../components/HeroTitleHybrid';
 import { useDocumentVisibility } from '../hooks/useDocumentVisibility';
 import { useMediaQuery } from '../hooks/useMediaQuery';
+import { HERO_VIDEO } from '../utils/media';
+import reportError from '../lib/reportError';
 
 const HERO_SLUG = 'joetrip2' as const;
 const heroMetadata = getImageMetadata(HERO_SLUG);
 const HERO_IMAGE_WIDTH = 1440;
 const HERO_IMAGE_HEIGHT = 2160;
-const HERO_VIDEO_PATH = '/videos/you-did-good-today.mp4';
+const HERO_VIDEO_ENABLE_DELAY_MS = 1200;
+
+interface HeroVideoConnection {
+  saveData?: boolean;
+  effectiveType?: string;
+  addEventListener?: (type: 'change', listener: () => void) => void;
+  removeEventListener?: (type: 'change', listener: () => void) => void;
+}
+
+function getHeroVideoConnection(): HeroVideoConnection | null {
+  if (typeof navigator === 'undefined') {
+    return null;
+  }
+
+  const navigatorWithConnection = navigator as Navigator & {
+    connection?: HeroVideoConnection;
+    mozConnection?: HeroVideoConnection;
+    webkitConnection?: HeroVideoConnection;
+  };
+
+  return (
+    navigatorWithConnection.connection ??
+    navigatorWithConnection.mozConnection ??
+    navigatorWithConnection.webkitConnection ??
+    null
+  );
+}
+
+export function isHeroVideoConnectionConstrained(
+  connection: HeroVideoConnection | null = getHeroVideoConnection(),
+): boolean {
+  if (!connection) {
+    return false;
+  }
+
+  if (connection.saveData === true) {
+    return true;
+  }
+
+  const effectiveType = connection.effectiveType?.toLowerCase();
+  return effectiveType === 'slow-2g' || effectiveType === '2g';
+}
 
 interface HeroRevealConfig {
   initial: false | { opacity: number; y: number };
@@ -38,7 +81,40 @@ export function HeroSection({
   const isDocumentVisible = useDocumentVisibility();
   const prefersLargeViewport = useMediaQuery('(min-width: 1024px)', false);
   const [shouldPlayHeroVideo, setShouldPlayHeroVideo] = useState(false);
-  const allowHeroVideo = !reducedMotion && prefersLargeViewport && isDocumentVisible;
+  const [isHeroVideoDisabled, setIsHeroVideoDisabled] = useState(false);
+  const [isConnectionConstrained, setIsConnectionConstrained] = useState(() =>
+    isHeroVideoConnectionConstrained(),
+  );
+  const heroVideoFailureReportedRef = useRef(false);
+  const allowHeroVideo =
+    !isHeroVideoDisabled &&
+    !isConnectionConstrained &&
+    !reducedMotion &&
+    prefersLargeViewport &&
+    isDocumentVisible;
+
+  useEffect(() => {
+    const connection = getHeroVideoConnection();
+    if (!connection) {
+      setIsConnectionConstrained(false);
+      return;
+    }
+
+    const updateConnectionState = () => {
+      setIsConnectionConstrained(isHeroVideoConnectionConstrained(connection));
+    };
+
+    updateConnectionState();
+
+    if (typeof connection.addEventListener !== 'function') {
+      return;
+    }
+
+    connection.addEventListener('change', updateConnectionState);
+    return () => {
+      connection.removeEventListener?.('change', updateConnectionState);
+    };
+  }, []);
 
   useEffect(() => {
     if (!allowHeroVideo) {
@@ -48,10 +124,28 @@ export function HeroSection({
 
     const timer = window.setTimeout(() => {
       setShouldPlayHeroVideo(true);
-    }, 1200);
+    }, HERO_VIDEO_ENABLE_DELAY_MS);
 
     return () => window.clearTimeout(timer);
   }, [allowHeroVideo]);
+
+  const handleHeroVideoFailure = useCallback((event: SyntheticEvent<HTMLVideoElement>) => {
+    setShouldPlayHeroVideo(false);
+    setIsHeroVideoDisabled(true);
+
+    if (heroVideoFailureReportedRef.current) {
+      return;
+    }
+
+    heroVideoFailureReportedRef.current = true;
+    reportError(new Error('Hero overlay video failed to load or stalled.'), 'hero-section:overlay-video', {
+      currentSrc: event.currentTarget.currentSrc || undefined,
+      eventType: event.type,
+      networkState: event.currentTarget.networkState,
+      readyState: event.currentTarget.readyState,
+      src: HERO_VIDEO.src,
+    });
+  }, []);
 
   return (
     <section className="relative min-h-[100dvh] overflow-hidden z-10 bg-zinc-950">
@@ -83,15 +177,18 @@ export function HeroSection({
           <motion.video
             className="min-w-[120vw] min-h-[120vh] object-cover object-center absolute -top-[10vh] -left-[10vw]"
             style={{ y: parallaxY, x: parallaxX }}
+            data-testid="hero-overlay-video"
             autoPlay
             muted
             loop
+            onError={handleHeroVideoFailure}
+            onStalled={handleHeroVideoFailure}
             playsInline
             preload="none"
             poster={getImageUrl(HERO_SLUG, HERO_IMAGE_WIDTH)}
             aria-hidden="true"
           >
-            <source src={HERO_VIDEO_PATH} type="video/mp4" />
+            <source src={HERO_VIDEO.src} type={HERO_VIDEO.type} />
           </motion.video>
         )}
       </motion.div>

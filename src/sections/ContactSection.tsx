@@ -31,10 +31,10 @@ export function ContactSection({ reducedMotion }: ContactSectionProps) {
           >
             <span className="sr-only">{CONTACT_COPY.heading}</span>
             <span aria-hidden="true">
-              <TextScramble text="Let's Create Something" delay={200} duration={1200} />
+              <TextScramble text={CONTACT_COPY.headingParts.lead} delay={200} duration={1200} />
               <span className="text-gradient">
                 {' '}
-                <TextScramble text="Trippy." delay={800} duration={800} />
+                <TextScramble text={CONTACT_COPY.headingParts.accent} delay={800} duration={800} />
               </span>
             </span>
           </h2>

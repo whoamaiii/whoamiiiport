@@ -3,7 +3,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { ShaderHeading } from '../src/components/ShaderHeading';
 import ContactSection from '../src/sections/ContactSection';
 import GallerySection from '../src/sections/GallerySection';
-import { GALLERY_COPY } from '../src/content/siteCopy';
+import { CONTACT_COPY, GALLERY_COPY } from '../src/content/siteCopy';
+import { installMatchMediaMock } from './helpers/matchMedia';
 
 vi.mock('../src/lib/shaderRenderer', () => ({
   ShaderRenderer: class MockShaderRenderer {
@@ -25,12 +26,19 @@ vi.mock('../src/components/InteractiveArtworkCard', () => ({
 }));
 
 describe('section semantics', () => {
-  it('keeps the contact heading named from first render while the scramble stays decorative', () => {
+  it('keeps the contact heading accessible name stable while visible scramble copy comes from CONTACT_COPY', () => {
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': true,
+    });
     render(<ContactSection reducedMotion={false} />);
 
-    expect(
-      screen.getByRole('heading', { name: /let's create something trippy/i }),
-    ).toBeInTheDocument();
+    const heading = screen.getByRole('heading', { name: CONTACT_COPY.heading });
+
+    expect(CONTACT_COPY.heading).toBe(
+      `${CONTACT_COPY.headingParts.lead} ${CONTACT_COPY.headingParts.accent}`,
+    );
+    expect(heading).toHaveTextContent(CONTACT_COPY.headingParts.lead);
+    expect(heading).toHaveTextContent(CONTACT_COPY.headingParts.accent);
   });
 
   it('allows named regions to reference the default shader heading by id', () => {

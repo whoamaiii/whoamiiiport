@@ -2,7 +2,7 @@
 
 ## Overview
 
-`HeroTitleHybrid` is the active hero title system for the landing view. It replaces the old `HeroShaderTitle` path with a calmer, more deterministic split between semantic meaning and decorative rendering:
+`HeroTitleHybrid` is the active hero title system for the landing view. It replaces the retired WebGL hero-title path with a calmer, more deterministic split between semantic meaning and decorative rendering:
 
 - semantic meaning stays in the hero `h1`
 - the decorative title is a hero-only custom wordmark visual layer

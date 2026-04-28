@@ -1,7 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { motionValue } from 'motion/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { HeroTitleHybrid } from '../src/components/HeroTitleHybrid';
+import { HERO_COPY } from '../src/content/siteCopy';
+import reportError from '../src/lib/reportError';
 import { HeroSection } from '../src/sections/HeroSection';
+
+vi.mock('../src/lib/reportError', () => ({
+  default: vi.fn(),
+}));
 
 vi.mock('../src/lib/shaderRenderer', () => ({
   ShaderRenderer: class MockShaderRenderer {
@@ -41,6 +48,7 @@ function getHeroTitleVisual() {
 
 describe('Hero title accessibility contract', () => {
   beforeEach(() => {
+    vi.mocked(reportError).mockClear();
     vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation((type: string) => {
       if (type !== '2d') {
         return null;
@@ -75,6 +83,7 @@ describe('Hero title accessibility contract', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.mocked(reportError).mockClear();
   });
 
   it('keeps a single accessible hero heading while the decorative title stays aria-hidden', () => {
@@ -94,5 +103,51 @@ describe('Hero title accessibility contract', () => {
     expect(
       screen.getByText(/digital paintings and dream-burned color studies from altered states\./i),
     ).toBeInTheDocument();
+  });
+
+  it('renders a forced fallback without reporting a wordmark mismatch', () => {
+    render(
+      <h1>
+        <HeroTitleHybrid
+          semanticTitle={HERO_COPY.titleSemantic}
+          titleLines={HERO_COPY.titleLines}
+          reducedMotion={false}
+          forceFallback
+        />
+      </h1>,
+    );
+
+    expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'fallback');
+    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Altered');
+    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Perceptions');
+    expect(reportError).not.toHaveBeenCalled();
+  });
+
+  it('reports a visual fallback when the requested title does not match the wordmark asset', async () => {
+    const mismatchedTitleLines = ['Altered', 'Refractions'] as const;
+
+    render(
+      <h1>
+        <HeroTitleHybrid
+          semanticTitle="Altered Refractions."
+          titleLines={mismatchedTitleLines}
+          reducedMotion={false}
+        />
+      </h1>,
+    );
+
+    expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'fallback');
+
+    await waitFor(() => {
+      expect(reportError).toHaveBeenCalledTimes(1);
+    });
+    expect(reportError).toHaveBeenCalledWith(
+      expect.any(Error),
+      'hero-title-hybrid:visual-fallback',
+      expect.objectContaining({
+        semanticTitle: 'Altered Refractions.',
+        titleLines: mismatchedTitleLines,
+      }),
+    );
   });
 });

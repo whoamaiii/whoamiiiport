@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   GALLERY_WIDTHS,
   HERO_WIDTHS,
+  IMAGE_MANIFEST,
   getGallerySrcset,
   getHeroSrcset,
   getImageMetadata,
@@ -11,12 +12,9 @@ import {
   getModalImageUrl,
   getModalSrcset,
 } from '../src/utils/images';
-import {
-  ferdigcopVideoArtwork,
-  liquidPerceptionArtwork,
-  psychedelicBathroomPortrait,
-  psychedelicBathroomScream,
-} from '../src/components/artworkData';
+import { ferdigcopVideoArtwork } from '../src/components/artworkData';
+import { FEATURED_ARTWORKS } from '../src/content/featuredArtworks';
+import { GALLERY_VIDEOS, HERO_VIDEO } from '../src/utils/media';
 
 const generatedImagePath = (urlPath: string) =>
   resolve('public', urlPath.replace(/^\/+/, ''));
@@ -27,6 +25,12 @@ const splitSrcset = (srcset: string) =>
 describe('image contract', () => {
   it('keeps the hero asset contract explicit and resolvable', () => {
     expect(HERO_WIDTHS).toEqual([960, 1440, 1920]);
+    expect(HERO_VIDEO).toEqual({
+      src: '/videos/you-did-good-today.mp4',
+      type: 'video/mp4',
+      posterSlug: 'joetrip2',
+    });
+
     const srcset = getHeroSrcset('joetrip2');
     const urls = splitSrcset(srcset);
     expect(urls).toEqual([
@@ -38,18 +42,22 @@ describe('image contract', () => {
     for (const url of urls) {
       expect(existsSync(generatedImagePath(url))).toBe(true);
     }
+
+    expect(existsSync(resolve('public', HERO_VIDEO.src.replace(/^\/+/, '')))).toBe(true);
+    expect(getImageMetadata(HERO_VIDEO.posterSlug).slug).toBe('joetrip2');
   });
 
-  it('maps the four local artworks to the generated gallery assets', () => {
-    const artworks = [
-      liquidPerceptionArtwork,
-      psychedelicBathroomPortrait,
-      psychedelicBathroomScream,
-      ferdigcopVideoArtwork,
-    ];
+  it('maps the current featured artworks to generated gallery assets', () => {
+    const artworks = FEATURED_ARTWORKS.map(({ artwork }) => artwork);
 
     expect(artworks).toHaveLength(4);
     expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(4);
+    expect(FEATURED_ARTWORKS.map(({ id }) => id)).toEqual([
+      'liquid-perception',
+      'psychedelic-bathroom-portrait',
+      'psychedelic-bathroom-scream',
+      'ferdigcop-video',
+    ]);
     expect(artworks.map((artwork) => artwork.imageSlug)).toEqual([
       'liquid-perception',
       'psychedelic-bathroom-portrait',
@@ -71,9 +79,30 @@ describe('image contract', () => {
     expect(getImageMetadata('liquid-perception').galleryObjectPosition).toBe('52% 54%');
     expect(getImageMetadata('psychedelic-bathroom-portrait').galleryObjectPosition).toBe('40% 50%');
     expect(getImageMetadata('psychedelic-bathroom-scream').galleryObjectPosition).toBe('46% 50%');
-    expect(liquidPerceptionArtwork.videoSrc).toBeUndefined();
-    expect(ferdigcopVideoArtwork.videoSrc).toBe('/videos/ferdigcop-gallery.mp4');
-    expect(existsSync(resolve('public/videos/ferdigcop-gallery.mp4'))).toBe(true);
+  });
+
+  it('keeps the active image manifest free of retired gallery slugs', () => {
+    expect(Object.keys(IMAGE_MANIFEST)).toEqual([
+      'joetrip2',
+      'liquid-perception',
+      'psychedelic-bathroom-portrait',
+      'psychedelic-bathroom-scream',
+      'ferdigcop-video-poster',
+      'about-portrait',
+    ]);
+  });
+
+  it('keeps gallery video sources explicit and resolvable', () => {
+    expect(GALLERY_VIDEOS).toEqual({
+      ferdigcop: {
+        src: '/videos/ferdigcop-gallery.mp4',
+        type: 'video/mp4',
+        posterSlug: 'ferdigcop-video-poster',
+      },
+    });
+    expect(ferdigcopVideoArtwork.videoSrc).toBe(GALLERY_VIDEOS.ferdigcop.src);
+    expect(existsSync(resolve('public', GALLERY_VIDEOS.ferdigcop.src.replace(/^\/+/, '')))).toBe(true);
+    expect(existsSync(generatedImagePath(getModalImageUrl(GALLERY_VIDEOS.ferdigcop.posterSlug)))).toBe(true);
   });
 
   it('keeps the about portrait on the same generated local asset pipeline', () => {

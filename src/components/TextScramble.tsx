@@ -21,7 +21,7 @@ export function TextScramble({
   const [displayText, setDisplayText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
   const prefersReducedMotion = useReducedMotion();
-  const frameRef = useRef<number>();
+  const frameRef = useRef<number | null>(null);
   const queueRef = useRef<{ from: string; to: string; start: number; end: number; char?: string }[]>([]);
   const completionNotifiedRef = useRef(false);
 
@@ -54,6 +54,7 @@ export function TextScramble({
     if (complete < queueRef.current.length) {
       frameRef.current = requestAnimationFrame(update);
     } else {
+      frameRef.current = null;
       setIsComplete(true);
     }
   }, []);
@@ -93,15 +94,16 @@ export function TextScramble({
     setDisplayText('');
     setIsComplete(false);
     completionNotifiedRef.current = false;
-    
+
     const timer = setTimeout(() => {
       startScramble();
     }, delay);
 
     return () => {
       clearTimeout(timer);
-      if (frameRef.current) {
+      if (frameRef.current !== null) {
         cancelAnimationFrame(frameRef.current);
+        frameRef.current = null;
       }
     };
   }, [delay, startScramble, text]);

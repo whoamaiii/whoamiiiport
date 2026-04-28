@@ -38,7 +38,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - App shell: [`src/App.tsx`](./src/App.tsx) coordinates skip-link focus, background motion, and section composition.
 - Sections: [`src/sections/`](./src/sections) owns page structure and local copy placement.
 - Shared behavior: [`src/hooks/`](./src/hooks) centralizes reduced motion, media queries, document visibility, and overlay focus handling.
-- Visual effects: shader and glass systems live in [`src/components/shared/`](./src/components/shared), [`src/components/`](./src/components), and [`src/glass-effect/`](./src/glass-effect).
+- Visual effects: hero wordmark and shader text live in [`src/components/`](./src/components) and [`src/components/shared/`](./src/components/shared); [`src/glass-effect/`](./src/glass-effect) is intentionally preserved as future/reference infrastructure.
 - Content contracts: section copy lives in [`src/content/siteCopy.ts`](./src/content/siteCopy.ts), featured artwork wiring lives in [`src/content/featuredArtworks.ts`](./src/content/featuredArtworks.ts), and image metadata lives in [`src/utils/images.ts`](./src/utils/images.ts).
 - Fallback and resilience: [`src/components/fallback/RenderErrorBoundary.tsx`](./src/components/fallback/RenderErrorBoundary.tsx) and [`src/lib/reportError.ts`](./src/lib/reportError.ts) keep effect failures from blanking content.
 
@@ -75,7 +75,7 @@ The current implementation docs live in [`docs/README.md`](./docs/README.md).
 
 - Source inputs live under [`src/assets/`](./src/assets).
 - Generated runtime images live under [`public/images/`](./public/images).
-- The runtime source of truth is the image manifest in [`src/utils/images.ts`](./src/utils/images.ts).
+- The runtime source of truth is the image manifest in [`src/utils/images.ts`](./src/utils/images.ts) plus the video media manifest in [`src/utils/media.ts`](./src/utils/media.ts).
 - When adding or replacing artwork, regenerate responsive images with `npm run optimize-images` and then run `npm run test`.
 
 ## CI
@@ -93,11 +93,11 @@ This project is intentionally frontend-only. The expected host should support:
 - serving the Vite `dist/` output as a static site
 - immutable caching for hashed assets
 - preview deployments for pull requests if available
-- configurable security headers and CSP, especially for Adobe Fonts plus any `data:` or `blob:` URLs needed by visual effects
+- host-level configurable security headers and CSP, especially for Adobe Fonts, same-origin image/video media, plus any `data:` or `blob:` URLs needed by visual effects
 
 ## Troubleshooting
 
 - Missing generated images: run `npm run optimize-images` and then `npm run test`.
 - Browser regression failure: run `npm run test:e2e` locally and inspect the Playwright trace under `test-results/`.
 - Lint or typecheck drift: run `npm run check` before opening a PR.
-- Visual effect fallback issues: inspect [`src/components/shared/ShaderTextWord.tsx`](./src/components/shared/ShaderTextWord.tsx), [`src/components/HeroShaderTitle.tsx`](./src/components/HeroShaderTitle.tsx), and [`src/components/ShaderHeading.tsx`](./src/components/ShaderHeading.tsx).
+- Visual effect fallback issues: inspect [`src/components/HeroTitleHybrid.tsx`](./src/components/HeroTitleHybrid.tsx), [`src/components/shared/ShaderTextWord.tsx`](./src/components/shared/ShaderTextWord.tsx), and [`src/components/ShaderHeading.tsx`](./src/components/ShaderHeading.tsx).

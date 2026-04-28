@@ -13,7 +13,7 @@ The project is a portfolio experience with heavy visual presentation, local cura
 The app will remain a static Vite + React frontend with:
 
 - local content modules
-- local image manifest and generated responsive assets
+- local image/media manifests and generated responsive assets
 - section-local state
 - shared hooks for cross-cutting browser behavior
 - lightweight error reporting and render fallbacks instead of a larger monitoring platform

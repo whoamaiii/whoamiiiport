@@ -32,9 +32,16 @@ The image contract test suite will catch missing generated files or mismatched s
 
 - Keep gallery cards poster-first: store a poster source in [`src/assets/`](../src/assets), generate responsive poster variants with `npm run optimize-images`, and reference the poster through the normal image manifest.
 - Store compressed runtime videos in [`public/videos/`](../public/videos). Do not point app data at a file in Downloads or another local-only folder.
-- Add `videoSrc` to the artwork entry in [`src/components/artworkData.ts`](../src/components/artworkData.ts). The shared gallery card will then show `View video` on the card and render the existing autoplaying, muted, controlled `<video>` modal.
+- Add the runtime video path to [`src/utils/media.ts`](../src/utils/media.ts), then reference that manifest entry from the artwork entry in [`src/components/artworkData.ts`](../src/components/artworkData.ts). The shared gallery card will then show `View video` on the card and render the existing autoplaying, muted, controlled `<video>` modal.
 - Keep video files web-sized. As a practical target, prefer an optimized MP4 with `-movflags +faststart`, H.264 video, AAC audio, and dimensions no larger than the modal needs.
 - Update [`tests/image-contract.test.ts`](../tests/image-contract.test.ts) and the relevant Playwright modal test whenever a featured card changes from image to video.
+
+## Maintaining Hero Media
+
+- The hero poster remains the `joetrip2` image manifest entry in [`src/utils/images.ts`](../src/utils/images.ts).
+- The hero overlay video lives in [`src/utils/media.ts`](../src/utils/media.ts) and must resolve to a same-origin file in [`public/videos/`](../public/videos).
+- Keep hero-video failure handling wired through [`src/lib/reportError.ts`](../src/lib/reportError.ts). That adapter logs only in development until a production monitoring policy is chosen.
+- If the hero video path, poster slug, or loading policy changes, update [`tests/image-contract.test.ts`](../tests/image-contract.test.ts), [`tests/hero-video.test.tsx`](../tests/hero-video.test.tsx), and the manual hero readability pass in [`docs/release-checklist.md`](./release-checklist.md).
 
 ## Modifying Motion
 
@@ -74,7 +81,14 @@ Before adding new motion:
 - Reuse [`src/components/shared/ShaderTextWord.tsx`](../src/components/shared/ShaderTextWord.tsx) for lifecycle changes.
 - Preserve readable fallback output and do not reintroduce per-frame React state churn.
 - Keep any gallery-specific shader tuning behind `variant="gallery"` instead of mutating the default section heading behavior.
-- Do not route new hero work back through the retired `HeroShaderTitle` path unless the hero architecture is deliberately being redesigned again.
+- Do not route new hero work back through the retired WebGL hero-title path unless the hero architecture is deliberately being redesigned again.
+
+## Dependency and Tooling Notes
+
+- React 19 typings expect refs to start with an explicit value. Prefer `useRef<Type | null>(null)` for DOM/object refs and `useRef<number | null>(null)` for animation-frame or timer IDs.
+- Most package ranges use `^`, so a normal install can accept compatible-looking minor updates. Treat dependency bumps, especially React type packages and browser tooling, as code changes that need `npm run typecheck` and `npm run lint`.
+- Keep `fullyParallel: false` in [`playwright.config.ts`](../playwright.config.ts) unless the Playwright setup is changed to start an isolated dev server per worker.
+- [`eslint.config.js`](../eslint.config.js) intentionally ignores `docs/**` because Markdown is reviewed as prose. If executable TypeScript or JavaScript examples are added under docs, add a scoped validation path instead of silently relying on the docs ignore.
 
 ## Out of Scope
 

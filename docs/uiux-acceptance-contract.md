@@ -5,27 +5,32 @@ This note is the lightweight contract for the remaining Whoamiii UI/UX completio
 ## Locked Rules
 
 - The gallery shows four local artworks only.
+- Gallery video and hero video paths must be declared in `src/utils/media.ts` and resolve to same-origin files in `public/videos/`.
 - The skip link must target `#main-content`.
 - The page must expose one real `main` landmark.
 - Modal artwork images must resolve to generated local assets.
 - Reduced motion must disable both CSS motion and JS-driven motion.
-- `GlassLayer` may only return to live nav use after a dedicated stability gate passes.
+- The preserved `src/glass-effect/` subsystem may only return to live nav use after a dedicated stability gate passes.
+- CSP is a host-level responsibility for this static app, and production error telemetry is not active until `src/lib/reportError.ts` grows a real reporting adapter.
 
 ## Implementation Notes
 
 - The image pipeline uses slug-based helpers in `src/utils/images.ts`.
-- The gallery and About imagery use generated local variants rather than direct source assets.
-- The preserved glass subsystem is allowed to stay in the codebase even if it is not live yet.
+- The video pipeline uses the explicit media manifest in `src/utils/media.ts`.
+- The gallery, About imagery, and video posters use generated local variants rather than direct source assets.
+- The preserved `src/glass-effect/` subsystem is allowed to stay in the codebase even if it is not live yet.
 
 ## Current Release Status
 
 - The gallery is limited to the four local artworks in the slug-based image pipeline.
 - The About section now also resolves through the same generated local image pipeline.
-- `loongdrive` now has an explicit generated modal fallback asset at `/images/loongdrive-modal-1200.webp`.
-- `GlassLayer` is preserved and stabilized at the component level, but it is not live in the navigation for this release.
+- Each featured artwork now resolves through an explicit generated modal fallback in `/public/images`.
+- The active video set is the hero overlay video plus the Ferdigcop gallery video, both declared in `src/utils/media.ts`.
+- `src/glass-effect/` is preserved as a future/reference subsystem, but it is not live in the navigation for this release.
 
 ## Validation Expectations
 
 - Unit tests should confirm generated asset paths exist.
+- Unit tests should confirm media manifest video paths exist.
 - Smoke tests should confirm the page loads and the gallery shell renders.
 - Accessibility checks should confirm skip-link, menu, and modal behavior once the UI tasks are complete.

@@ -8,9 +8,9 @@ This note records the final release decisions for the Whoamiii UI/UX completion 
 - Fixed navigation offset is handled through global scroll padding.
 - Mobile menu focus is trapped correctly and focus returns to the menu trigger on close.
 - Reduced motion support covers CSS and the app's JS-driven parallax/reveal behavior.
-- Gallery artwork browsing uses modal-based interaction with generated local image assets.
+- Gallery artwork browsing uses modal-based interaction with generated local image assets and media-manifest video paths.
 - The About section image now uses the same generated local asset pipeline as the rest of the portfolio imagery.
-- Generated gallery and modal image paths now match the optimizer output contract.
+- Generated gallery/modal image paths and declared video paths now match the local asset contracts.
 - Lightweight unit and end-to-end smoke coverage exists for the image contract and main UI shell.
 - The hero badge has been removed in favor of a cleaner headline lockup.
 - A thin scroll progress indicator is now live.

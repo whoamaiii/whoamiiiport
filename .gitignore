@@ -13,3 +13,9 @@ skills-lock.json
 hero-after-implementation.png
 hero-desktop-after.png
 selected-works-shader.png
+
+# Local QA screenshots
+/portfolio-*.png
+/qa-*.png
+/screenshot-*.png
+/*-screenshot.png

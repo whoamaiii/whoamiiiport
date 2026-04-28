@@ -6,13 +6,13 @@
 
 export type ImageSlug =
   | 'joetrip2'
-  | 'dreamy-cat-nap'
   | 'liquid-perception'
-  | 'nestenferdig-tunge-video-poster'
   | 'psychedelic-bathroom-portrait'
   | 'psychedelic-bathroom-scream'
   | 'ferdigcop-video-poster'
   | 'about-portrait';
+
+export type ModalImageSlug = Exclude<ImageSlug, 'joetrip2'>;
 
 export interface ArtworkImage {
   slug: ImageSlug;
@@ -25,19 +25,10 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
     slug: 'joetrip2', 
     alt: 'Hero artwork - psychedelic portrait' 
   },
-  'dreamy-cat-nap': {
-    slug: 'dreamy-cat-nap',
-    alt: 'Sleeping cat wrapped in ornate green textiles with shimmering psychedelic fur highlights'
-  },
   'liquid-perception': {
     slug: 'liquid-perception',
     alt: 'Surreal hooded forest portrait with chrome face fragments, red nails, and an electric cellular sky',
     galleryObjectPosition: '52% 54%',
-  },
-  'nestenferdig-tunge-video-poster': {
-    slug: 'nestenferdig-tunge-video-poster',
-    alt: 'Poster frame from Nestenferdig Tunge moving image artwork',
-    galleryObjectPosition: '50% 50%',
   },
   'psychedelic-bathroom-portrait': {
     slug: 'psychedelic-bathroom-portrait',
@@ -63,11 +54,8 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
 export const HERO_WIDTHS = [960, 1440, 1920] as const;
 export const GALLERY_WIDTHS = [480, 800, 1200] as const;
 
-const MODAL_FALLBACK_WIDTH_BY_SLUG: Record<ImageSlug, number> = {
-  joetrip2: 1600,
-  'dreamy-cat-nap': 1200,
+const MODAL_FALLBACK_WIDTH_BY_SLUG: Record<ModalImageSlug, number> = {
   'liquid-perception': 1600,
-  'nestenferdig-tunge-video-poster': 1600,
   'psychedelic-bathroom-portrait': 1600,
   'psychedelic-bathroom-scream': 1600,
   'ferdigcop-video-poster': 1600,
@@ -122,7 +110,7 @@ export function getGallerySrcset(slug: ImageSlug): string {
 /**
  * Get modal image URL (highest resolution)
  */
-export function getModalImageUrl(slug: ImageSlug): string {
+export function getModalImageUrl(slug: ModalImageSlug): string {
   const fallbackWidth = MODAL_FALLBACK_WIDTH_BY_SLUG[slug];
   return `/images/${slug}-modal-${fallbackWidth}.webp`;
 }
@@ -130,7 +118,7 @@ export function getModalImageUrl(slug: ImageSlug): string {
 /**
  * Get modal image srcset.
  */
-export function getModalSrcset(slug: ImageSlug): string {
+export function getModalSrcset(slug: ModalImageSlug): string {
   const fallbackWidth = MODAL_FALLBACK_WIDTH_BY_SLUG[slug];
   return `${getModalImageUrl(slug)} ${fallbackWidth}w`;
 }

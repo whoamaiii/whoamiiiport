@@ -174,22 +174,25 @@ test('mobile menu traps focus and restores it to the trigger', async ({ page }) 
   await expect(menuButton).toBeFocused();
 });
 
-test('narrow mobile header hides the desktop CTA and keeps the menu trigger inside the viewport', async ({
+test('narrow mobile header exposes a coherent menu trigger and dialog CTA', async ({
   page,
 }) => {
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/');
 
-  await expect(page.getByRole('link', { name: /get in touch/i })).toHaveCount(0);
-
-  const menuButton = page.getByRole('button', { name: /open menu/i });
+  const menuButton = page.locator('.site-reference-menu-trigger');
   await expect(menuButton).toBeVisible();
+  await expect(menuButton).toHaveAccessibleName(/open menu/i);
+  await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+  await expect(menuButton).toHaveAttribute('aria-haspopup', 'dialog');
 
   const menuBounds = await menuButton.boundingBox();
   expect(menuBounds).not.toBeNull();
   expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(320);
 
   await menuButton.click();
+  await expect(menuButton).toHaveAccessibleName(/navigation menu open/i);
+  await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByRole('dialog', { name: /navigation menu/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /get in touch/i })).toBeVisible();
 });
@@ -240,7 +243,7 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
   expect(geometry!.overflowX).toBeLessThanOrEqual(0);
 });
 
-test('site header stays at the top of the page instead of following scroll', async ({ page }) => {
+test('absolute site header scrolls away with the hero instead of staying fixed', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(page.getByRole('heading', { name: /Selected Works\./i })).toBeVisible();
@@ -291,7 +294,7 @@ test('site header stays at the top of the page instead of following scroll', asy
   expect(scrollState!.afterTop).toBeLessThan(scrollState!.beforeTop - 40);
 });
 
-test('desktop anchor links land sections with breathing room after menu navigation', async ({
+test('menu section buttons scroll to and focus target sections with breathing room', async ({
   page,
 }) => {
   await page.goto('/');
@@ -307,26 +310,29 @@ test('desktop anchor links land sections with breathing room after menu navigati
     const menu = page.getByRole('dialog', { name: /navigation menu/i });
     await expect(menu).toBeVisible();
     await menu.getByRole('button', { name: section.menuLabel }).click();
-    await page.waitForTimeout(450);
+    await expect(menu).toHaveCount(0);
 
-    const position = await page.evaluate((id) => {
-      const target = document.getElementById(id);
-      const nav = document.querySelector('[data-testid="site-header"]');
+    await expect
+      .poll(
+        () =>
+          page.evaluate((sectionId) => {
+            const target = document.getElementById(sectionId);
+            const nav = document.querySelector('[data-testid="site-header"]');
 
-      if (!target || !nav) {
-        return null;
-      }
+            if (!target || !nav) {
+              return false;
+            }
 
-      const targetRect = target.getBoundingClientRect();
-      const navRect = nav.getBoundingClientRect();
+            const targetRect = target.getBoundingClientRect();
+            const navRect = nav.getBoundingClientRect();
 
-      return {
-        targetTop: targetRect.top,
-        navBottom: navRect.bottom,
-      };
-    }, section.id);
-
-    expect(position).not.toBeNull();
-    expect(position!.targetTop - position!.navBottom).toBeGreaterThanOrEqual(12);
+            return document.activeElement === target && targetRect.top - navRect.bottom >= 12;
+          }, section.id),
+        {
+          message: `${section.label} section should be focused and clear of the header`,
+          timeout: 3000,
+        },
+      )
+      .toBe(true);
   }
 });

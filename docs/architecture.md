@@ -47,7 +47,7 @@ This project is intentionally a static frontend. There is no backend, CMS, auth 
 - [`src/components/shared/ShaderTextWord.tsx`](../src/components/shared/ShaderTextWord.tsx) contains the shared shader-text lifecycle.
 - [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx) remains the section-level consumer for shader-driven headings.
 - The gallery intro uses `ShaderHeading` with `variant="gallery"` so it can borrow calmer typography and fallback tuning without reusing the hero wordmark system.
-- The old `HeroShaderTitle` path is no longer the active hero lockup and should not be reintroduced for routine hero work.
+- The retired WebGL hero-title path is no longer the active hero lockup and should not be recreated for routine hero work.
 - [`src/components/shared/shaderTextShared.ts`](../src/components/shared/shaderTextShared.ts) contains shared math and shadow helpers.
 - [`src/lib/shaderRenderer.ts`](../src/lib/shaderRenderer.ts) remains the rendering engine contract.
 
@@ -68,11 +68,12 @@ This project is intentionally a static frontend. There is no backend, CMS, auth 
 - [`src/content/featuredArtworks.ts`](../src/content/featuredArtworks.ts) owns the curated gallery order.
 - [`src/components/artworkData.ts`](../src/components/artworkData.ts) remains the detailed artwork-note source.
 - [`src/utils/images.ts`](../src/utils/images.ts) is the runtime source of truth for image slugs, alt text, and srcset generation.
+- [`src/utils/media.ts`](../src/utils/media.ts) is the runtime source of truth for hero and gallery video files. Video entries must point at files in [`public/videos/`](../public/videos) and reference poster slugs from the image manifest.
 
 ## Resilience and Failure Handling
 
 - [`src/components/fallback/RenderErrorBoundary.tsx`](../src/components/fallback/RenderErrorBoundary.tsx) catches render failures around effect-heavy UI.
-- [`src/lib/reportError.ts`](../src/lib/reportError.ts) is the centralized reporting adapter. It is intentionally lightweight so future monitoring integration remains optional.
+- [`src/lib/reportError.ts`](../src/lib/reportError.ts) is the centralized reporting adapter. It intentionally logs only in development right now, so production monitoring requires a deliberate adapter change instead of assuming browser failures are reported.
 - The hero title system must degrade to a readable fallback without blanking the semantic heading, eyebrow, or subtitle if decorative rendering fails.
 
 ## Static Deployment Model
@@ -84,4 +85,4 @@ The build output is the Vite `dist/` directory. A compatible host should support
 - preview deployments for review environments
 - configurable CSP and security headers
 
-Expected CSP allowances should account for the Adobe Fonts stylesheet plus any `data:` or `blob:` URLs used by visual effects.
+This repo does not define deploy headers. CSP and standard static-site security headers must be configured at the host level. Expected CSP allowances should account for same-origin images/videos, the Adobe Fonts stylesheet and font endpoints, and any `data:` or `blob:` URLs used by visual effects.

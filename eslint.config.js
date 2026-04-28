@@ -15,6 +15,7 @@ export default tseslint.config(
       '.claude/**',
       '.agents/**',
       'analysis/**',
+      // Markdown docs are prose-reviewed; add a scoped check if docs gain runnable JS/TS examples.
       'docs/**',
       '*.png',
       '*.jpg',

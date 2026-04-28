@@ -21,28 +21,12 @@ const SOURCES = [
     alt: 'Hero artwork - psychedelic portrait',
     quality: 65,
   },
-  { 
-    input: './src/assets/dreamy-cat-nap-sparkling-textiles.png', 
-    slug: 'dreamy-cat-nap', 
-    profile: 'gallery',
-    alt: 'Sleeping cat wrapped in ornate green textiles with shimmering psychedelic fur highlights',
-    quality: 65,
-    modalWidth: 1200,
-  },
   {
     input: './src/assets/liquid-perception.jpg',
     slug: 'liquid-perception',
     profile: 'gallery',
     alt: 'Surreal hooded forest portrait with chrome face fragments, red nails, and an electric cellular sky',
     quality: 70,
-    modalWidth: 1600,
-  },
-  {
-    input: './src/assets/nestenferdig-tunge-video-poster.jpg',
-    slug: 'nestenferdig-tunge-video-poster',
-    profile: 'gallery',
-    alt: 'Poster frame from Nestenferdig Tunge moving image artwork',
-    quality: 66,
     modalWidth: 1600,
   },
   { 
@@ -137,8 +121,6 @@ async function optimizeImage(source) {
         })
         .toFile(outputPath);
 
-      // Get file size
-      const { statSync } = await import('fs');
       const stats = statSync(outputPath);
       const sizeKB = (stats.size / 1024).toFixed(1);
 

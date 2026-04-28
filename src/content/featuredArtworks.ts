@@ -1,6 +1,6 @@
 import {
   ferdigcopVideoArtwork,
-  nestenferdigTungeVideoArtwork,
+  liquidPerceptionArtwork,
   psychedelicBathroomPortrait,
   psychedelicBathroomScream,
   type SpecialArtwork,
@@ -13,8 +13,8 @@ export interface FeaturedArtworkEntry {
 
 export const FEATURED_ARTWORKS: FeaturedArtworkEntry[] = [
   {
-    id: 'nestenferdig-tunge-video',
-    artwork: nestenferdigTungeVideoArtwork,
+    id: 'liquid-perception',
+    artwork: liquidPerceptionArtwork,
   },
   {
     id: 'psychedelic-bathroom-portrait',

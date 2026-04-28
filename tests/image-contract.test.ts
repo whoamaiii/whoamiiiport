@@ -13,7 +13,7 @@ import {
 } from '../src/utils/images';
 import {
   ferdigcopVideoArtwork,
-  nestenferdigTungeVideoArtwork,
+  liquidPerceptionArtwork,
   psychedelicBathroomPortrait,
   psychedelicBathroomScream,
 } from '../src/components/artworkData';
@@ -42,7 +42,7 @@ describe('image contract', () => {
 
   it('maps the four local artworks to the generated gallery assets', () => {
     const artworks = [
-      nestenferdigTungeVideoArtwork,
+      liquidPerceptionArtwork,
       psychedelicBathroomPortrait,
       psychedelicBathroomScream,
       ferdigcopVideoArtwork,
@@ -51,7 +51,7 @@ describe('image contract', () => {
     expect(artworks).toHaveLength(4);
     expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(4);
     expect(artworks.map((artwork) => artwork.imageSlug)).toEqual([
-      'nestenferdig-tunge-video-poster',
+      'liquid-perception',
       'psychedelic-bathroom-portrait',
       'psychedelic-bathroom-scream',
       'ferdigcop-video-poster',
@@ -68,10 +68,10 @@ describe('image contract', () => {
       urls.forEach((url) => expect(existsSync(generatedImagePath(url))).toBe(true));
     }
 
+    expect(getImageMetadata('liquid-perception').galleryObjectPosition).toBe('52% 54%');
     expect(getImageMetadata('psychedelic-bathroom-portrait').galleryObjectPosition).toBe('40% 50%');
     expect(getImageMetadata('psychedelic-bathroom-scream').galleryObjectPosition).toBe('46% 50%');
-    expect(nestenferdigTungeVideoArtwork.videoSrc).toBe('/videos/nestenferdig-tunge-gallery.mp4');
-    expect(existsSync(resolve('public/videos/nestenferdig-tunge-gallery.mp4'))).toBe(true);
+    expect(liquidPerceptionArtwork.videoSrc).toBeUndefined();
     expect(ferdigcopVideoArtwork.videoSrc).toBe('/videos/ferdigcop-gallery.mp4');
     expect(existsSync(resolve('public/videos/ferdigcop-gallery.mp4'))).toBe(true);
   });
@@ -96,7 +96,7 @@ describe('image contract', () => {
     expect(GALLERY_WIDTHS).toEqual([480, 800, 1200]);
 
     const modalExpectations = [
-      ['nestenferdig-tunge-video-poster', 1600],
+      ['liquid-perception', 1600],
       ['psychedelic-bathroom-portrait', 1600],
       ['psychedelic-bathroom-scream', 1600],
       ['ferdigcop-video-poster', 1600],

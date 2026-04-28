@@ -65,20 +65,21 @@ test('skip link lands on main content and artwork modal opens and closes', async
   await expect(page.locator('#main-content')).toBeFocused();
 
   const artworkButton = page.getByRole('button', {
-    name: /view nestenferdig tunge.*video/i,
+    name: /view liquid perception.*artwork/i,
   });
   await artworkButton.click();
 
-  const dialog = page.getByRole('dialog');
+  const dialog = page.getByRole('dialog', {
+    name: /liquid perception/i,
+  });
   await expect(dialog).toBeVisible();
   await expect(page.getByRole('button', { name: /close modal/i })).toBeFocused();
 
-  const video = dialog.locator('video');
-  await expect(video).toBeVisible();
-  await expect(video).toHaveJSProperty('autoplay', true);
-  await expect(video).toHaveJSProperty('muted', true);
-  await expect(video).toHaveAttribute('preload', 'metadata');
-  await expect(video.locator('source')).toHaveAttribute('src', '/videos/nestenferdig-tunge-gallery.mp4');
+  await expect(
+    dialog.getByRole('img', {
+      name: /surreal hooded forest portrait/i,
+    }),
+  ).toBeVisible();
 
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
@@ -242,6 +243,8 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
 test('site header stays at the top of the page instead of following scroll', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
+  await expect(page.getByRole('heading', { name: /Selected Works\./i })).toBeVisible();
+  await page.waitForFunction(() => document.documentElement.scrollHeight > window.innerHeight + 200);
 
   const scrollState = await page.evaluate(async () => {
     const header = document.querySelector('[data-testid="site-header"]');
@@ -251,20 +254,39 @@ test('site header stays at the top of the page instead of following scroll', asy
     }
 
     const beforeTop = header.getBoundingClientRect().top;
-    window.scrollTo(0, 900);
-    await new Promise((resolve) => window.setTimeout(resolve, 120));
+    const previousHtmlScrollBehavior = document.documentElement.style.scrollBehavior;
+    const previousBodyScrollBehavior = document.body.style.scrollBehavior;
+    document.documentElement.style.scrollBehavior = 'auto';
+    document.body.style.scrollBehavior = 'auto';
+
+    const maxScrollY = Math.max(
+      document.documentElement.scrollHeight,
+      document.body.scrollHeight,
+    ) - window.innerHeight;
+    const targetScrollY = Math.min(900, Math.max(80, maxScrollY));
+
+    window.scrollTo(0, targetScrollY);
+    const startedAt = performance.now();
+    while (window.scrollY === 0 && performance.now() - startedAt < 1000) {
+      window.scrollTo(0, targetScrollY);
+      await new Promise((resolve) => window.setTimeout(resolve, 50));
+    }
     const afterTop = header.getBoundingClientRect().top;
+    document.documentElement.style.scrollBehavior = previousHtmlScrollBehavior;
+    document.body.style.scrollBehavior = previousBodyScrollBehavior;
 
     return {
       afterTop,
       beforeTop,
       position: getComputedStyle(header).position,
       scrollY: window.scrollY,
+      targetScrollY,
     };
   });
 
   expect(scrollState).not.toBeNull();
   expect(scrollState!.position).toBe('absolute');
+  expect(scrollState!.targetScrollY).toBeGreaterThan(0);
   expect(scrollState!.scrollY).toBeGreaterThan(0);
   expect(scrollState!.afterTop).toBeLessThan(scrollState!.beforeTop - 40);
 });

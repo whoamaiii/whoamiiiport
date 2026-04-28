@@ -30,6 +30,14 @@ const SOURCES = [
     modalWidth: 1200,
   },
   {
+    input: './src/assets/liquid-perception.jpg',
+    slug: 'liquid-perception',
+    profile: 'gallery',
+    alt: 'Surreal hooded forest portrait with chrome face fragments, red nails, and an electric cellular sky',
+    quality: 70,
+    modalWidth: 1600,
+  },
+  {
     input: './src/assets/nestenferdig-tunge-video-poster.jpg',
     slug: 'nestenferdig-tunge-video-poster',
     profile: 'gallery',

@@ -77,6 +77,37 @@ export const nestenferdigTungeVideoArtwork: SpecialArtwork = {
   ],
 };
 
+export const liquidPerceptionArtwork: SpecialArtwork = {
+  imageSlug: 'liquid-perception',
+  title: {
+    primary: 'Liquid Perception',
+    secondary: 'chrome skin study',
+  },
+  sections: [
+    {
+      body: `Dette bildet startet som noe veldig direkte: en tett utendørs selfie i hette, sollys og skog. Det kunne egentlig ha blitt et helt vanlig portrett, men jeg ville presse det til punktet der virkeligheten fortsatt er der, samtidig som overflaten begynner å oppføre seg feil. Ansiktet er fortsatt lesbart, øynene er fortsatt menneskelige, og kamerafølelsen er fortsatt nær, men huden, himmelen og kantene har begynt å ta inn et annet signal.\n\nFor meg handler verket om identitet som ikke forsvinner i forvrengningen, men blir mer synlig gjennom den. Chrome-formene ligger ikke som en maske som skjuler ansiktet. De fungerer mer som et materiale for persepsjon: blankt, hardt, flytende og nesten kirurgisk, som om synet selv har størknet oppå huden.`,
+    },
+    {
+      heading: 'Mening',
+      body: `Jeg ville at bildet skulle sitte mellom kontroll og overbelastning. Figuren står fortsatt midt i seg selv, men verden rundt har begynt å avsløre skjulte systemer: himmelen blir cellulær, skogen blir elektrisk, kantene splittes i farge, og hendene med røde negler gjør selfien mer rituell enn tilfeldig.\n\nDet interessante for meg er spenningen mellom det organiske og det syntetiske. Varm hud, mørk hoodie, bark og sollys møter flytende metall, cyan glød og en himmel som nesten ser ut som en nerveflate. Bildet spør egentlig ikke hvem personen er. Det spør hva som skjer med et selvbilde når hele synsfeltet begynner å speile, forsterke og mutere det.`,
+    },
+    {
+      heading: 'Metode',
+      body: `Arbeidsregelen var å beskytte portrettet først. Ansiktsformen, øynene, munnen, skjegget, håret, hendene, hoodien og den skrå selfie-vinkelen måtte få bli igjen som realistiske holdepunkter. Hvis alt hadde smeltet samtidig, ville bildet bare blitt visuelt bråk. Derfor ligger den sterkeste transformasjonen i utvalgte flater: chrome-fragmentene i ansiktet og på hendene, den blå cellulære himmelen, barken, løvet og de kromatiske kantene.\n\nLightroom-delen handlet om å balansere intensiteten etterpå: holde sollyset varmt, la skyggene i hoodien bli tunge, gjøre blåtonene dype uten at de ble plastiske, og stramme opp kontrasten slik at chrome-materialet føles integrert i bildet i stedet for limt på. Effekten skulle kjennes høyintensiv, men kontrollert.`,
+    },
+    {
+      heading: 'Overflate-logikk',
+      body: `Jeg tenkte på bildet som et system av materialer. Hud måtte fortsatt være hud. Chrome måtte oppføre seg som flytende speil. Hoodien måtte være matt, mørk og tekstilaktig. Skogen kunne få bære mer fargestøy og kantdeling fordi grener, bark og løv allerede er naturlige mønstersystemer. Himmelen fikk mest frihet, og ble gjort om til et blått felt av celler, bølger og lysende membraner.\n\nDet er derfor bildet fortsatt føles fotografisk selv om det er langt fra realistisk. Forvrengningen er ikke fordelt likt over alt. Den er forankret i hvilke overflater som tåler hva. Ansiktet holder identiteten. Chrome holder det kunstige speilet. Skogen holder fraktal energi. Himmelen holder den indre geometrien.`,
+      formula: `stabilitet = ansikt + blikk + selfie-perspektiv + sollys\n\nforvrengning = chrome(overflate) + cellulær_himmel + kromatisk_kanttrykk\n\nportrett_troverdighet = stabilitet - global_oppløsning + materialpresisjon`,
+      formulaCaption: 'Dette er arbeidsregelen bak bildet: ikke oppløse alt, men la bestemte flater bære bestemte typer signal.',
+    },
+    {
+      heading: 'Tilstand',
+      body: `Jeg prøver ikke å skrive dette som en bokstavelig forklaring på et rusminne. Det som interesserer meg er mer presist enn det: følelsen av at et vanlig bilde plutselig får for mye informasjon i seg. Ikke fantasy, ikke filter, ikke tilfeldig psykedelisk pynt, men et portrett der realistisk lys og kropp blir presset inn i en annen visuell grammatikk.\n\nDerfor liker jeg at bildet fortsatt har telefonfoto-energi. Det er ikke et rent studiobilde. Det føles som bevis fra et øyeblikk der verden var ekte, men ikke stabil. Et ansikt, en skog, røde negler, sollys og en himmel som har begynt å vise nervesystemet sitt.`,
+    },
+  ],
+};
+
 export const psychedelicBathroomPortrait: SpecialArtwork = {
   imageSlug: 'psychedelic-bathroom-portrait',
   title: {

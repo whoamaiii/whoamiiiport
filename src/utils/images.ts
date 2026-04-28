@@ -7,6 +7,7 @@
 export type ImageSlug =
   | 'joetrip2'
   | 'dreamy-cat-nap'
+  | 'liquid-perception'
   | 'nestenferdig-tunge-video-poster'
   | 'psychedelic-bathroom-portrait'
   | 'psychedelic-bathroom-scream'
@@ -27,6 +28,11 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
   'dreamy-cat-nap': {
     slug: 'dreamy-cat-nap',
     alt: 'Sleeping cat wrapped in ornate green textiles with shimmering psychedelic fur highlights'
+  },
+  'liquid-perception': {
+    slug: 'liquid-perception',
+    alt: 'Surreal hooded forest portrait with chrome face fragments, red nails, and an electric cellular sky',
+    galleryObjectPosition: '52% 54%',
   },
   'nestenferdig-tunge-video-poster': {
     slug: 'nestenferdig-tunge-video-poster',
@@ -60,6 +66,7 @@ export const GALLERY_WIDTHS = [480, 800, 1200] as const;
 const MODAL_FALLBACK_WIDTH_BY_SLUG: Record<ImageSlug, number> = {
   joetrip2: 1600,
   'dreamy-cat-nap': 1200,
+  'liquid-perception': 1600,
   'nestenferdig-tunge-video-poster': 1600,
   'psychedelic-bathroom-portrait': 1600,
   'psychedelic-bathroom-scream': 1600,

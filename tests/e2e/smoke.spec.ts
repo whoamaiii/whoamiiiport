@@ -33,8 +33,8 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
 
   const heroImage = page.locator('section').first().locator('img').first();
   await expect(heroImage).not.toHaveClass(/animate-hue-breathe/);
-  await expect(heroImage).toHaveAttribute('width', '1440');
-  await expect(heroImage).toHaveAttribute('height', '2160');
+  await expect(heroImage).toHaveAttribute('width', '1672');
+  await expect(heroImage).toHaveAttribute('height', '941');
 
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://whoamiii.art/');
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(

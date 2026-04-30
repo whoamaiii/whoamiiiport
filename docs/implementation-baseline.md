@@ -5,7 +5,7 @@
 - Node.js: `24.13.1`
 - npm: `11.8.0`
 - App type: static Vite + React + TypeScript frontend
-- Primary browser regression target: Playwright Chromium
+- Primary browser regression targets: Playwright desktop Chromium and `mobile-390`
 
 ## Commands Used to Validate the Project
 
@@ -40,6 +40,7 @@ The project is considered acceptable only when these are true:
 - Reduced-motion users do not depend on decorative motion for readability or navigation.
 - Visual-effect failures degrade to readable static content instead of blank UI.
 - Image URLs, video URLs, `srcset` values, and manifest metadata remain aligned.
+- The first mobile viewport remains free of horizontal overflow and keeps the header, hero lockup, menu, and modal usable.
 
 ## Current Guardrails
 

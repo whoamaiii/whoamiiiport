@@ -4,7 +4,7 @@
  * Generates responsive variants from source assets using Sharp
  * 
  * Profiles:
- * - hero: 960/1440/1920w variants for hero section
+ * - hero: 960/1440w variants for hero section
  * - gallery: 480/800/1200w variants for gallery cards
  */
 
@@ -14,12 +14,12 @@ import { join } from 'path';
 
 // Source image configurations
 const SOURCES = [
-  { 
-    input: './src/assets/joetrip2.webp', 
-    slug: 'joetrip2', 
+  {
+    input: './src/assets/liquid-perception-hero.png',
+    slug: 'liquid-perception-hero',
     profile: 'hero',
-    alt: 'Hero artwork - psychedelic portrait',
-    quality: 65,
+    alt: 'Liquid psychedelic forest portrait with chrome face distortion and red nails',
+    quality: 72,
   },
   {
     input: './src/assets/liquid-perception.jpg',
@@ -68,7 +68,7 @@ const OUTPUT_DIR = './public/images';
 
 // Size variants by profile
 const PROFILES = {
-  hero: [960, 1440, 1920],
+  hero: [960, 1440],
   gallery: [480, 800, 1200],
 };
 
@@ -78,6 +78,10 @@ async function optimizeImage(source) {
   const { input, slug, profile, alt } = source;
   const quality = source.quality ?? DEFAULT_QUALITY;
   const modalWidth = source.modalWidth ?? 1600;
+  const result = {
+    errorCount: 0,
+    generatedCount: 0,
+  };
   
   console.log(`\n📷 Processing: ${slug} (${profile})`);
   console.log(`   Source: ${input}`);
@@ -85,18 +89,25 @@ async function optimizeImage(source) {
 
   if (!existsSync(input)) {
     console.error(`   ❌ Source file not found: ${input}`);
-    return false;
+    result.errorCount++;
+    return result;
   }
 
   // Get base sizes for this profile
   const sizes = PROFILES[profile];
   
   const image = sharp(input);
-  const metadata = await image.metadata();
+  let metadata;
+
+  try {
+    metadata = await image.metadata();
+  } catch (error) {
+    console.error(`   ❌ Failed to read source metadata:`, error.message);
+    result.errorCount++;
+    return result;
+  }
   
   console.log(`   Original: ${metadata.width}x${metadata.height}`);
-
-  const results = [];
 
   for (const width of sizes) {
     // Skip if target width is larger than original
@@ -125,16 +136,17 @@ async function optimizeImage(source) {
       const sizeKB = (stats.size / 1024).toFixed(1);
 
       console.log(`   ✅ ${outputFilename} (${sizeKB} KB)`);
-      results.push({ width, filename: outputFilename, sizeKB });
+      result.generatedCount++;
     } catch (error) {
       console.error(`   ❌ Failed to generate ${width}w:`, error.message);
+      result.errorCount++;
     }
   }
 
   if (profile === 'gallery') {
     if (metadata.width && modalWidth > metadata.width) {
       console.log(`   ⏭️  Skipping modal ${modalWidth}w (larger than original)`);
-      return results;
+      return result;
     }
 
     const modalFilename = `${slug}-modal-${modalWidth}.webp`;
@@ -157,13 +169,14 @@ async function optimizeImage(source) {
       const sizeKB = (stats.size / 1024).toFixed(1);
 
       console.log(`   ✅ ${modalFilename} (${sizeKB} KB)`);
-      results.push({ width: modalWidth, filename: modalFilename, sizeKB, modal: true });
+      result.generatedCount++;
     } catch (error) {
       console.error(`   ❌ Failed to generate modal ${modalWidth}w:`, error.message);
+      result.errorCount++;
     }
   }
 
-  return results;
+  return result;
 }
 
 async function main() {
@@ -178,10 +191,15 @@ async function main() {
 
   let successCount = 0;
   let failCount = 0;
+  let generatedCount = 0;
+  let errorCount = 0;
 
   for (const source of SOURCES) {
-    const results = await optimizeImage(source);
-    if (results && results.length > 0) {
+    const result = await optimizeImage(source);
+    generatedCount += result.generatedCount;
+    errorCount += result.errorCount;
+
+    if (result.generatedCount > 0 && result.errorCount === 0) {
       successCount++;
     } else {
       failCount++;
@@ -192,7 +210,13 @@ async function main() {
   console.log('✨ Optimization complete!');
   console.log(`   Success: ${successCount}/${SOURCES.length}`);
   console.log(`   Failed: ${failCount}/${SOURCES.length}`);
+  console.log(`   Generated files: ${generatedCount}`);
+  console.log(`   Errors: ${errorCount}`);
   console.log('='.repeat(50));
+
+  if (errorCount > 0) {
+    process.exitCode = 1;
+  }
 }
 
 main().catch(error => {

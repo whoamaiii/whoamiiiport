@@ -68,7 +68,7 @@ This project is intentionally a static frontend. There is no backend, CMS, auth 
 - [`src/content/featuredArtworks.ts`](../src/content/featuredArtworks.ts) owns the curated gallery order.
 - [`src/components/artworkData.ts`](../src/components/artworkData.ts) remains the detailed artwork-note source.
 - [`src/utils/images.ts`](../src/utils/images.ts) is the runtime source of truth for image slugs, alt text, and srcset generation.
-- [`src/utils/media.ts`](../src/utils/media.ts) is the runtime source of truth for hero and gallery video files. Video entries must point at files in [`public/videos/`](../public/videos) and reference poster slugs from the image manifest.
+- [`src/utils/media.ts`](../src/utils/media.ts) is the runtime source of truth for active gallery video files. Video entries must point at files in [`public/videos/`](../public/videos) and reference poster slugs from the image manifest.
 
 ## Resilience and Failure Handling
 

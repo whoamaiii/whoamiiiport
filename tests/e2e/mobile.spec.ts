@@ -1,0 +1,115 @@
+import { expect, test } from '@playwright/test';
+
+test('mobile first viewport keeps hero and navigation coherent', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page).toHaveTitle(/Whoamiii/i);
+
+  const geometry = await page.evaluate(() => {
+    const header = document.querySelector('[data-testid="site-header"]');
+    const eyebrow = document.querySelector('.liquid-kicker');
+    const heroTitle = document.querySelector('[data-testid="hero-title-visual"]');
+    const subtitle = document.querySelector('.hero-subtitle');
+
+    const rectFor = (element: Element | null) => {
+      if (!element) {
+        return null;
+      }
+
+      const rect = element.getBoundingClientRect();
+      return {
+        bottom: rect.bottom,
+        height: rect.height,
+        left: rect.left,
+        right: rect.right,
+        top: rect.top,
+        width: rect.width,
+      };
+    };
+
+    return {
+      eyebrow: rectFor(eyebrow),
+      header: rectFor(header),
+      heroTitle: rectFor(heroTitle),
+      overflowX: document.documentElement.scrollWidth - window.innerWidth,
+      subtitle: rectFor(subtitle),
+      viewportHeight: window.innerHeight,
+      viewportWidth: window.innerWidth,
+    };
+  });
+
+  expect(geometry.overflowX).toBeLessThanOrEqual(0);
+  expect(geometry.header).not.toBeNull();
+  expect(geometry.eyebrow).not.toBeNull();
+  expect(geometry.heroTitle).not.toBeNull();
+  expect(geometry.subtitle).not.toBeNull();
+  expect(geometry.header!.top).toBeGreaterThanOrEqual(0);
+  expect(geometry.header!.left).toBeGreaterThanOrEqual(0);
+  expect(geometry.header!.right).toBeLessThanOrEqual(geometry.viewportWidth);
+  expect(geometry.header!.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
+  expect(geometry.eyebrow!.top).toBeGreaterThan(geometry.header!.bottom);
+  expect(geometry.eyebrow!.bottom).toBeLessThanOrEqual(geometry.heroTitle!.top);
+  expect(geometry.heroTitle!.bottom).toBeLessThanOrEqual(geometry.subtitle!.top);
+  expect(geometry.subtitle!.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
+
+  const menuButton = page.getByRole('button', { name: /open menu/i });
+  await expect(menuButton).toBeVisible();
+  await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+  await expect(page.getByRole('heading', { name: /Altered Perceptions\./i })).toBeVisible();
+  await expect(page.getByText(/Psychedelic Art Portfolio/i)).toBeVisible();
+  await expect(
+    page.getByText(/Digital paintings and dream-burned color studies from altered states\./i),
+  ).toBeVisible();
+});
+
+test('mobile menu traps focus and closes back to the trigger', async ({ page }) => {
+  await page.goto('/');
+
+  const menuButton = page.getByRole('button', { name: /open menu/i });
+  await menuButton.click();
+
+  const menu = page.getByRole('dialog', { name: /navigation menu/i });
+  const closeButton = menu.getByRole('button', { name: /close menu/i });
+  const contactButton = menu.getByRole('button', { name: /get in touch/i });
+
+  await expect(menu).toBeVisible();
+  await expect(closeButton).toBeFocused();
+
+  await page.keyboard.press('Shift+Tab');
+  await expect(contactButton).toBeFocused();
+
+  await page.keyboard.press('Tab');
+  await expect(closeButton).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(menu).toHaveCount(0);
+  await expect(menuButton).toBeFocused();
+});
+
+test('mobile artwork modal covers the viewport and restores focus', async ({ page }) => {
+  await page.goto('/#work');
+
+  const artworkButton = page.getByRole('button', {
+    name: /view psychedelic bathroom portrait/i,
+  });
+  await artworkButton.scrollIntoViewIfNeeded();
+  await artworkButton.click();
+
+  const dialog = page.getByRole('dialog', {
+    name: /psychedelic bathroom portrait/i,
+  });
+  await expect(dialog).toBeVisible();
+
+  const dialogBounds = await dialog.boundingBox();
+  expect(dialogBounds).not.toBeNull();
+  expect(dialogBounds!.x).toBeLessThanOrEqual(1);
+  expect(dialogBounds!.y).toBeLessThanOrEqual(1);
+  expect(dialogBounds!.width).toBeGreaterThanOrEqual(389);
+  expect(dialogBounds!.height).toBeGreaterThanOrEqual(843);
+
+  await expect(page.getByRole('button', { name: /close modal/i })).toBeFocused();
+
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
+  await expect(artworkButton).toBeFocused();
+});

@@ -57,6 +57,7 @@ The browser suite specifically protects:
 - stable heading and landmark naming
 - modal focus restoration
 - mobile menu focus trapping
+- first mobile viewport/header/hero/modal regressions at `390x844`
 - base-page and modal accessibility scans
 
 ## Documentation

@@ -39,11 +39,11 @@ Primary responsibilities:
 - gallery eyebrow, heading, and subtitle presence within the artwork section
 - modal open/close and focus restoration
 - video artwork modal behavior, including autoplay, muted playback, poster-backed loading, and expected source paths
-- hero overlay video behavior, including constrained-network skips and failure reporting through the local adapter
 - mobile menu focus trap behavior
+- mobile-first viewport checks for header, hero lockup, menu, modal coverage, and horizontal overflow
 - axe accessibility scans
 
-Playwright configuration lives in [`playwright.config.ts`](../playwright.config.ts). `fullyParallel` intentionally stays `false` because the suite currently shares one dev server on port 3000. Do not enable full parallelism unless each worker gets an isolated server or port.
+Playwright configuration lives in [`playwright.config.ts`](../playwright.config.ts). The suite has separate `desktop-chromium` and `mobile-390` projects. `fullyParallel` intentionally stays `false` because the suite currently shares one dev server on port 3000. Do not enable full parallelism unless each worker gets an isolated server or port.
 
 ## Regression Policy
 
@@ -55,9 +55,10 @@ Every fixed user-facing bug should have at least one automated regression case. 
 - unstable animated heading semantics
 - hero title semantics staying separate from decorative rendering
 - hero-title visual selector stability for browser checks
-- hero and gallery video manifest paths resolving to files in `public/videos/`
+- gallery video manifest paths resolving to files in `public/videos/`
 - broken modal focus restoration
 - featured video artworks accidentally losing autoplay/muted modal behavior or pointing at the wrong MP4
+- first mobile viewport regressions such as horizontal overflow, broken header/menu layout, or unreadable hero lockup
 - mobile menu focus trapping
 - accessibility violations on base page and modal
 

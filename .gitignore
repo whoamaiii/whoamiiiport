@@ -19,3 +19,8 @@ selected-works-shader.png
 /qa-*.png
 /screenshot-*.png
 /*-screenshot.png
+/analysis/*.png
+/analysis/*.jpg
+/analysis/*.jpeg
+/analysis/*.webp
+/analysis/*.html

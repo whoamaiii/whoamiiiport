@@ -14,7 +14,7 @@ npm run test:e2e
 ### Hero Readability Pass
 
 - Confirm the eyebrow, hero title, and subtitle all appear within the first viewport with the fixed header present.
-- Inspect at least one bright video moment and one dark video moment. The subtitle must stay readable in both.
+- Confirm the static hero image keeps the subtitle readable across the first mobile viewport.
 - Confirm the localized readability mask supports the left-aligned lockup without turning into a visible muddy blob or full-frame dark wash.
 - Check a narrow mobile viewport and confirm the eyebrow, title, and subtitle keep controlled line breaks without overlap.
 
@@ -55,7 +55,7 @@ npm run test:e2e
 - Confirm hashed build assets are cacheable.
 - Verify the hero lockup still renders cleanly in preview, including the decorative title, eyebrow, and subtitle.
 - Verify Adobe Fonts still load for the rest of the site, or that fallback fonts keep non-hero typography usable.
-- Verify the hero overlay video and gallery video manifest paths resolve from `public/videos/` on the preview host.
+- Verify gallery video manifest paths resolve from `public/videos/` on the preview host.
 
 ## Security and Header Review
 
@@ -72,7 +72,7 @@ Do not release if any of the following are true:
 
 - skip-link focus is broken
 - a named region or major heading lacks a stable accessible name
-- the hero subtitle becomes unreadable over video
+- the hero subtitle becomes unreadable over the static hero image
 - reduced-motion mode leaves the hero dependent on decorative motion
 - hero-title fallback leaves the first viewport blank or visually broken
 - `npm run check` fails

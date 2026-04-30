@@ -14,7 +14,7 @@ import {
 } from '../src/utils/images';
 import { ferdigcopVideoArtwork } from '../src/components/artworkData';
 import { FEATURED_ARTWORKS } from '../src/content/featuredArtworks';
-import { GALLERY_VIDEOS, HERO_VIDEO } from '../src/utils/media';
+import { GALLERY_VIDEOS } from '../src/utils/media';
 
 const generatedImagePath = (urlPath: string) =>
   resolve('public', urlPath.replace(/^\/+/, ''));
@@ -24,27 +24,18 @@ const splitSrcset = (srcset: string) =>
 
 describe('image contract', () => {
   it('keeps the hero asset contract explicit and resolvable', () => {
-    expect(HERO_WIDTHS).toEqual([960, 1440, 1920]);
-    expect(HERO_VIDEO).toEqual({
-      src: '/videos/you-did-good-today.mp4',
-      type: 'video/mp4',
-      posterSlug: 'joetrip2',
-    });
+    expect(HERO_WIDTHS).toEqual([960, 1440]);
 
-    const srcset = getHeroSrcset('joetrip2');
+    const srcset = getHeroSrcset('liquid-perception-hero');
     const urls = splitSrcset(srcset);
     expect(urls).toEqual([
-      '/images/joetrip2-960.webp',
-      '/images/joetrip2-1440.webp',
-      '/images/joetrip2-1920.webp',
+      '/images/liquid-perception-hero-960.webp',
+      '/images/liquid-perception-hero-1440.webp',
     ]);
 
     for (const url of urls) {
       expect(existsSync(generatedImagePath(url))).toBe(true);
     }
-
-    expect(existsSync(resolve('public', HERO_VIDEO.src.replace(/^\/+/, '')))).toBe(true);
-    expect(getImageMetadata(HERO_VIDEO.posterSlug).slug).toBe('joetrip2');
   });
 
   it('maps the current featured artworks to generated gallery assets', () => {
@@ -83,7 +74,7 @@ describe('image contract', () => {
 
   it('keeps the active image manifest free of retired gallery slugs', () => {
     expect(Object.keys(IMAGE_MANIFEST)).toEqual([
-      'joetrip2',
+      'liquid-perception-hero',
       'liquid-perception',
       'psychedelic-bathroom-portrait',
       'psychedelic-bathroom-scream',

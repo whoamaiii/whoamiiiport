@@ -38,10 +38,9 @@ The image contract test suite will catch missing generated files or mismatched s
 
 ## Maintaining Hero Media
 
-- The hero poster remains the `joetrip2` image manifest entry in [`src/utils/images.ts`](../src/utils/images.ts).
-- The hero overlay video lives in [`src/utils/media.ts`](../src/utils/media.ts) and must resolve to a same-origin file in [`public/videos/`](../public/videos).
-- Keep hero-video failure handling wired through [`src/lib/reportError.ts`](../src/lib/reportError.ts). That adapter logs only in development until a production monitoring policy is chosen.
-- If the hero video path, poster slug, or loading policy changes, update [`tests/image-contract.test.ts`](../tests/image-contract.test.ts), [`tests/hero-video.test.tsx`](../tests/hero-video.test.tsx), and the manual hero readability pass in [`docs/release-checklist.md`](./release-checklist.md).
+- The hero poster uses the `liquid-perception-hero` image manifest entry in [`src/utils/images.ts`](../src/utils/images.ts); keep its advertised widths aligned with what `npm run optimize-images` actually generates.
+- The hero is static image-first for this release. Do not add a hero overlay video without a deliberate scope change, lazy-loading policy, reduced-motion behavior, and mobile readability pass.
+- If the hero poster slug, generated widths, or loading policy changes, update [`tests/image-contract.test.ts`](../tests/image-contract.test.ts), the mobile Playwright checks, and the manual hero readability pass in [`docs/release-checklist.md`](./release-checklist.md).
 
 ## Modifying Motion
 
@@ -89,6 +88,7 @@ Before adding new motion:
 - Most package ranges use `^`, so a normal install can accept compatible-looking minor updates. Treat dependency bumps, especially React type packages and browser tooling, as code changes that need `npm run typecheck` and `npm run lint`.
 - Keep `fullyParallel: false` in [`playwright.config.ts`](../playwright.config.ts) unless the Playwright setup is changed to start an isolated dev server per worker.
 - [`eslint.config.js`](../eslint.config.js) intentionally ignores `docs/**` because Markdown is reviewed as prose. If executable TypeScript or JavaScript examples are added under docs, add a scoped validation path instead of silently relying on the docs ignore.
+- Local visual QA screenshots and HTML experiments under `analysis/` are ignored by default. Commit only curated Markdown notes or intentionally named evidence artifacts.
 
 ## Out of Scope
 

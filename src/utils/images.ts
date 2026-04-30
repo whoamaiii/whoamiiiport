@@ -5,14 +5,14 @@
  */
 
 export type ImageSlug =
-  | 'joetrip2'
+  | 'liquid-perception-hero'
   | 'liquid-perception'
   | 'psychedelic-bathroom-portrait'
   | 'psychedelic-bathroom-scream'
   | 'ferdigcop-video-poster'
   | 'about-portrait';
 
-export type ModalImageSlug = Exclude<ImageSlug, 'joetrip2'>;
+export type ModalImageSlug = Exclude<ImageSlug, 'liquid-perception-hero'>;
 
 export interface ArtworkImage {
   slug: ImageSlug;
@@ -21,9 +21,9 @@ export interface ArtworkImage {
 }
 
 export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
-  joetrip2: { 
-    slug: 'joetrip2', 
-    alt: 'Hero artwork - psychedelic portrait' 
+  'liquid-perception-hero': {
+    slug: 'liquid-perception-hero',
+    alt: 'Liquid psychedelic forest portrait with chrome face distortion and red nails',
   },
   'liquid-perception': {
     slug: 'liquid-perception',
@@ -51,7 +51,8 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
 };
 
 // Available widths by profile
-export const HERO_WIDTHS = [960, 1440, 1920] as const;
+export const HERO_WIDTHS = [960, 1440] as const;
+export const HERO_FALLBACK_WIDTH = HERO_WIDTHS[HERO_WIDTHS.length - 1];
 export const GALLERY_WIDTHS = [480, 800, 1200] as const;
 
 const MODAL_FALLBACK_WIDTH_BY_SLUG: Record<ModalImageSlug, number> = {

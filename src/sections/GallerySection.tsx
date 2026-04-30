@@ -28,7 +28,7 @@ export function GallerySection({ reducedMotion }: GallerySectionProps) {
             transition={reducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="gallery-lockup max-w-[38rem]"
           >
-            <p className="gallery-eyebrow mb-3 sm:mb-4">{GALLERY_COPY.eyebrow}</p>
+            <p className="gallery-eyebrow liquid-kicker mb-3 sm:mb-4">{GALLERY_COPY.eyebrow}</p>
             <ShaderHeading
               id="selected-works-heading"
               className="gallery-title"
@@ -37,7 +37,7 @@ export function GallerySection({ reducedMotion }: GallerySectionProps) {
             >
               {GALLERY_COPY.heading}
             </ShaderHeading>
-            <p className="gallery-subtitle mt-5 max-w-[27ch] sm:mt-6 sm:max-w-[29ch]">
+            <p className="gallery-subtitle liquid-support-text mt-5 max-w-[27ch] sm:mt-6 sm:max-w-[29ch]">
               {GALLERY_COPY.subtitle}
             </p>
           </motion.div>

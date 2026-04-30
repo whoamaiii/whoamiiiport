@@ -1,16 +1,13 @@
 import { motion, useScroll, useSpring } from 'motion/react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
-export function ScrollProgress() {
-  const prefersReducedMotion = useReducedMotion();
+function ScrollProgressBar() {
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, {
     stiffness: 120,
     damping: 28,
     restDelta: 0.001,
   });
-
-  if (prefersReducedMotion) return null;
 
   return (
     <motion.div
@@ -20,4 +17,12 @@ export function ScrollProgress() {
       style={{ scaleX }}
     />
   );
+}
+
+export function ScrollProgress() {
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) return null;
+
+  return <ScrollProgressBar />;
 }

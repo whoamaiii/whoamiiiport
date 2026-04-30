@@ -111,6 +111,7 @@ interface ShaderHeadingPreset {
     scale: number;
     minWidth: number;
   };
+  glassSurface: 'section';
   getShadowConfig: (isMobile: boolean, fontSize: number) => TextShadowConfig;
 }
 
@@ -124,7 +125,8 @@ const SHADER_HEADING_PRESETS: Record<ShaderHeadingVariant, ShaderHeadingPreset> 
     staticFallbackClassName: 'section-shader-static-fallback--default',
     shaderScale: { mobile: 0.5, desktop: 0.6, reduced: 0.4 },
     shaderClamp: { minWidth: 80, maxWidth: 700, minHeight: 48, maxHeight: 350 },
-    finalStroke: { color: 'rgba(255, 248, 235, 0.09)', scale: 0.006, minWidth: 0.6 },
+    finalStroke: { color: 'rgba(228, 250, 255, 0.24)', scale: 0.0065, minWidth: 0.72 },
+    glassSurface: 'section',
     getShadowConfig: getSectionShadowConfig,
   },
   gallery: {
@@ -136,25 +138,34 @@ const SHADER_HEADING_PRESETS: Record<ShaderHeadingVariant, ShaderHeadingPreset> 
     staticFallbackClassName: 'section-shader-static-fallback--gallery',
     shaderScale: { mobile: 0.44, desktop: 0.52, reduced: 0.34 },
     shaderClamp: { minWidth: 80, maxWidth: 760, minHeight: 48, maxHeight: 320 },
-    finalStroke: { color: 'rgba(255, 245, 236, 0.14)', scale: 0.0048, minWidth: 0.62 },
+    finalStroke: { color: 'rgba(235, 252, 255, 0.28)', scale: 0.0054, minWidth: 0.72 },
+    glassSurface: 'section',
     getShadowConfig: getGalleryShadowConfig,
   },
 };
 
 function SectionWordFallback({
-  text,
+  lines,
   wordClassName,
   staticFallbackClassName,
 }: {
-  text: string;
+  lines: readonly string[];
   wordClassName: string;
   staticFallbackClassName: string;
 }) {
   return (
-    <span className={`section-shader-word ${wordClassName}`.trim()} aria-hidden="true">
-      <span className={`section-shader-static-fallback ${staticFallbackClassName}`.trim()}>
-        {text}
-      </span>
+    <span className="section-shader-lines" aria-hidden="true">
+      {lines.map((line) => (
+        <span
+          key={line}
+          className={`section-shader-word ${wordClassName}`.trim()}
+          data-text={line}
+        >
+          <span className={`section-shader-static-fallback ${staticFallbackClassName}`.trim()}>
+            {line}
+          </span>
+        </span>
+      ))}
     </span>
   );
 }
@@ -167,6 +178,7 @@ interface ShaderHeadingProps extends Omit<HTMLAttributes<HTMLHeadingElement>, 'c
   onReady?: () => void;
   ariaLabel?: string;
   variant?: ShaderHeadingVariant;
+  visualLines?: readonly string[];
 }
 
 export function ShaderHeading({
@@ -177,10 +189,12 @@ export function ShaderHeading({
   onReady,
   ariaLabel,
   variant = 'default',
+  visualLines,
   ...headingProps
 }: ShaderHeadingProps) {
   const [isReady, setIsReady] = useState(false);
   const preset = SHADER_HEADING_PRESETS[variant];
+  const lines = visualLines?.length ? visualLines : [children];
 
   useEffect(() => {
     if (!isReady) {
@@ -212,24 +226,31 @@ export function ShaderHeading({
           context="section-shader-heading"
           fallback={
             <SectionWordFallback
-              text={children}
+              lines={lines}
               wordClassName={preset.wordClassName}
               staticFallbackClassName={preset.staticFallbackClassName}
             />
           }
         >
-          <ShaderTextWord
-            text={children}
-            wrapperClassName={`section-shader-word ${preset.wordClassName}`.trim()}
-            measureClassName={`section-shader-measure ${preset.measureClassName}`.trim()}
-            canvasClassName={`section-shader-canvas ${preset.canvasClassName}`.trim()}
-            fallbackClassName={`section-shader-fallback ${preset.fallbackClassName}`.trim()}
-            shaderScale={preset.shaderScale}
-            shaderClamp={preset.shaderClamp}
-            getShadowConfig={preset.getShadowConfig}
-            finalStroke={preset.finalStroke}
-            onReady={handleReady}
-          />
+          <span className="section-shader-lines">
+            {lines.map((line, index) => (
+              <span key={`${line}-${index}`} className="section-shader-line">
+                <ShaderTextWord
+                  text={line}
+                  wrapperClassName={`section-shader-word ${preset.wordClassName}`.trim()}
+                  measureClassName={`section-shader-measure ${preset.measureClassName}`.trim()}
+                  canvasClassName={`section-shader-canvas ${preset.canvasClassName}`.trim()}
+                  fallbackClassName={`section-shader-fallback ${preset.fallbackClassName}`.trim()}
+                  shaderScale={preset.shaderScale}
+                  shaderClamp={preset.shaderClamp}
+                  getShadowConfig={preset.getShadowConfig}
+                  finalStroke={preset.finalStroke}
+                  glassSurface={preset.glassSurface}
+                  onReady={handleReady}
+                />
+              </span>
+            ))}
+          </span>
         </RenderErrorBoundary>
       </span>
     </Component>

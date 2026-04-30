@@ -55,6 +55,7 @@ interface HeaderGlassSvgProps {
     width: number;
   };
   path: string;
+  reducedMotion: boolean;
   railPath: string;
   viewBox: string;
 }
@@ -66,11 +67,17 @@ function HeaderGlassSvg({
   innerEdgeGradientId,
   menuLines,
   path,
+  reducedMotion,
   railPath,
   viewBox,
 }: HeaderGlassSvgProps) {
   const lineStart = menuLines.centerX - menuLines.width / 2;
   const lineEnd = menuLines.centerX + menuLines.width / 2;
+  const liquidEdgeGradientId = `${edgeGradientId}-liquid`;
+  const liquidCausticGradientId = `${edgeGradientId}-liquid-caustic`;
+  const liquidPrismGradientId = `${edgeGradientId}-liquid-prism`;
+  const liquidRailGradientId = `${edgeGradientId}-liquid-rail`;
+  const liquidRailCausticGradientId = `${edgeGradientId}-liquid-rail-caustic`;
 
   return (
     <svg
@@ -98,12 +105,153 @@ function HeaderGlassSvg({
           <stop offset="50%" stopColor="rgba(255,255,255,0.11)" />
           <stop offset="100%" stopColor="rgba(195,130,239,0.42)" />
         </linearGradient>
+        <linearGradient
+          id={liquidEdgeGradientId}
+          x1="-0.4"
+          y1="0"
+          x2="1.4"
+          y2="0"
+          spreadMethod="reflect"
+        >
+          <stop offset="0%" stopColor="rgba(55,122,170,0.08)" />
+          <stop offset="14%" stopColor="rgba(89,206,230,0.52)" />
+          <stop offset="28%" stopColor="rgba(224,205,168,0.62)" />
+          <stop offset="43%" stopColor="rgba(178,95,61,0.42)" />
+          <stop offset="58%" stopColor="rgba(90,76,150,0.34)" />
+          <stop offset="76%" stopColor="rgba(213,188,143,0.58)" />
+          <stop offset="100%" stopColor="rgba(78,177,214,0.1)" />
+          {!reducedMotion && (
+            <animateTransform
+              attributeName="gradientTransform"
+              type="translate"
+              values="-0.34 0;0.28 0;-0.34 0"
+              dur="6.6s"
+              repeatCount="indefinite"
+            />
+          )}
+        </linearGradient>
+        <linearGradient
+          id={liquidPrismGradientId}
+          x1="-0.5"
+          y1="0.18"
+          x2="1.5"
+          y2="0.82"
+          spreadMethod="reflect"
+        >
+          <stop offset="0%" stopColor="rgba(255,255,255,0)" />
+          <stop offset="10%" stopColor="rgba(255,255,255,0.42)" />
+          <stop offset="19%" stopColor="rgba(96,210,237,0.7)" />
+          <stop offset="31%" stopColor="rgba(255,213,151,0.54)" />
+          <stop offset="45%" stopColor="rgba(202,126,255,0.34)" />
+          <stop offset="62%" stopColor="rgba(36,75,139,0.32)" />
+          <stop offset="78%" stopColor="rgba(248,239,217,0.62)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+          {!reducedMotion && (
+            <animateTransform
+              attributeName="gradientTransform"
+              type="translate"
+              values="-0.48 0;0.34 0;-0.48 0"
+              dur="7.2s"
+              repeatCount="indefinite"
+            />
+          )}
+        </linearGradient>
+        <linearGradient
+          id={liquidCausticGradientId}
+          x1="-0.25"
+          y1="0"
+          x2="1.25"
+          y2="0"
+          spreadMethod="reflect"
+        >
+          <stop offset="0%" stopColor="rgba(255,255,255,0)" />
+          <stop offset="12%" stopColor="rgba(128,224,246,0.88)" />
+          <stop offset="20%" stopColor="rgba(255,244,205,0.94)" />
+          <stop offset="29%" stopColor="rgba(255,255,255,0)" />
+          <stop offset="48%" stopColor="rgba(214,124,80,0.66)" />
+          <stop offset="58%" stopColor="rgba(255,255,255,0)" />
+          <stop offset="74%" stopColor="rgba(181,138,232,0.54)" />
+          <stop offset="86%" stopColor="rgba(255,255,255,0.66)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+          {!reducedMotion && (
+            <animateTransform
+              attributeName="gradientTransform"
+              type="translate"
+              values="0.38 0;-0.24 0;0.38 0"
+              dur="4.9s"
+              repeatCount="indefinite"
+            />
+          )}
+        </linearGradient>
+        <linearGradient
+          id={liquidRailGradientId}
+          x1="-0.2"
+          y1="0"
+          x2="1.2"
+          y2="0"
+          spreadMethod="reflect"
+        >
+          <stop offset="0%" stopColor="rgba(255,255,255,0)" />
+          <stop offset="22%" stopColor="rgba(93,210,238,0.42)" />
+          <stop offset="46%" stopColor="rgba(236,213,174,0.48)" />
+          <stop offset="66%" stopColor="rgba(183,98,61,0.28)" />
+          <stop offset="86%" stopColor="rgba(255,255,255,0.42)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+          {!reducedMotion && (
+            <animateTransform
+              attributeName="gradientTransform"
+              type="translate"
+              values="0.24 0;-0.24 0;0.24 0"
+              dur="5.8s"
+              repeatCount="indefinite"
+            />
+          )}
+        </linearGradient>
+        <linearGradient
+          id={liquidRailCausticGradientId}
+          x1="-0.25"
+          y1="0"
+          x2="1.25"
+          y2="0"
+          spreadMethod="reflect"
+        >
+          <stop offset="0%" stopColor="rgba(255,255,255,0)" />
+          <stop offset="18%" stopColor="rgba(111,220,246,0.78)" />
+          <stop offset="35%" stopColor="rgba(255,236,188,0.86)" />
+          <stop offset="52%" stopColor="rgba(255,255,255,0)" />
+          <stop offset="70%" stopColor="rgba(210,124,79,0.52)" />
+          <stop offset="86%" stopColor="rgba(244,230,255,0.62)" />
+          <stop offset="100%" stopColor="rgba(255,255,255,0)" />
+          {!reducedMotion && (
+            <animateTransform
+              attributeName="gradientTransform"
+              type="translate"
+              values="-0.3 0;0.32 0;-0.3 0"
+              dur="4.4s"
+              repeatCount="indefinite"
+            />
+          )}
+        </linearGradient>
       </defs>
       <path className="site-reference-glass-fill" d={path} style={{ fill: `url(#${fillGradientId})` }} />
       <path className="site-reference-glass-edge site-reference-glass-edge--halo" d={path} style={{ stroke: `url(#${edgeGradientId})` }} />
+      <path className="site-reference-glass-edge site-reference-glass-edge--liquid-glow" d={path} style={{ stroke: `url(#${liquidPrismGradientId})` }} />
       <path className="site-reference-glass-edge" d={path} style={{ stroke: `url(#${edgeGradientId})` }} />
       <path className="site-reference-glass-edge site-reference-glass-edge--inner" d={path} style={{ stroke: `url(#${innerEdgeGradientId})` }} />
+      <path className="site-reference-glass-edge site-reference-glass-edge--liquid" d={path} style={{ stroke: `url(#${liquidEdgeGradientId})` }} />
+      <path className="site-reference-glass-edge site-reference-glass-edge--liquid-caustic" d={path} style={{ stroke: `url(#${liquidCausticGradientId})` }}>
+        {!reducedMotion && (
+          <animate attributeName="stroke-dashoffset" values="0;-420" dur="6.1s" repeatCount="indefinite" />
+        )}
+      </path>
       <path className="site-reference-rail-light" d={railPath} />
+      <path className="site-reference-rail-light site-reference-rail-light--liquid-glow" d={railPath} style={{ stroke: `url(#${liquidPrismGradientId})` }} />
+      <path className="site-reference-rail-light site-reference-rail-light--liquid" d={railPath} style={{ stroke: `url(#${liquidRailGradientId})` }} />
+      <path className="site-reference-rail-light site-reference-rail-light--liquid-caustic" d={railPath} style={{ stroke: `url(#${liquidRailCausticGradientId})` }}>
+        {!reducedMotion && (
+          <animate attributeName="stroke-dashoffset" values="0;-190" dur="4.6s" repeatCount="indefinite" />
+        )}
+      </path>
       <g className="site-reference-menu-lines" data-testid="site-header-menu-lines">
         <line x1={lineStart} x2={lineEnd} y1={menuLines.centerY - menuLines.gap} y2={menuLines.centerY - menuLines.gap} />
         <line x1={lineStart} x2={lineEnd} y1={menuLines.centerY} y2={menuLines.centerY} />
@@ -117,12 +265,11 @@ function HeaderWordmark() {
   return (
     <span className="site-reference-wordmark-live" aria-hidden="true">
       WHOAMIII
-      <span className="site-reference-wordmark-dot" />
     </span>
   );
 }
 
-function HeaderGlassSurface() {
+function HeaderGlassSurface({ reducedMotion }: { reducedMotion: boolean }) {
   return (
     <>
       <HeaderGlassSvg
@@ -132,6 +279,7 @@ function HeaderGlassSurface() {
         innerEdgeGradientId="site-header-inner-edge-desktop"
         menuLines={{ centerX: 1524, centerY: 90, gap: 18, width: 50 }}
         path={HEADER_GLASS_PATH}
+        reducedMotion={reducedMotion}
         railPath="M 574 91 H 1368"
         viewBox="0 0 1600 180"
       />
@@ -142,6 +290,7 @@ function HeaderGlassSurface() {
         innerEdgeGradientId="site-header-inner-edge-mobile"
         menuLines={{ centerX: 362, centerY: 43, gap: 8, width: 24 }}
         path={MOBILE_HEADER_GLASS_PATH}
+        reducedMotion={reducedMotion}
         railPath="M 174 43 H 322"
         viewBox="0 0 390 88"
       />
@@ -292,7 +441,7 @@ export function SiteHeader({ reducedMotion }: SiteHeaderProps) {
         className="absolute top-3 left-1/2 z-50 w-full max-w-[100rem] -translate-x-1/2 px-3 sm:top-4 sm:px-5 md:top-6 md:px-12"
       >
         <div className="site-reference-nav relative mx-auto">
-          <HeaderGlassSurface />
+          <HeaderGlassSurface reducedMotion={reducedMotion} />
           <motion.a
             href="#main-content"
             aria-label="Whoamiii — jump to main content"

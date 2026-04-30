@@ -11,6 +11,19 @@ function createMockWebGlContext() {
     STATIC_DRAW: 6,
     TRIANGLES: 7,
     FLOAT: 8,
+    COLOR_BUFFER_BIT: 9,
+    TEXTURE_2D: 10,
+    TEXTURE0: 11,
+    TEXTURE1: 12,
+    RGBA: 13,
+    UNSIGNED_BYTE: 14,
+    CLAMP_TO_EDGE: 15,
+    LINEAR: 16,
+    TEXTURE_WRAP_S: 17,
+    TEXTURE_WRAP_T: 18,
+    TEXTURE_MIN_FILTER: 19,
+    TEXTURE_MAG_FILTER: 20,
+    UNPACK_FLIP_Y_WEBGL: 21,
     createShader: vi.fn(() => ({})),
     shaderSource: vi.fn(),
     compileShader: vi.fn(),
@@ -34,6 +47,16 @@ function createMockWebGlContext() {
     viewport: vi.fn(),
     uniform2f: vi.fn(),
     uniform1f: vi.fn(),
+    uniform1i: vi.fn(),
+    clearColor: vi.fn(),
+    clear: vi.fn(),
+    createTexture: vi.fn(() => ({})),
+    activeTexture: vi.fn(),
+    bindTexture: vi.fn(),
+    pixelStorei: vi.fn(),
+    texParameteri: vi.fn(),
+    texImage2D: vi.fn(),
+    deleteTexture: vi.fn(),
     drawArrays: vi.fn(),
     deleteBuffer: vi.fn(),
     getExtension: vi.fn(() => null),
@@ -117,9 +140,72 @@ describe('ShaderRenderer', () => {
     expect(onFrame).toHaveBeenCalledTimes(callCount);
   });
 
+  it('reuses stable hero liquid texture sources instead of uploading them every frame', () => {
+    const textMask = document.createElement('canvas');
+    const backgroundImage = document.createElement('img');
+
+    renderer = new ShaderRenderer(320, 180, 'heroLiquid', {
+      heroLiquid: {
+        backgroundImage,
+        textMask,
+      },
+    });
+
+    expect(mockGl.texImage2D).toHaveBeenCalledTimes(2);
+
+    renderer.setHeroLiquidOptions({
+      backgroundImage,
+      canvasViewportMin: [10, 20],
+      canvasViewportSize: [120, 80],
+      textMask,
+      viewportSize: [390, 844],
+    });
+    renderer.render(0.25);
+    renderer.setHeroLiquidOptions({
+      backgroundImage,
+      canvasViewportMin: [12, 22],
+      canvasViewportSize: [120, 80],
+      textMask,
+      viewportSize: [390, 844],
+    });
+    renderer.render(0.5);
+
+    expect(mockGl.texImage2D).toHaveBeenCalledTimes(2);
+  });
+
+  it('releases hero liquid textures when sources are cleared', () => {
+    const textMask = document.createElement('canvas');
+    const backgroundImage = document.createElement('img');
+
+    renderer = new ShaderRenderer(320, 180, 'heroLiquid', {
+      heroLiquid: {
+        backgroundImage,
+        textMask,
+      },
+    });
+
+    renderer.setHeroLiquidOptions({
+      backgroundImage: null,
+      textMask: null,
+    });
+
+    expect(mockGl.deleteTexture).toHaveBeenCalledTimes(2);
+  });
+
   it('disposes without throwing', () => {
     renderer = new ShaderRenderer(320, 180);
 
     expect(() => renderer?.dispose()).not.toThrow();
+  });
+
+  it('keeps disposal idempotent so repeated cleanup does not double-free WebGL resources', () => {
+    renderer = new ShaderRenderer(320, 180);
+
+    renderer.dispose();
+    renderer.dispose();
+
+    expect(mockGl.deleteBuffer).toHaveBeenCalledTimes(1);
+    expect(mockGl.deleteProgram).toHaveBeenCalledTimes(1);
+    expect(mockGl.deleteShader).toHaveBeenCalledTimes(2);
   });
 });

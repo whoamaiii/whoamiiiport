@@ -1,12 +1,13 @@
-import { useEffect, useId, useRef } from 'react';
-import { useDocumentVisibility } from '../hooks/useDocumentVisibility';
-import reportError from '../lib/reportError';
+import { useEffect, useRef } from 'react';
 import {
-  HERO_WORDMARK_LINES,
-  HERO_WORDMARK_VIEWBOX,
+  HERO_WORDMARK_SUPPORTED_LINES,
   matchesHeroWordmark,
   type HeroTitleLines,
 } from './heroWordmarkData';
+import ShaderTextWord from './shared/ShaderTextWord';
+import type { TextShadowConfig } from './shared/shaderTextShared';
+import reportError from '../lib/reportError';
+import { getImageUrl } from '../utils/images';
 
 interface HeroTitleHybridProps {
   semanticTitle: string;
@@ -15,12 +16,103 @@ interface HeroTitleHybridProps {
   forceFallback?: boolean;
 }
 
+const HERO_LIQUID_BACKGROUND = getImageUrl('liquid-perception-hero', 960);
+const HERO_WORDMARK_VISUAL_SECOND_LINE = `${HERO_WORDMARK_SUPPORTED_LINES[1]}.`;
+
+const HERO_LIQUID_SHARED_UV = {
+  first: {
+    titleUvOffset: [0.10, 0.00] as const,
+    titleUvScale: [0.78, 0.48] as const,
+  },
+  second: {
+    titleUvOffset: [0.00, 0.42] as const,
+    titleUvScale: [1.00, 0.58] as const,
+  },
+};
+
+function getHeroShadowConfig(isMobile: boolean, fontSize: number): TextShadowConfig {
+  const sizeScale = Math.min(fontSize / 84, 1);
+  const mobileScale = isMobile ? 0.92 : 1;
+  const baseSize = sizeScale * mobileScale;
+
+  return {
+    ambient: {
+      shadowColor: 'rgba(0, 0, 0, 0.12)',
+      shadowBlur: 9 * baseSize,
+      shadowOffsetX: 0,
+      shadowOffsetY: 0,
+      strokeColor: 'rgba(3, 7, 14, 0.045)',
+      strokeWidth: 0.014 * baseSize,
+    },
+    halo: {
+      shadowColor: 'rgba(91, 218, 239, 0.14)',
+      shadowBlur: 8 * baseSize,
+      shadowOffsetX: 0,
+      shadowOffsetY: -0.4 * baseSize,
+      strokeColor: 'rgba(219, 249, 255, 0.13)',
+      strokeWidth: 0.012 * baseSize,
+    },
+    primary: {
+      shadowColor: 'rgba(0, 0, 0, 0.24)',
+      shadowBlur: 2.4 * baseSize,
+      shadowOffsetX: 0,
+      shadowOffsetY: 1.2 * baseSize,
+      strokeColor: 'rgba(0, 0, 0, 0.08)',
+      strokeWidth: 0.007 * baseSize,
+    },
+    innerGlow: {
+      shadowColor: 'rgba(255, 252, 238, 0.22)',
+      shadowBlur: 3.2 * baseSize,
+      shadowOffsetX: -0.4 * baseSize,
+      shadowOffsetY: -0.9 * baseSize,
+      strokeColor: 'rgba(255, 252, 240, 0.12)',
+      strokeWidth: 0.006 * baseSize,
+    },
+  };
+}
+
 function HeroTitleFallback({ titleLines }: { titleLines: HeroTitleLines }) {
   return (
     <span className="hero-title-fallback" data-testid="hero-title-fallback">
       <span>{titleLines[0]}</span>
-      <span>{titleLines[1]}</span>
+      <span>{titleLines[1]}.</span>
     </span>
+  );
+}
+
+function HeroShaderLine({ text, line }: { text: string; line: 'first' | 'second' }) {
+  return (
+    <ShaderTextWord
+      text={text}
+      wrapperClassName={`hero-title-shader-word hero-title-shader-word--${line}`.trim()}
+      measureClassName={`hero-title-shader-measure hero-title-shader-measure--${line}`.trim()}
+      canvasClassName={`hero-title-shader-canvas hero-title-shader-canvas--${line}`.trim()}
+      fallbackClassName={`hero-title-shader-fallback hero-title-shader-fallback--${line}`.trim()}
+      shaderScale={{ mobile: 0.5, desktop: 0.58, reduced: 0.34 }}
+      shaderClamp={{ minWidth: 120, maxWidth: 880, minHeight: 56, maxHeight: 260 }}
+      getShadowConfig={getHeroShadowConfig}
+      finalStroke={{ color: 'rgba(235, 252, 255, 0.12)', scale: 0.0032, minWidth: 0.42 }}
+      heroLiquid={{
+        backgroundImageUrl: HERO_LIQUID_BACKGROUND,
+        backgroundDarken: 0.4,
+        backgroundMix: 0.115,
+        causticStrength: 0.06,
+        coreBrightness: 0.96,
+        coreContrast: 1.1,
+        coreSaturation: 1.02,
+        dispersionStrength: 0.003,
+        glowStrength: 0.045,
+        innerShadowStrength: 0.64,
+        liquidOpacity: 0.64,
+        liquidSpeed: 0.026,
+        liquidWarp: 0.04,
+        refractPixels: 4.2,
+        rimStrength: 0.78,
+        rimWidth: 0.5,
+        ...HERO_LIQUID_SHARED_UV[line],
+      }}
+      shaderVariant="heroLiquid"
+    />
   );
 }
 
@@ -30,20 +122,9 @@ export function HeroTitleHybrid({
   reducedMotion,
   forceFallback = false,
 }: HeroTitleHybridProps) {
-  const isDocumentVisible = useDocumentVisibility();
-  const ids = useId().replace(/:/g, '');
   const reportedRef = useRef(false);
   const titleMatchesWordmark = matchesHeroWordmark(titleLines);
   const visualSupported = !forceFallback && titleMatchesWordmark;
-  const shouldAnimate = visualSupported && !reducedMotion && isDocumentVisible;
-  const baseGradientId = `${ids}-hero-title-base`;
-  const edgeGradientId = `${ids}-hero-title-edge`;
-  const glowGradientId = `${ids}-hero-title-glow`;
-  const sheenGradientId = `${ids}-hero-title-sheen`;
-  const blurFilterId = `${ids}-hero-title-blur`;
-  const clipPathId = `${ids}-hero-title-clip`;
-  const firstLineTransform = `translate(${HERO_WORDMARK_LINES.first.x} ${HERO_WORDMARK_LINES.first.y + HERO_WORDMARK_LINES.first.height}) scale(1 -1)`;
-  const secondLineTransform = `translate(${HERO_WORDMARK_LINES.second.x} ${HERO_WORDMARK_LINES.second.y + HERO_WORDMARK_LINES.second.height}) scale(1 -1)`;
 
   useEffect(() => {
     if (titleMatchesWordmark || reportedRef.current) {
@@ -65,123 +146,13 @@ export function HeroTitleHybrid({
         className="hero-title-hybrid"
         data-testid="hero-title-visual"
         data-mode={visualSupported ? 'visual' : 'fallback'}
-        data-animated={shouldAnimate ? 'true' : 'false'}
+        data-animated={visualSupported && !reducedMotion ? 'true' : 'false'}
       >
         {visualSupported ? (
-          <svg
-            className="hero-title-svg"
-            viewBox={`0 0 ${HERO_WORDMARK_VIEWBOX.width} ${HERO_WORDMARK_VIEWBOX.height}`}
-            role="presentation"
-            focusable="false"
-            preserveAspectRatio="xMinYMin meet"
-          >
-            <defs>
-              <linearGradient id={baseGradientId} x1="3%" y1="8%" x2="94%" y2="92%">
-                <stop offset="0%" stopColor="#f6dcc6" />
-                <stop offset="28%" stopColor="#ebb4a3" />
-                <stop offset="54%" stopColor="#c77f87" />
-                <stop offset="79%" stopColor="#66738f" />
-                <stop offset="100%" stopColor="#9ecfc4" />
-              </linearGradient>
-              <linearGradient id={edgeGradientId} x1="10%" y1="0%" x2="90%" y2="100%">
-                <stop offset="0%" stopColor="rgba(255, 247, 238, 0.94)" />
-                <stop offset="48%" stopColor="rgba(255, 240, 231, 0.48)" />
-                <stop offset="100%" stopColor="rgba(186, 225, 214, 0.6)" />
-              </linearGradient>
-              <radialGradient id={glowGradientId} cx="28%" cy="16%" r="88%">
-                <stop offset="0%" stopColor="rgba(255, 244, 232, 0.42)" />
-                <stop offset="55%" stopColor="rgba(242, 196, 194, 0.18)" />
-                <stop offset="100%" stopColor="rgba(99, 109, 141, 0)" />
-              </radialGradient>
-              <linearGradient id={sheenGradientId} x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="rgba(255, 255, 255, 0)" />
-                <stop offset="42%" stopColor="rgba(255, 255, 255, 0)" />
-                <stop offset="51%" stopColor="rgba(255, 250, 245, 0.82)" />
-                <stop offset="60%" stopColor="rgba(255, 255, 255, 0)" />
-                <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
-              </linearGradient>
-              <filter id={blurFilterId} x="-10%" y="-10%" width="120%" height="120%">
-                <feGaussianBlur stdDeviation="12" />
-              </filter>
-              <clipPath id={clipPathId}>
-                <path
-                  d={HERO_WORDMARK_LINES.first.d}
-                  transform={firstLineTransform}
-                />
-                <path
-                  d={HERO_WORDMARK_LINES.second.d}
-                  transform={secondLineTransform}
-                />
-              </clipPath>
-            </defs>
-
-            <g className="hero-title-shadow-layer" opacity="0.28" filter={`url(#${blurFilterId})`}>
-              <path
-                d={HERO_WORDMARK_LINES.first.d}
-                transform={firstLineTransform}
-                fill={`url(#${glowGradientId})`}
-              />
-              <path
-                d={HERO_WORDMARK_LINES.second.d}
-                transform={secondLineTransform}
-                fill={`url(#${glowGradientId})`}
-              />
-            </g>
-
-            <g className="hero-title-wordmark-layer">
-              <path
-                className="hero-title-wordmark-fill"
-                d={HERO_WORDMARK_LINES.first.d}
-                transform={firstLineTransform}
-                fill={`url(#${baseGradientId})`}
-              />
-              <path
-                className="hero-title-wordmark-fill"
-                d={HERO_WORDMARK_LINES.second.d}
-                transform={secondLineTransform}
-                fill={`url(#${baseGradientId})`}
-              />
-              <path
-                className="hero-title-wordmark-rim"
-                d={HERO_WORDMARK_LINES.first.d}
-                transform={firstLineTransform}
-                fill="none"
-                stroke={`url(#${edgeGradientId})`}
-              />
-              <path
-                className="hero-title-wordmark-rim"
-                d={HERO_WORDMARK_LINES.second.d}
-                transform={secondLineTransform}
-                fill="none"
-                stroke={`url(#${edgeGradientId})`}
-              />
-              <path
-                className="hero-title-wordmark-inner"
-                d={HERO_WORDMARK_LINES.first.d}
-                transform={firstLineTransform}
-                fill="none"
-              />
-              <path
-                className="hero-title-wordmark-inner"
-                d={HERO_WORDMARK_LINES.second.d}
-                transform={secondLineTransform}
-                fill="none"
-              />
-            </g>
-
-            <g clipPath={`url(#${clipPathId})`}>
-              <g className="hero-title-sheen-track">
-                <rect
-                  className="hero-title-sheen"
-                  x="-340"
-                  y="-80"
-                  width="320"
-                  height="610"
-                  fill={`url(#${sheenGradientId})`}
-                />
-              </g>
-            </g>
-          </svg>
+          <span className="hero-title-live-shader">
+            <HeroShaderLine text={HERO_WORDMARK_SUPPORTED_LINES[0]} line="first" />
+            <HeroShaderLine text={HERO_WORDMARK_VISUAL_SECOND_LINE} line="second" />
+          </span>
         ) : (
           <HeroTitleFallback titleLines={titleLines} />
         )}

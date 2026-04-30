@@ -1,7 +1,7 @@
 import { motion } from 'motion/react';
 import { Mail } from 'lucide-react';
 import { MagneticButton } from '../components/MagneticButton';
-import { TextScramble } from '../components/TextScramble';
+import { ShaderHeading } from '../components/ShaderHeading';
 import { CONTACT_COPY } from '../content/siteCopy';
 
 interface ContactSectionProps {
@@ -24,21 +24,14 @@ export function ContactSection({ reducedMotion }: ContactSectionProps) {
           transition={reducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="glass-dark rounded-[3rem] p-12 md:p-20 relative pointer-events-auto"
         >
-          <h2
+          <ShaderHeading
             id="contact-heading"
-            aria-label={CONTACT_COPY.heading}
-            className="text-4xl md:text-6xl font-display tracking-tight mb-6 relative z-10"
+            className="text-center text-4xl md:text-6xl font-display tracking-tight mb-6 relative z-10"
+            visualLines={["Let's", 'Create', 'Something', 'Trippy.']}
           >
-            <span className="sr-only">{CONTACT_COPY.heading}</span>
-            <span aria-hidden="true">
-              <TextScramble text={CONTACT_COPY.headingParts.lead} delay={200} duration={1200} />
-              <span className="text-gradient">
-                {' '}
-                <TextScramble text={CONTACT_COPY.headingParts.accent} delay={800} duration={800} />
-              </span>
-            </span>
-          </h2>
-          <p className="text-xl text-zinc-400 mb-10 relative z-10">{CONTACT_COPY.body}</p>
+            {CONTACT_COPY.heading}
+          </ShaderHeading>
+          <p className="liquid-support-text text-xl mb-10 relative z-10">{CONTACT_COPY.body}</p>
 
           <MagneticButton strength={0.3} href="mailto:hello@whoamiii.art">
             <span className="group relative z-10 inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-black rounded-full font-semibold text-lg overflow-hidden transition-transform hover:scale-105 pointer-events-auto cursor-pointer">

@@ -26,7 +26,7 @@ vi.mock('../src/components/InteractiveArtworkCard', () => ({
 }));
 
 describe('section semantics', () => {
-  it('keeps the contact heading accessible name stable while visible scramble copy comes from CONTACT_COPY', () => {
+  it('keeps the contact heading accessible while rendering through the shader heading system', () => {
     installMatchMediaMock({
       '(prefers-reduced-motion: reduce)': true,
     });
@@ -37,6 +37,7 @@ describe('section semantics', () => {
     expect(CONTACT_COPY.heading).toBe(
       `${CONTACT_COPY.headingParts.lead} ${CONTACT_COPY.headingParts.accent}`,
     );
+    expect(heading).toHaveAttribute('data-heading-variant', 'default');
     expect(heading).toHaveTextContent(CONTACT_COPY.headingParts.lead);
     expect(heading).toHaveTextContent(CONTACT_COPY.headingParts.accent);
   });

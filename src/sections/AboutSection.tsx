@@ -1,7 +1,7 @@
 import { Instagram, Twitter } from 'lucide-react';
-import AnimatedHeading from '../components/AnimatedHeading';
 import { ImageReveal } from '../components/ImageReveal';
 import { MagneticButton } from '../components/MagneticButton';
+import { ShaderHeading } from '../components/ShaderHeading';
 import { ABOUT_COPY } from '../content/siteCopy';
 import { getAboutSizes, getGalleryImageUrl, getGallerySrcset, getImageMetadata } from '../utils/images';
 
@@ -22,13 +22,14 @@ export function AboutSection() {
 
           <div className="grid md:grid-cols-2 gap-16 relative z-10">
             <div>
-              <AnimatedHeading
+              <ShaderHeading
                 id="about-heading"
                 delay={0}
                 className="text-4xl md:text-5xl font-display tracking-tight mb-8"
+                visualLines={['The Mind', 'Behind the', 'Canvas']}
               >
                 {ABOUT_COPY.heading}
-              </AnimatedHeading>
+              </ShaderHeading>
               <p className="text-zinc-300 text-lg leading-relaxed mb-6">
                 {ABOUT_COPY.intro}
               </p>

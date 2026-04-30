@@ -19,9 +19,12 @@ const buildComputedDisplacement = (w: number, h: number): string => {
     height: h,
     fragment: shaderPrograms.refraction,
   })
-  const uri = renderer.render()
-  renderer.dispose()
-  return uri
+
+  try {
+    return renderer.render()
+  } finally {
+    renderer.dispose()
+  }
 }
 
 export const resolveDisplacementSource = (
@@ -59,24 +62,37 @@ export const RefractionFilter: React.FC<{
   const blobUrlRef = useRef<string | null>(null)
 
   useEffect(() => {
-    const rawUri = resolveDisplacementSource(variant, computedUri)
-    if (isGecko() && rawUri.startsWith("data:")) {
-      toBlobUrl(rawUri).then((blobUrl) => {
-        // Revoke previous blob URL before setting new one
-        if (blobUrlRef.current) {
-          URL.revokeObjectURL(blobUrlRef.current)
-        }
-        blobUrlRef.current = blobUrl
-        setResolvedHref(blobUrl)
-      })
-    } else {
-      setResolvedHref(rawUri)
-    }
-    return () => {
+    let active = true
+
+    const revokeCurrentBlobUrl = () => {
       if (blobUrlRef.current) {
         URL.revokeObjectURL(blobUrlRef.current)
         blobUrlRef.current = null
       }
+    }
+
+    const rawUri = resolveDisplacementSource(variant, computedUri)
+    if (isGecko() && rawUri.startsWith("data:")) {
+      toBlobUrl(rawUri).then((blobUrl) => {
+        if (!active) {
+          if (blobUrl.startsWith("blob:")) {
+            URL.revokeObjectURL(blobUrl)
+          }
+          return
+        }
+
+        revokeCurrentBlobUrl()
+        blobUrlRef.current = blobUrl.startsWith("blob:") ? blobUrl : null
+        setResolvedHref(blobUrl)
+      })
+    } else {
+      revokeCurrentBlobUrl()
+      setResolvedHref(rawUri)
+    }
+
+    return () => {
+      active = false
+      revokeCurrentBlobUrl()
     }
   }, [variant, computedUri])
 

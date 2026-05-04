@@ -179,12 +179,19 @@
   transform: translate(-50%, calc(-50% + 1px));
 }
 
-.site-reference-menu-lines {
+.site-reference-menu-trigger-lines {
+  display: grid;
+  gap: clamp(0.36rem, 0.76vw, 0.82rem);
+  width: 36%;
   pointer-events: none;
-  stroke: rgb(255 255 255 / 0.94);
-  stroke-linecap: round;
-  stroke-width: 4;
-  vector-effect: non-scaling-stroke;
+}
+
+.site-reference-menu-trigger-lines span {
+  display: block;
+  height: clamp(0.14rem, 0.28vw, 0.29rem);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.94);
+  pointer-events: none;
   filter:
     drop-shadow(0 1px 0 rgb(255 255 255 / 0.18))
     drop-shadow(0 7px 12px rgb(0 0 0 / 0.45));
@@ -221,8 +228,13 @@
     height: clamp(3.55rem, 17.5vw, 4.4rem);
   }
 
-  .site-reference-menu-lines {
-    stroke-width: 3.1;
+  .site-reference-menu-trigger-lines {
+    gap: clamp(0.36rem, 1.92vw, 0.5rem);
+    width: 34%;
+  }
+
+  .site-reference-menu-trigger-lines span {
+    height: clamp(0.16rem, 0.78vw, 0.22rem);
   }
 
   .site-reference-glass-edge--liquid {

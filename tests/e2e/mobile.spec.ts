@@ -74,7 +74,8 @@ test('mobile menu traps focus and closes back to the trigger', async ({ page }) 
   const contactButton = menu.getByRole('button', { name: /get in touch/i });
 
   await expect(menu).toBeVisible();
-  await expect(menuButton).toHaveAccessibleName(/close menu/i);
+  await expect(menuButton).toHaveAccessibleName(/close navigation menu/i);
+  await expect(page.getByRole('button', { name: /^close menu$/i })).toHaveCount(1);
   await expect(closeButton).toBeFocused();
 
   await page.keyboard.press('Shift+Tab');

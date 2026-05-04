@@ -48,12 +48,6 @@ interface HeaderGlassSvgProps {
   edgeGradientId: string;
   fillGradientId: string;
   innerEdgeGradientId: string;
-  menuLines: {
-    centerX: number;
-    centerY: number;
-    gap: number;
-    width: number;
-  };
   path: string;
   reducedMotion: boolean;
   railPath: string;
@@ -65,14 +59,11 @@ function HeaderGlassSvg({
   edgeGradientId,
   fillGradientId,
   innerEdgeGradientId,
-  menuLines,
   path,
   reducedMotion,
   railPath,
   viewBox,
 }: HeaderGlassSvgProps) {
-  const lineStart = menuLines.centerX - menuLines.width / 2;
-  const lineEnd = menuLines.centerX + menuLines.width / 2;
   const liquidEdgeGradientId = `${edgeGradientId}-liquid`;
   const liquidCausticGradientId = `${edgeGradientId}-liquid-caustic`;
   const liquidPrismGradientId = `${edgeGradientId}-liquid-prism`;
@@ -252,11 +243,6 @@ function HeaderGlassSvg({
           <animate attributeName="stroke-dashoffset" values="0;-190" dur="4.6s" repeatCount="indefinite" />
         )}
       </path>
-      <g className="site-reference-menu-lines" data-testid="site-header-menu-lines">
-        <line x1={lineStart} x2={lineEnd} y1={menuLines.centerY - menuLines.gap} y2={menuLines.centerY - menuLines.gap} />
-        <line x1={lineStart} x2={lineEnd} y1={menuLines.centerY} y2={menuLines.centerY} />
-        <line x1={lineStart} x2={lineEnd} y1={menuLines.centerY + menuLines.gap} y2={menuLines.centerY + menuLines.gap} />
-      </g>
     </svg>
   );
 }
@@ -277,7 +263,6 @@ function HeaderGlassSurface({ reducedMotion }: { reducedMotion: boolean }) {
         edgeGradientId="site-header-edge-desktop"
         fillGradientId="site-header-fill-desktop"
         innerEdgeGradientId="site-header-inner-edge-desktop"
-        menuLines={{ centerX: 1524, centerY: 90, gap: 18, width: 50 }}
         path={HEADER_GLASS_PATH}
         reducedMotion={reducedMotion}
         railPath="M 574 91 H 1368"
@@ -288,7 +273,6 @@ function HeaderGlassSurface({ reducedMotion }: { reducedMotion: boolean }) {
         edgeGradientId="site-header-edge-mobile"
         fillGradientId="site-header-fill-mobile"
         innerEdgeGradientId="site-header-inner-edge-mobile"
-        menuLines={{ centerX: 362, centerY: 43, gap: 8, width: 24 }}
         path={MOBILE_HEADER_GLASS_PATH}
         reducedMotion={reducedMotion}
         railPath="M 174 43 H 322"
@@ -309,7 +293,7 @@ function MobileMenuButton({
   onClick,
   buttonRef,
 }: MobileMenuButtonProps) {
-  const triggerLabel = isOpen ? 'Close menu' : 'Open menu';
+  const triggerLabel = isOpen ? 'Close navigation menu' : 'Open menu';
 
   return (
     <button
@@ -319,7 +303,13 @@ function MobileMenuButton({
       aria-label={triggerLabel}
       aria-expanded={isOpen}
       aria-haspopup="dialog"
-    />
+    >
+      <span className="site-reference-menu-trigger-lines" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </span>
+    </button>
   );
 }
 

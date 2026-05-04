@@ -201,9 +201,10 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
   expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(320);
 
   await menuButton.click();
-  await expect(menuButton).toHaveAccessibleName(/close menu/i);
+  await expect(menuButton).toHaveAccessibleName(/close navigation menu/i);
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByRole('dialog', { name: /navigation menu/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /^close menu$/i })).toHaveCount(1);
   await expect(page.getByRole('button', { name: /get in touch/i })).toBeVisible();
   await expect
     .poll(() =>
@@ -224,19 +225,15 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
     const header = document.querySelector('[data-testid="site-header"]');
     const mobileSurface = document.querySelector('.site-reference-glass-surface--mobile');
     const menuButton = document.querySelector('.site-reference-menu-trigger');
-    const menuLineGroups = Array.from(document.querySelectorAll('[data-testid="site-header-menu-lines"]'));
-    const visibleLineGroup = menuLineGroups.find((node) => {
-      const rect = node.getBoundingClientRect();
-      return rect.width > 0 && rect.height > 0;
-    });
+    const menuLines = document.querySelector('.site-reference-menu-trigger-lines');
 
-    if (!header || !mobileSurface || !menuButton || !visibleLineGroup) {
+    if (!header || !mobileSurface || !menuButton || !menuLines) {
       return null;
     }
 
     const surfaceRect = mobileSurface.getBoundingClientRect();
     const buttonRect = menuButton.getBoundingClientRect();
-    const linesRect = visibleLineGroup.getBoundingClientRect();
+    const linesRect = menuLines.getBoundingClientRect();
     const expectedLineCenterX = surfaceRect.left + surfaceRect.width * (362 / 390);
     const expectedButtonCenterX = surfaceRect.left + surfaceRect.width * (362 / 390);
     const expectedCenterY = surfaceRect.top + surfaceRect.height * (43 / 88);
@@ -250,11 +247,13 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
       buttonDeltaY: Math.abs(buttonCenterY - expectedCenterY),
       lineDeltaX: Math.abs(lineCenterX - expectedLineCenterX),
       lineDeltaY: Math.abs(lineCenterY - expectedCenterY),
+      lineCount: menuLines.querySelectorAll('span').length,
       overflowX: document.documentElement.scrollWidth - window.innerWidth,
     };
   });
 
   expect(geometry).not.toBeNull();
+  expect(geometry!.lineCount).toBe(3);
   expect(geometry!.lineDeltaX).toBeLessThanOrEqual(3);
   expect(geometry!.lineDeltaY).toBeLessThanOrEqual(3);
   expect(geometry!.buttonDeltaX).toBeLessThanOrEqual(4);

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
+import { AnimatedHeading } from '../src/components/AnimatedHeading';
 import { ShaderHeading } from '../src/components/ShaderHeading';
 import ContactSection from '../src/sections/ContactSection';
 import GallerySection from '../src/sections/GallerySection';
@@ -53,6 +54,23 @@ describe('section semantics', () => {
     expect(heading).toHaveAttribute('id', 'selected-works-heading');
     expect(heading).toHaveAttribute('data-heading-variant', 'default');
     expect(screen.getByRole('region', { name: /selected works\./i })).toBeInTheDocument();
+  });
+
+  it('keeps animated headings named by their semantic hidden text', () => {
+    render(<AnimatedHeading>Dream Signal.</AnimatedHeading>);
+
+    expect(screen.getByRole('heading', { name: /dream signal\./i })).toBeInTheDocument();
+  });
+
+  it('uses ShaderHeading ariaLabel as semantic text without naming from decorative lines', () => {
+    render(
+      <ShaderHeading ariaLabel="Selected Works." visualLines={['Archive', 'Signals']}>
+        Gallery overview
+      </ShaderHeading>,
+    );
+
+    expect(screen.getByRole('heading', { name: /selected works\./i })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /archive signals/i })).not.toBeInTheDocument();
   });
 
   it('keeps the gallery region named from the gallery heading while the supporting copy stays visible', () => {

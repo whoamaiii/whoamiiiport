@@ -195,6 +195,8 @@ export function ShaderHeading({
   const [isReady, setIsReady] = useState(false);
   const preset = SHADER_HEADING_PRESETS[variant];
   const lines = visualLines?.length ? visualLines : [children];
+  const { 'aria-label': htmlAriaLabel, ...semanticHeadingProps } = headingProps;
+  const semanticText = ariaLabel ?? htmlAriaLabel ?? children;
 
   useEffect(() => {
     if (!isReady) {
@@ -215,12 +217,11 @@ export function ShaderHeading({
   return (
     <Component
       className={`section-shader-title ${preset.rootClassName} ${className}`.trim()}
-      aria-label={ariaLabel ?? children}
       data-heading-variant={variant}
       data-testid="shader-heading"
-      {...headingProps}
+      {...semanticHeadingProps}
     >
-      <span className="sr-only">{children}</span>
+      <span className="sr-only">{semanticText}</span>
       <span aria-hidden="true">
         <RenderErrorBoundary
           context="section-shader-heading"

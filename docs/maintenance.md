@@ -15,9 +15,9 @@ npm run optimize-images
    - slug
    - alt text
    - expected widths
-   - modal fallback width if needed
+   - modal widths if the modal asset profile changes
 4. Update artwork copy in [`src/components/artworkData.ts`](../src/components/artworkData.ts) and featured ordering in [`src/content/featuredArtworks.ts`](../src/content/featuredArtworks.ts) if the piece should appear in the gallery.
-5. Update [`tests/image-contract.test.ts`](../tests/image-contract.test.ts) so the expected featured slugs and modal widths match the new artwork.
+5. Update [`tests/image-contract.test.ts`](../tests/image-contract.test.ts) so the expected featured slugs and generated gallery/modal widths match the new artwork.
 6. Run:
 
 ```bash

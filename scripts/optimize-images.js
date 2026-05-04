@@ -6,6 +6,7 @@
  * Profiles:
  * - hero: 960/1440w variants for hero section
  * - gallery: 480/800/1200w variants for gallery cards
+ * - modal: 800/1200/1600w variants for artwork modals
  */
 
 import sharp from 'sharp';
@@ -27,7 +28,6 @@ const SOURCES = [
     profile: 'gallery',
     alt: 'Surreal hooded forest portrait with chrome face fragments, red nails, and an electric cellular sky',
     quality: 70,
-    modalWidth: 1600,
   },
   { 
     input: './src/assets/psychedelic-bathroom-portrait.jpg', 
@@ -35,7 +35,6 @@ const SOURCES = [
     profile: 'gallery',
     alt: 'Dark psychedelic bathroom portrait with rainbow distortion and patterned tiled wall',
     quality: 65,
-    modalWidth: 1600,
   },
   { 
     input: './src/assets/psychedelic-bathroom-scream.png', 
@@ -43,7 +42,6 @@ const SOURCES = [
     profile: 'gallery',
     alt: 'Psychedelic bathroom portrait with screaming figure covered in rainbow contour patterns',
     quality: 65,
-    modalWidth: 1600,
   },
   { 
     input: './src/assets/ferdigcop-video-poster.jpg', 
@@ -51,7 +49,6 @@ const SOURCES = [
     profile: 'gallery',
     alt: 'Poster frame from Ferdigcop video artwork',
     quality: 65,
-    modalWidth: 1600,
   },
   {
     input: './src/assets/photoshootwhiletripping.png',
@@ -59,7 +56,6 @@ const SOURCES = [
     profile: 'gallery',
     alt: 'Portrait of the artist in a hooded sweatshirt',
     quality: 68,
-    modalWidth: 1600,
   },
 ];
 
@@ -71,13 +67,14 @@ const PROFILES = {
   hero: [960, 1440],
   gallery: [480, 800, 1200],
 };
+const MODAL_WIDTHS = [800, 1200, 1600];
 
 const DEFAULT_QUALITY = 65;
 
 async function optimizeImage(source) {
   const { input, slug, profile, alt } = source;
   const quality = source.quality ?? DEFAULT_QUALITY;
-  const modalWidth = source.modalWidth ?? 1600;
+  const modalWidths = source.modalWidths ?? MODAL_WIDTHS;
   const result = {
     errorCount: 0,
     generatedCount: 0,
@@ -144,35 +141,37 @@ async function optimizeImage(source) {
   }
 
   if (profile === 'gallery') {
-    if (metadata.width && modalWidth > metadata.width) {
-      console.log(`   ⏭️  Skipping modal ${modalWidth}w (larger than original)`);
-      return result;
-    }
+    for (const modalWidth of modalWidths) {
+      if (metadata.width && modalWidth > metadata.width) {
+        console.log(`   ⏭️  Skipping modal ${modalWidth}w (larger than original)`);
+        continue;
+      }
 
-    const modalFilename = `${slug}-modal-${modalWidth}.webp`;
-    const modalPath = join(OUTPUT_DIR, modalFilename);
+      const modalFilename = `${slug}-modal-${modalWidth}.webp`;
+      const modalPath = join(OUTPUT_DIR, modalFilename);
 
-    try {
-      await image
-        .clone()
-        .resize(modalWidth, null, {
-          withoutEnlargement: true,
-          fit: 'inside',
-        })
-        .webp({
-          quality,
-          effort: 6,
-        })
-        .toFile(modalPath);
+      try {
+        await image
+          .clone()
+          .resize(modalWidth, null, {
+            withoutEnlargement: true,
+            fit: 'inside',
+          })
+          .webp({
+            quality,
+            effort: 6,
+          })
+          .toFile(modalPath);
 
-      const stats = statSync(modalPath);
-      const sizeKB = (stats.size / 1024).toFixed(1);
+        const stats = statSync(modalPath);
+        const sizeKB = (stats.size / 1024).toFixed(1);
 
-      console.log(`   ✅ ${modalFilename} (${sizeKB} KB)`);
-      result.generatedCount++;
-    } catch (error) {
-      console.error(`   ❌ Failed to generate modal ${modalWidth}w:`, error.message);
-      result.errorCount++;
+        console.log(`   ✅ ${modalFilename} (${sizeKB} KB)`);
+        result.generatedCount++;
+      } catch (error) {
+        console.error(`   ❌ Failed to generate modal ${modalWidth}w:`, error.message);
+        result.errorCount++;
+      }
     }
   }
 

@@ -65,7 +65,8 @@ test('mobile first viewport keeps hero and navigation coherent', async ({ page }
 test('mobile menu traps focus and closes back to the trigger', async ({ page }) => {
   await page.goto('/');
 
-  const menuButton = page.getByRole('button', { name: /open menu/i });
+  const menuButton = page.locator('.site-reference-menu-trigger');
+  await expect(menuButton).toHaveAccessibleName(/open menu/i);
   await menuButton.click();
 
   const menu = page.getByRole('dialog', { name: /navigation menu/i });
@@ -73,6 +74,7 @@ test('mobile menu traps focus and closes back to the trigger', async ({ page }) 
   const contactButton = menu.getByRole('button', { name: /get in touch/i });
 
   await expect(menu).toBeVisible();
+  await expect(menuButton).toHaveAccessibleName(/close menu/i);
   await expect(closeButton).toBeFocused();
 
   await page.keyboard.press('Shift+Tab');
@@ -99,6 +101,15 @@ test('mobile artwork modal covers the viewport and restores focus', async ({ pag
     name: /psychedelic bathroom portrait/i,
   });
   await expect(dialog).toBeVisible();
+  await expect
+    .poll(() =>
+      page.locator('[aria-controls]').evaluateAll((nodes) =>
+        nodes
+          .map((node) => node.getAttribute('aria-controls'))
+          .filter((id): id is string => Boolean(id) && !document.getElementById(id)),
+      ),
+    )
+    .toEqual([]);
 
   const dialogBounds = await dialog.boundingBox();
   expect(dialogBounds).not.toBeNull();

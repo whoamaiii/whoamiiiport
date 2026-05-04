@@ -24,7 +24,40 @@ type ImageRevealChildrenProps = ImageRevealBaseProps & {
 
 type ImageRevealProps = ImageRevealImageProps | ImageRevealChildrenProps;
 
-export function ImageReveal(props: ImageRevealProps) {
+function ImageRevealContent({
+  props,
+  imageClassName,
+}: {
+  props: ImageRevealProps;
+  imageClassName: string;
+}) {
+  return 'children' in props ? (
+    props.children
+  ) : (
+    <img
+      src={props.src}
+      alt={props.alt}
+      className={`w-full h-full object-cover ${imageClassName}`.trim()}
+      loading="lazy"
+      decoding="async"
+      referrerPolicy="no-referrer"
+    />
+  );
+}
+
+function StaticImageReveal(props: ImageRevealProps) {
+  const { className = '', imageClassName = '' } = props;
+
+  return (
+    <div className={`relative overflow-hidden ${className}`}>
+      <div className="w-full h-full" data-testid="image-reveal-content">
+        <ImageRevealContent props={props} imageClassName={imageClassName} />
+      </div>
+    </div>
+  );
+}
+
+function AnimatedImageReveal(props: ImageRevealProps) {
   const {
     className = '',
     imageClassName = '',
@@ -34,7 +67,6 @@ export function ImageReveal(props: ImageRevealProps) {
   } = props;
   const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
-  const prefersReducedMotion = useReducedMotion();
 
   const getClipPath = () => {
     switch (direction) {
@@ -69,14 +101,14 @@ export function ImageReveal(props: ImageRevealProps) {
   const clipPaths = getClipPath();
 
   const transition: Transition = {
-    duration: prefersReducedMotion ? 0 : duration,
-    delay: prefersReducedMotion ? 0 : delay,
+    duration,
+    delay,
     ease: [0.25, 0.46, 0.45, 0.94],
   };
 
   const imageTransition: Transition = {
-    duration: prefersReducedMotion ? 0 : duration * 1.2,
-    delay: prefersReducedMotion ? 0 : delay,
+    duration: duration * 1.2,
+    delay,
     ease: [0.25, 0.46, 0.45, 0.94],
   };
 
@@ -89,56 +121,47 @@ export function ImageReveal(props: ImageRevealProps) {
       : direction === 'down'
         ? 'bottom'
         : direction === 'left'
-          ? 'left'
-          : 'right';
-  const imageMotionProps = prefersReducedMotion
-    ? {
-        initial: false as const,
-        animate: { scale: 1 },
-        transition: imageTransition,
-      }
-    : {
-        initial: { clipPath: clipPaths.hidden, scale: 1.2 },
-        animate: isInView
-          ? { clipPath: clipPaths.visible, scale: 1 }
-          : { clipPath: clipPaths.hidden, scale: 1.2 },
-        transition: imageTransition,
-      };
+          ? 'right'
+          : 'left';
+  const imageMotionProps = {
+    initial: { clipPath: clipPaths.hidden, scale: 1.2 },
+    animate: isInView
+      ? { clipPath: clipPaths.visible, scale: 1 }
+      : { clipPath: clipPaths.hidden, scale: 1.2 },
+    transition: imageTransition,
+  };
 
   return (
     <div ref={ref} className={`relative overflow-hidden ${className}`}>
-      {!prefersReducedMotion && (
-        <motion.div
-          className="absolute inset-0 z-10 bg-purple-500 origin-bottom"
-          data-testid="image-reveal-mask"
-          initial={overlayInitial}
-          animate={isInView ? overlayAnimate : overlayInitial}
-          transition={{
-            ...transition,
-            delay: delay + 0.1,
-          }}
-          style={{ transformOrigin: overlayOrigin }}
-        />
-      )}
+      <motion.div
+        className="absolute inset-0 z-10 bg-purple-500"
+        data-testid="image-reveal-mask"
+        initial={overlayInitial}
+        animate={isInView ? overlayAnimate : overlayInitial}
+        transition={{
+          ...transition,
+          delay: delay + 0.1,
+        }}
+        style={{ transformOrigin: overlayOrigin }}
+      />
 
       <motion.div
         className="w-full h-full"
         data-testid="image-reveal-content"
         {...imageMotionProps}
       >
-        {'children' in props ? (
-          props.children
-        ) : (
-          <img
-            src={props.src}
-            alt={props.alt}
-            className={`w-full h-full object-cover ${imageClassName}`.trim()}
-            loading="lazy"
-            decoding="async"
-            referrerPolicy="no-referrer"
-          />
-        )}
+        <ImageRevealContent props={props} imageClassName={imageClassName} />
       </motion.div>
     </div>
   );
+}
+
+export function ImageReveal(props: ImageRevealProps) {
+  const prefersReducedMotion = useReducedMotion();
+
+  if (prefersReducedMotion) {
+    return <StaticImageReveal {...props} />;
+  }
+
+  return <AnimatedImageReveal {...props} />;
 }

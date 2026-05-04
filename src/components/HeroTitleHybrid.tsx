@@ -80,6 +80,20 @@ function HeroTitleFallback({ titleLines }: { titleLines: HeroTitleLines }) {
   );
 }
 
+export function HeroTitleStaticFallback({ titleLines }: { titleLines: HeroTitleLines }) {
+  return (
+    <span
+      aria-hidden="true"
+      className="hero-title-hybrid"
+      data-testid="hero-title-visual"
+      data-mode="fallback"
+      data-animated="false"
+    >
+      <HeroTitleFallback titleLines={titleLines} />
+    </span>
+  );
+}
+
 function HeroShaderLine({ text, line }: { text: string; line: 'first' | 'second' }) {
   return (
     <ShaderTextWord
@@ -138,26 +152,23 @@ export function HeroTitleHybrid({
     });
   }, [semanticTitle, titleLines, titleMatchesWordmark]);
 
+  if (!visualSupported) {
+    return <HeroTitleStaticFallback titleLines={titleLines} />;
+  }
+
   return (
-    <>
-      <span className="sr-only">{semanticTitle}</span>
-      <span
-        aria-hidden="true"
-        className="hero-title-hybrid"
-        data-testid="hero-title-visual"
-        data-mode={visualSupported ? 'visual' : 'fallback'}
-        data-animated={visualSupported && !reducedMotion ? 'true' : 'false'}
-      >
-        {visualSupported ? (
-          <span className="hero-title-live-shader">
-            <HeroShaderLine text={HERO_WORDMARK_SUPPORTED_LINES[0]} line="first" />
-            <HeroShaderLine text={HERO_WORDMARK_VISUAL_SECOND_LINE} line="second" />
-          </span>
-        ) : (
-          <HeroTitleFallback titleLines={titleLines} />
-        )}
+    <span
+      aria-hidden="true"
+      className="hero-title-hybrid"
+      data-testid="hero-title-visual"
+      data-mode="visual"
+      data-animated={!reducedMotion ? 'true' : 'false'}
+    >
+      <span className="hero-title-live-shader">
+        <HeroShaderLine text={HERO_WORDMARK_SUPPORTED_LINES[0]} line="first" />
+        <HeroShaderLine text={HERO_WORDMARK_VISUAL_SECOND_LINE} line="second" />
       </span>
-    </>
+    </span>
   );
 }
 

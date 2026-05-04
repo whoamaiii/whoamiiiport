@@ -1,7 +1,8 @@
 import { motion, type MotionValue } from 'motion/react';
 import { HERO_FALLBACK_WIDTH, getHeroSizes, getHeroSrcset, getImageMetadata, getImageUrl } from '../utils/images';
 import { HERO_COPY } from '../content/siteCopy';
-import { HeroTitleHybrid } from '../components/HeroTitleHybrid';
+import { HeroTitleHybrid, HeroTitleStaticFallback } from '../components/HeroTitleHybrid';
+import RenderErrorBoundary from '../components/fallback/RenderErrorBoundary';
 
 const HERO_SLUG = 'liquid-perception-hero' as const;
 const heroMetadata = getImageMetadata(HERO_SLUG);
@@ -75,14 +76,19 @@ export function HeroSection({
 
             <motion.h1
               {...heroReveal(0.28)}
-              aria-label={HERO_COPY.titleSemantic}
               className="mb-4 sm:mb-5 md:mb-6"
             >
-              <HeroTitleHybrid
-                semanticTitle={HERO_COPY.titleSemantic}
-                titleLines={HERO_COPY.titleLines}
-                reducedMotion={reducedMotion}
-              />
+              <span className="sr-only">{HERO_COPY.titleSemantic}</span>
+              <RenderErrorBoundary
+                context="hero-title"
+                fallback={<HeroTitleStaticFallback titleLines={HERO_COPY.titleLines} />}
+              >
+                <HeroTitleHybrid
+                  semanticTitle={HERO_COPY.titleSemantic}
+                  titleLines={HERO_COPY.titleLines}
+                  reducedMotion={reducedMotion}
+                />
+              </RenderErrorBoundary>
             </motion.h1>
 
             <motion.p

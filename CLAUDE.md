@@ -60,7 +60,7 @@ Decorative animation must never be the only accessible source of meaning. The pa
 - `src/utils/images.ts` — runtime source of truth for slugs, alt text, widths, and srcset. `tests/image-contract.test.ts` enforces alignment with what's actually generated under `public/images/`.
 
 ### Adding/replacing artwork
-Source under `src/assets/` (lowercase slug) → `npm run optimize-images` → update `src/utils/images.ts` (slug, alt, widths, modal fallback) → update `artworkData.ts` and `featuredArtworks.ts` if featured → update `tests/image-contract.test.ts` to match featured slugs/modal widths. Never reference files in `~/Downloads` or other local-only paths from app code. Video files go in `public/videos/` (web-sized, `+faststart` H.264/AAC); poster images flow through the normal image manifest.
+Source under `src/assets/` (lowercase slug) → `npm run optimize-images` → update `src/utils/images.ts` (slug, alt, gallery/modal widths) → update `artworkData.ts` and `featuredArtworks.ts` if featured → update `tests/image-contract.test.ts` to match featured slugs/modal widths. Never reference files in `~/Downloads` or other local-only paths from app code. Video files go in `public/videos/` (web-sized, `+faststart` H.264/AAC); poster images flow through the normal image manifest.
 
 ### Resilience
 Effect-heavy regions are wrapped in `src/components/fallback/RenderErrorBoundary.tsx`. Errors flow through `src/lib/reportError.ts` (intentionally lightweight — keep it that way until a monitoring story is decided).
@@ -81,4 +81,4 @@ Do not ship if `npm run check` or `npm run test:e2e` fails, if skip-link focus i
 
 ## Documentation map
 
-`docs/README.md` is the index. The canonical sources are `docs/architecture.md`, `docs/accessibility.md`, `docs/testing.md`, `docs/maintenance.md`, `docs/release-checklist.md`, `docs/hero-title-hybrid.md`, and `docs/adr-001-static-portfolio-architecture.md`. Older root-level `DESIGN_*.md`, `IMPROVEMENTS_GUIDE.md`, `QUICK_START.md`, and the captured `portfolio-*.png` screenshots are historical artifacts — prefer the `docs/` tree for current truth.
+`docs/README.md` is the index. The canonical sources are `docs/architecture.md`, `docs/accessibility.md`, `docs/testing.md`, `docs/maintenance.md`, `docs/release-checklist.md`, `docs/hero-title-hybrid.md`, `docs/portfolio-maintenance-map.md`, and `docs/adr-001-static-portfolio-architecture.md`. Older root-level design summary/quick-start artifacts and captured `portfolio-*.png` screenshots were removed; prefer the `docs/` tree for current truth.

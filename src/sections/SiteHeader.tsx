@@ -1,5 +1,5 @@
 import { useRef, useState, type RefObject } from 'react';
-import { motion } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
 
@@ -309,7 +309,7 @@ function MobileMenuButton({
   onClick,
   buttonRef,
 }: MobileMenuButtonProps) {
-  const triggerLabel = isOpen ? 'Navigation menu open' : 'Open menu';
+  const triggerLabel = isOpen ? 'Close menu' : 'Open menu';
 
   return (
     <button
@@ -319,10 +319,7 @@ function MobileMenuButton({
       aria-label={triggerLabel}
       aria-expanded={isOpen}
       aria-haspopup="dialog"
-      aria-controls="mobile-menu"
-    >
-      <span className="sr-only">{triggerLabel}</span>
-    </button>
+    />
   );
 }
 
@@ -368,61 +365,62 @@ function MobileMenu({
     }, reducedMotion ? 0 : 120);
   };
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <motion.div
-      ref={menuRef}
-      id="mobile-menu"
-      role="dialog"
-      tabIndex={-1}
-      aria-modal="true"
-      aria-labelledby={menuTitleId}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/92 px-6 backdrop-blur-2xl"
-    >
-      <h2 id={menuTitleId} className="sr-only">
-        Navigation menu
-      </h2>
-      <button
-        ref={closeButtonRef}
-        className="absolute top-5 right-5 rounded-full p-2 text-white transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400 sm:top-6 sm:right-6"
-        onClick={onClose}
-        aria-label="Close menu"
-      >
-        <X size={32} />
-      </button>
-      <div className="flex w-full max-w-sm flex-col gap-5 text-center">
-        <nav className="flex flex-col gap-4 text-center" aria-label="Mobile menu">
-          <button
-            type="button"
-            onClick={() => navigateToSection('work')}
-            className="rounded-2xl px-4 py-3 text-xl font-medium text-white/90 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-          >
-            Work
-          </button>
-          <button
-            type="button"
-            onClick={() => navigateToSection('about')}
-            className="rounded-2xl px-4 py-3 text-xl font-medium text-white/90 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
-          >
-            About
-          </button>
-        </nav>
-
-        <button
-          type="button"
-          onClick={() => navigateToSection('contact')}
-          className="w-full rounded-full bg-white px-6 py-4 text-base font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-black"
+    <AnimatePresence initial={false}>
+      {isOpen && (
+        <motion.div
+          ref={menuRef}
+          id="mobile-menu"
+          role="dialog"
+          tabIndex={-1}
+          aria-modal="true"
+          aria-labelledby={menuTitleId}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={reducedMotion ? { duration: 0 } : { duration: 0.2 }}
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/92 px-6 backdrop-blur-2xl"
         >
-          Get in touch
-        </button>
-      </div>
-    </motion.div>
+          <h2 id={menuTitleId} className="sr-only">
+            Navigation menu
+          </h2>
+          <button
+            ref={closeButtonRef}
+            className="absolute top-5 right-5 rounded-full p-2 text-white transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400 sm:top-6 sm:right-6"
+            onClick={onClose}
+            aria-label="Close menu"
+          >
+            <X size={32} />
+          </button>
+          <div className="flex w-full max-w-sm flex-col gap-5 text-center">
+            <nav className="flex flex-col gap-4 text-center" aria-label="Mobile menu">
+              <button
+                type="button"
+                onClick={() => navigateToSection('work')}
+                className="rounded-2xl px-4 py-3 text-xl font-medium text-white/90 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+              >
+                Work
+              </button>
+              <button
+                type="button"
+                onClick={() => navigateToSection('about')}
+                className="rounded-2xl px-4 py-3 text-xl font-medium text-white/90 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+              >
+                About
+              </button>
+            </nav>
+
+            <button
+              type="button"
+              onClick={() => navigateToSection('contact')}
+              className="w-full rounded-full bg-white px-6 py-4 text-base font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-black"
+            >
+              Get in touch
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
@@ -437,6 +435,7 @@ export function SiteHeader({ reducedMotion }: SiteHeaderProps) {
   return (
     <>
       <nav
+        aria-label="Primary"
         data-testid="site-header"
         className="absolute top-3 left-1/2 z-50 w-full max-w-[100rem] -translate-x-1/2 px-3 sm:top-4 sm:px-5 md:top-6 md:px-12"
       >
@@ -454,7 +453,7 @@ export function SiteHeader({ reducedMotion }: SiteHeaderProps) {
           <MobileMenuButton
             buttonRef={menuButtonRef}
             isOpen={isMobileMenuOpen}
-            onClick={() => setIsMobileMenuOpen(true)}
+            onClick={() => setIsMobileMenuOpen((isOpen) => !isOpen)}
           />
         </div>
       </nav>

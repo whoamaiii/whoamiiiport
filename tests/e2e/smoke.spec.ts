@@ -74,6 +74,15 @@ test('skip link lands on main content and artwork modal opens and closes', async
   });
   await expect(dialog).toBeVisible();
   await expect(page.getByRole('button', { name: /close modal/i })).toBeFocused();
+  await expect
+    .poll(() =>
+      page.locator('[aria-controls]').evaluateAll((nodes) =>
+        nodes
+          .map((node) => node.getAttribute('aria-controls'))
+          .filter((id): id is string => Boolean(id) && !document.getElementById(id)),
+      ),
+    )
+    .toEqual([]);
 
   await expect(
     dialog.getByRole('img', {
@@ -185,16 +194,26 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
   await expect(menuButton).toHaveAccessibleName(/open menu/i);
   await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
   await expect(menuButton).toHaveAttribute('aria-haspopup', 'dialog');
+  await expect(menuButton).not.toHaveAttribute('aria-controls');
 
   const menuBounds = await menuButton.boundingBox();
   expect(menuBounds).not.toBeNull();
   expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(320);
 
   await menuButton.click();
-  await expect(menuButton).toHaveAccessibleName(/navigation menu open/i);
+  await expect(menuButton).toHaveAccessibleName(/close menu/i);
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByRole('dialog', { name: /navigation menu/i })).toBeVisible();
   await expect(page.getByRole('button', { name: /get in touch/i })).toBeVisible();
+  await expect
+    .poll(() =>
+      page.locator('[aria-controls]').evaluateAll((nodes) =>
+        nodes
+          .map((node) => node.getAttribute('aria-controls'))
+          .filter((id): id is string => Boolean(id) && !document.getElementById(id)),
+      ),
+    )
+    .toEqual([]);
 });
 
 test('mobile header keeps the hamburger lines centered in the glass bubble', async ({ page }) => {

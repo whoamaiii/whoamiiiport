@@ -16,10 +16,12 @@ export function AnimatedHeading({
 }: AnimatedHeadingProps) {
   const ref = useRef<HTMLHeadingElement>(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
+  const { 'aria-label': ariaLabel, ...semanticHeadingProps } = headingProps;
+  const semanticText = ariaLabel ?? children;
 
   return (
-    <h2 ref={ref} className={className} aria-label={children} {...headingProps}>
-      <span className="sr-only">{children}</span>
+    <h2 ref={ref} className={className} {...semanticHeadingProps}>
+      <span className="sr-only">{semanticText}</span>
       <span aria-hidden="true">
         {isInView ? (
           <TextScramble text={children} delay={delay} duration={1200} />

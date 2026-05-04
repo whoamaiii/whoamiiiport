@@ -110,7 +110,7 @@ export default function InteractiveArtworkCard({
   const imageMeta = getImageMetadata(imageSlug);
   const isVideoArtwork = Boolean(videoSrc);
   const gallerySrcset = getGallerySrcset(imageSlug);
-  const modalSrcset = getModalSrcset(imageSlug);
+  const modalSrcset = isVideoArtwork ? undefined : getModalSrcset(imageSlug);
   const sizes = getGallerySizes();
   const fallbackUrl = getGalleryImageUrl(imageSlug);
   const modalImageUrl = getModalImageUrl(imageSlug);
@@ -296,7 +296,6 @@ export default function InteractiveArtworkCard({
                       <button
                         onClick={() => setShowInfo(true)}
                         className="glass-dark w-full max-w-md rounded-full px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-purple-400"
-                        aria-controls="artwork-info-panel"
                         aria-expanded={showInfo}
                       >
                         Read meaning + process

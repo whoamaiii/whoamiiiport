@@ -5,6 +5,8 @@ import {
   GALLERY_WIDTHS,
   HERO_WIDTHS,
   IMAGE_MANIFEST,
+  MODAL_FALLBACK_WIDTH,
+  MODAL_WIDTHS,
   getGallerySrcset,
   getHeroSrcset,
   getImageMetadata,
@@ -112,25 +114,35 @@ describe('image contract', () => {
     expect(existsSync(generatedImagePath(getModalImageUrl('about-portrait')))).toBe(true);
   });
 
-  it('keeps modal URLs aligned with generated files for every featured artwork', () => {
+  it('keeps modal URLs aligned with generated files for every modal-capable artwork', () => {
     expect(GALLERY_WIDTHS).toEqual([480, 800, 1200]);
+    expect(MODAL_WIDTHS).toEqual([800, 1200, 1600]);
+    expect(MODAL_FALLBACK_WIDTH).toBe(1600);
 
-    const modalExpectations = [
-      ['liquid-perception', 1600],
-      ['psychedelic-bathroom-portrait', 1600],
-      ['psychedelic-bathroom-scream', 1600],
-      ['ferdigcop-video-poster', 1600],
+    const modalSlugs = [
+      'liquid-perception',
+      'psychedelic-bathroom-portrait',
+      'psychedelic-bathroom-scream',
+      'ferdigcop-video-poster',
+      'about-portrait',
     ] as const;
 
-    for (const [slug, width] of modalExpectations) {
+    for (const slug of modalSlugs) {
       const modalUrl = getModalImageUrl(slug);
       const modalSrcset = getModalSrcset(slug);
+      const modalSrcsetUrls = splitSrcset(modalSrcset);
 
-      expect(modalUrl).toBe(`/images/${slug}-modal-${width}.webp`);
-      expect(modalSrcset).toBe(`/images/${slug}-modal-${width}.webp ${width}w`);
+      expect(modalUrl).toBe(`/images/${slug}-modal-${MODAL_FALLBACK_WIDTH}.webp`);
+      expect(modalSrcset).toBe(
+        MODAL_WIDTHS.map((width) => `/images/${slug}-modal-${width}.webp ${width}w`).join(', '),
+      );
       expect(existsSync(generatedImagePath(modalUrl))).toBe(true);
       expect(existsSync(generatedImagePath(getImageUrl(slug, 1200)))).toBe(true);
       expect(readFileSync(generatedImagePath(modalUrl)).byteLength).toBeGreaterThan(0);
+      modalSrcsetUrls.forEach((url) => {
+        expect(existsSync(generatedImagePath(url))).toBe(true);
+        expect(readFileSync(generatedImagePath(url)).byteLength).toBeGreaterThan(0);
+      });
     }
   });
 });

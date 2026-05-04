@@ -54,14 +54,8 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
 export const HERO_WIDTHS = [960, 1440] as const;
 export const HERO_FALLBACK_WIDTH = HERO_WIDTHS[HERO_WIDTHS.length - 1];
 export const GALLERY_WIDTHS = [480, 800, 1200] as const;
-
-const MODAL_FALLBACK_WIDTH_BY_SLUG: Record<ModalImageSlug, number> = {
-  'liquid-perception': 1600,
-  'psychedelic-bathroom-portrait': 1600,
-  'psychedelic-bathroom-scream': 1600,
-  'ferdigcop-video-poster': 1600,
-  'about-portrait': 1600,
-};
+export const MODAL_WIDTHS = [800, 1200, 1600] as const;
+export const MODAL_FALLBACK_WIDTH = MODAL_WIDTHS[MODAL_WIDTHS.length - 1];
 
 /**
  * Generate srcset string for responsive images
@@ -112,16 +106,14 @@ export function getGallerySrcset(slug: ImageSlug): string {
  * Get modal image URL (highest resolution)
  */
 export function getModalImageUrl(slug: ModalImageSlug): string {
-  const fallbackWidth = MODAL_FALLBACK_WIDTH_BY_SLUG[slug];
-  return `/images/${slug}-modal-${fallbackWidth}.webp`;
+  return `/images/${slug}-modal-${MODAL_FALLBACK_WIDTH}.webp`;
 }
 
 /**
  * Get modal image srcset.
  */
 export function getModalSrcset(slug: ModalImageSlug): string {
-  const fallbackWidth = MODAL_FALLBACK_WIDTH_BY_SLUG[slug];
-  return `${getModalImageUrl(slug)} ${fallbackWidth}w`;
+  return getSrcset(slug, MODAL_WIDTHS, 'modal');
 }
 
 /**

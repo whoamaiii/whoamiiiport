@@ -107,7 +107,7 @@ test('mobile artwork modal covers the viewport and restores focus', async ({ pag
       page.locator('[aria-controls]').evaluateAll((nodes) =>
         nodes
           .map((node) => node.getAttribute('aria-controls'))
-          .filter((id): id is string => Boolean(id) && !document.getElementById(id)),
+          .filter((id): id is string => typeof id === 'string' && !document.getElementById(id)),
       ),
     )
     .toEqual([]);

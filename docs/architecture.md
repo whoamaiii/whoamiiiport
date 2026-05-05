@@ -14,7 +14,7 @@ This project is intentionally a static frontend. There is no backend, CMS, auth 
 
 - [`src/sections/SiteHeader.tsx`](../src/sections/SiteHeader.tsx): top navigation, desktop anchors, mobile menu dialog.
 - [`src/sections/HeroSection.tsx`](../src/sections/HeroSection.tsx): hero media, semantic hero heading, `HeroTitleHybrid` lockup, eyebrow, subtitle, and localized readability mask.
-- [`src/sections/GallerySection.tsx`](../src/sections/GallerySection.tsx): named artwork region, gallery intro lockup, and lazy artwork cards.
+- [`src/sections/GallerySection.tsx`](../src/sections/GallerySection.tsx): named artwork region, gallery intro lockup, and prioritized artwork cards.
 - [`src/sections/AboutSection.tsx`](../src/sections/AboutSection.tsx): biography copy, social links, about portrait.
 - [`src/sections/ContactSection.tsx`](../src/sections/ContactSection.tsx): contact CTA with decorative heading animation.
 - [`src/sections/SiteFooter.tsx`](../src/sections/SiteFooter.tsx): footer links and copyright.
@@ -51,11 +51,11 @@ This project is intentionally a static frontend. There is no backend, CMS, auth 
 - [`src/components/shared/shaderTextShared.ts`](../src/components/shared/shaderTextShared.ts) contains shared math and shadow helpers.
 - [`src/lib/shaderRenderer.ts`](../src/lib/shaderRenderer.ts) remains the rendering engine contract.
 
-### Animated Text
+### Retired Animated Text
 
-- [`src/components/TextScramble.tsx`](../src/components/TextScramble.tsx) is a decorative animation primitive.
-- [`src/components/AnimatedHeading.tsx`](../src/components/AnimatedHeading.tsx) wraps it in stable semantics.
-- The rule is: animation must never be the only accessible source of heading or control text.
+- The old `TextScramble` / `AnimatedHeading` path was removed from active source.
+- Section headings now use [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx) or plain semantic text.
+- The rule remains: animation must never be the only accessible source of heading or control text.
 
 ### Glass Subsystem
 

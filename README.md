@@ -32,6 +32,7 @@ Open [http://localhost:3000](http://localhost:3000).
 | `npm run check` | Run typecheck, lint, unit/integration tests, and build. |
 | `npm run check:ci` | Run the full local CI gate, including Playwright. |
 | `npm run optimize-images` | Regenerate the responsive local image assets in `public/images`. |
+| `npm run perf:mobile` | Measure the built preview at `http://localhost:4173/` with mobile throttling. |
 
 ## Architecture Overview
 
@@ -51,6 +52,16 @@ npm run check
 npm run test:e2e
 ```
 
+For load-speed work, use the production build path as the truth:
+
+```bash
+npm run build
+npx vite preview --host=0.0.0.0 --port=4173
+npm run perf:mobile
+```
+
+`npm run dev` is useful while editing, but it serves many unbundled development modules and is not representative of shipped portfolio performance.
+
 The browser suite specifically protects:
 
 - skip-link focus transfer to `main`
@@ -69,7 +80,9 @@ The current implementation docs live in [`docs/README.md`](./docs/README.md).
 - Accessibility rules: [`docs/accessibility.md`](./docs/accessibility.md)
 - Testing strategy: [`docs/testing.md`](./docs/testing.md)
 - Release workflow: [`docs/release-checklist.md`](./docs/release-checklist.md)
+- Load performance report: [`docs/load-performance-report.md`](./docs/load-performance-report.md)
 - Maintenance and asset updates: [`docs/maintenance.md`](./docs/maintenance.md)
+- Portfolio cleanup map: [`docs/portfolio-maintenance-map.md`](./docs/portfolio-maintenance-map.md)
 - Architecture decision log: [`docs/adr-001-static-portfolio-architecture.md`](./docs/adr-001-static-portfolio-architecture.md)
 
 ## Asset Pipeline
@@ -94,7 +107,7 @@ This project is intentionally frontend-only. The expected host should support:
 - serving the Vite `dist/` output as a static site
 - immutable caching for hashed assets
 - preview deployments for pull requests if available
-- host-level configurable security headers and CSP, especially for Adobe Fonts, same-origin image/video media, plus any `data:` or `blob:` URLs needed by visual effects
+- host-level configurable security headers and CSP, especially for same-origin image/video media plus any `data:` or `blob:` URLs needed by visual effects
 
 ## Troubleshooting
 

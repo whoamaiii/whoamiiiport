@@ -5,7 +5,7 @@
  * 
  * Profiles:
  * - hero: 960/1440w variants for hero section
- * - gallery: 480/800/1200w variants for gallery cards
+ * - gallery: 480/800/1024/1200w variants for gallery cards
  * - modal: 800/1200/1600w variants for artwork modals
  */
 
@@ -20,7 +20,7 @@ const SOURCES = [
     slug: 'liquid-perception-hero',
     profile: 'hero',
     alt: 'Liquid psychedelic forest portrait with chrome face distortion and red nails',
-    quality: 72,
+    quality: 45,
   },
   {
     input: './src/assets/liquid-perception.jpg',
@@ -28,6 +28,9 @@ const SOURCES = [
     profile: 'gallery',
     alt: 'Surreal hooded forest portrait with chrome face fragments, red nails, and an electric cellular sky',
     quality: 70,
+    qualityByWidth: {
+      480: 25,
+    },
   },
   { 
     input: './src/assets/psychedelic-bathroom-portrait.jpg', 
@@ -65,7 +68,7 @@ const OUTPUT_DIR = './public/images';
 // Size variants by profile
 const PROFILES = {
   hero: [960, 1440],
-  gallery: [480, 800, 1200],
+  gallery: [480, 800, 1024, 1200],
 };
 const MODAL_WIDTHS = [800, 1200, 1600];
 
@@ -74,6 +77,7 @@ const DEFAULT_QUALITY = 65;
 async function optimizeImage(source) {
   const { input, slug, profile, alt } = source;
   const quality = source.quality ?? DEFAULT_QUALITY;
+  const qualityByWidth = source.qualityByWidth ?? {};
   const modalWidths = source.modalWidths ?? MODAL_WIDTHS;
   const result = {
     errorCount: 0,
@@ -124,7 +128,7 @@ async function optimizeImage(source) {
           fit: 'inside',
         })
         .webp({ 
-          quality,
+          quality: qualityByWidth[width] ?? quality,
           effort: 6, // Compression effort (0-6, higher = smaller file)
         })
         .toFile(outputPath);

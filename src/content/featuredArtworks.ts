@@ -6,7 +6,7 @@ import {
   type SpecialArtwork,
 } from '../components/artworkData';
 
-export interface FeaturedArtworkEntry {
+interface FeaturedArtworkEntry {
   id: string;
   artwork: SpecialArtwork;
 }
@@ -29,5 +29,3 @@ export const FEATURED_ARTWORKS: FeaturedArtworkEntry[] = [
     artwork: ferdigcopVideoArtwork,
   },
 ];
-
-export default FEATURED_ARTWORKS;

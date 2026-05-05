@@ -30,5 +30,3 @@ export function useDocumentVisibility(): boolean {
 
   return isVisible;
 }
-
-export default useDocumentVisibility;

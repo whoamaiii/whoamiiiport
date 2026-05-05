@@ -11,7 +11,7 @@ interface RenderErrorBoundaryState {
   hasError: boolean;
 }
 
-export class RenderErrorBoundary extends Component<
+export default class RenderErrorBoundary extends Component<
   RenderErrorBoundaryProps,
   RenderErrorBoundaryState
 > {
@@ -31,7 +31,7 @@ export class RenderErrorBoundary extends Component<
 
   componentDidCatch(error: unknown, errorInfo: ErrorInfo) {
     reportError(error, this.props.context, {
-      componentStack: errorInfo.componentStack,
+      componentStack: errorInfo.componentStack ?? undefined,
     });
   }
   render() {
@@ -42,5 +42,3 @@ export class RenderErrorBoundary extends Component<
     return this.props.children;
   }
 }
-
-export default RenderErrorBoundary;

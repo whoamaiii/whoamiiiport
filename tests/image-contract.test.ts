@@ -16,6 +16,12 @@ import {
 } from '../src/utils/images';
 import { ferdigcopVideoArtwork } from '../src/components/artworkData';
 import { FEATURED_ARTWORKS } from '../src/content/featuredArtworks';
+import {
+  WORKFLOW_IMAGE_WIDTHS,
+  WORKFLOW_STEPS,
+  getWorkflowImageUrl,
+  getWorkflowSrcset,
+} from '../src/content/workflowSteps';
 import { GALLERY_VIDEOS } from '../src/utils/media';
 
 const generatedImagePath = (urlPath: string) =>
@@ -98,6 +104,32 @@ describe('image contract', () => {
     expect(existsSync(generatedImagePath(getModalImageUrl(GALLERY_VIDEOS.ferdigcop.posterSlug)))).toBe(true);
   });
 
+  it('keeps workflow carousel steps mapped to optimized local images', () => {
+    expect(WORKFLOW_STEPS).toHaveLength(15);
+    expect(WORKFLOW_IMAGE_WIDTHS).toEqual([480, 800, 1200]);
+
+    for (let index = 0; index < WORKFLOW_STEPS.length; index += 1) {
+      const stepNumber = index + 1;
+      expect(WORKFLOW_STEPS[index].title.length).toBeGreaterThan(0);
+      expect(WORKFLOW_STEPS[index].description.length).toBeGreaterThan(0);
+      expect(WORKFLOW_STEPS[index].detailSections.length).toBeGreaterThanOrEqual(2);
+      WORKFLOW_STEPS[index].detailSections.forEach((section) => {
+        expect(section.heading.length).toBeGreaterThan(0);
+        expect(section.body.length).toBeGreaterThan(90);
+      });
+      expect(WORKFLOW_STEPS[index].alt.length).toBeGreaterThan(0);
+      expect(getWorkflowSrcset(stepNumber)).toBe(
+        WORKFLOW_IMAGE_WIDTHS
+          .map((width) => `/images/workflow/workflow-step-${String(stepNumber).padStart(2, '0')}-${width}.webp ${width}w`)
+          .join(', '),
+      );
+
+      for (const width of WORKFLOW_IMAGE_WIDTHS) {
+        expect(existsSync(generatedImagePath(getWorkflowImageUrl(stepNumber, width)))).toBe(true);
+      }
+    }
+  });
+
   it('keeps the about portrait on the same generated local asset pipeline', () => {
     const metadata = getImageMetadata('about-portrait');
     expect(metadata.alt).toMatch(/portrait of the artist/i);
@@ -107,6 +139,7 @@ describe('image contract', () => {
     expect(urls).toEqual([
       '/images/about-portrait-480.webp',
       '/images/about-portrait-800.webp',
+      '/images/about-portrait-1024.webp',
       '/images/about-portrait-1200.webp',
     ]);
 
@@ -115,7 +148,7 @@ describe('image contract', () => {
   });
 
   it('keeps modal URLs aligned with generated files for every modal-capable artwork', () => {
-    expect(GALLERY_WIDTHS).toEqual([480, 800, 1200]);
+    expect(GALLERY_WIDTHS).toEqual([480, 800, 1024, 1200]);
     expect(MODAL_WIDTHS).toEqual([800, 1200, 1600]);
     expect(MODAL_FALLBACK_WIDTH).toBe(1600);
 
@@ -137,6 +170,7 @@ describe('image contract', () => {
         MODAL_WIDTHS.map((width) => `/images/${slug}-modal-${width}.webp ${width}w`).join(', '),
       );
       expect(existsSync(generatedImagePath(modalUrl))).toBe(true);
+      expect(existsSync(generatedImagePath(getImageUrl(slug, 1024)))).toBe(true);
       expect(existsSync(generatedImagePath(getImageUrl(slug, 1200)))).toBe(true);
       expect(readFileSync(generatedImagePath(modalUrl)).byteLength).toBeGreaterThan(0);
       modalSrcsetUrls.forEach((url) => {

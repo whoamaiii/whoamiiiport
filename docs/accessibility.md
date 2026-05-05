@@ -19,8 +19,8 @@
 - Named sections use `aria-labelledby` only when the referenced heading ID exists.
 - [`src/sections/GallerySection.tsx`](../src/sections/GallerySection.tsx) uses [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx) with a pass-through `id` and the gallery visual variant.
 - The gallery eyebrow and subtitle are supporting text only. The named artwork region must keep deriving its accessible name from the live `h2`.
-- [`src/sections/AboutSection.tsx`](../src/sections/AboutSection.tsx) uses [`src/components/AnimatedHeading.tsx`](../src/components/AnimatedHeading.tsx) with a stable semantic label.
-- [`src/sections/ContactSection.tsx`](../src/sections/ContactSection.tsx) keeps the scrambled text decorative and the heading name stable through `aria-label` plus screen-reader-only text.
+- [`src/sections/AboutSection.tsx`](../src/sections/AboutSection.tsx) uses [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx) with a stable semantic label.
+- [`src/sections/ContactSection.tsx`](../src/sections/ContactSection.tsx) uses [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx), keeping decorative visual lines separate from the accessible heading name.
 
 ## Overlay Rules
 
@@ -40,15 +40,15 @@
 - Decorative cursor and parallax behavior must not be required for comprehension.
 - Offscreen or hidden shader effects should pause when possible.
 
-## Animated Text Pattern
+## Decorative Text Pattern
 
-Use this pattern for any decorative text animation:
+Use this pattern for any decorative text effect:
 
 1. The semantic heading or control owns the real accessible name.
 2. A screen-reader-only text node repeats that stable label if needed.
 3. The animated visual subtree is marked `aria-hidden="true"`.
 
-Do not use `TextScramble` directly as the only heading label.
+Do not make canvas, shader, or animation output the only heading label.
 
 ## Browser Validation
 

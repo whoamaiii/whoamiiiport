@@ -1,6 +1,6 @@
 import { useRef, useState, type RefObject } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { X } from 'lucide-react';
+import X from 'lucide-react/dist/esm/icons/x.js';
 import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
 
 const HEADER_GLASS_PATH = [
@@ -457,5 +457,3 @@ export function SiteHeader({ reducedMotion }: SiteHeaderProps) {
     </>
   );
 }
-
-export default SiteHeader;

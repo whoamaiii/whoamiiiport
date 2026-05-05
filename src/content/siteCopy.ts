@@ -1,17 +1,17 @@
-export interface HeroCopy {
+interface HeroCopy {
   eyebrow: string;
   titleSemantic: string;
   titleLines: readonly [string, string];
   subtitle: string;
 }
 
-export interface GalleryCopy {
+interface GalleryCopy {
   eyebrow: string;
   heading: string;
   subtitle: string;
 }
 
-export interface ContactCopy {
+interface ContactCopy {
   heading: string;
   headingParts: {
     lead: string;

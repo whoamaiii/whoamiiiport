@@ -1,4 +1,5 @@
-import { Instagram, Twitter } from 'lucide-react';
+import Instagram from 'lucide-react/dist/esm/icons/instagram.js';
+import Twitter from 'lucide-react/dist/esm/icons/twitter.js';
 import { ImageReveal } from '../components/ImageReveal';
 import { MagneticButton } from '../components/MagneticButton';
 import { ShaderHeading } from '../components/ShaderHeading';
@@ -8,7 +9,7 @@ import { getAboutSizes, getGalleryImageUrl, getGallerySrcset, getImageMetadata }
 const ABOUT_SLUG = 'about-portrait' as const;
 const aboutMetadata = getImageMetadata(ABOUT_SLUG);
 
-export function AboutSection() {
+export default function AboutSection() {
   return (
     <section
       id="about"
@@ -82,5 +83,3 @@ export function AboutSection() {
     </section>
   );
 }
-
-export default AboutSection;

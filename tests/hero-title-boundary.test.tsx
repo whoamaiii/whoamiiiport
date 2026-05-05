@@ -15,7 +15,7 @@ describe('hero title render boundary', () => {
       default: vi.fn(),
     }));
     vi.doMock('../src/components/shared/ShaderTextWord', () => ({
-      default: function ThrowingShaderTextWord() {
+      ShaderTextWord: function ThrowingShaderTextWord() {
         throw new Error('shader render failed');
       },
     }));

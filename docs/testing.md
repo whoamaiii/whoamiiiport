@@ -7,6 +7,7 @@ npm run test
 npm run test:e2e
 npm run check
 npm run check:ci
+npm run perf:mobile
 ```
 
 ## Test Layers
@@ -18,7 +19,7 @@ Files live in [`tests/`](../tests).
 Primary responsibilities:
 
 - hook behavior such as reduced motion and media query updates
-- text-animation completion and semantic wrappers
+- shader heading readiness and semantic wrappers
 - `HeroTitleHybrid` semantic, reduced-motion, and fallback behavior
 - structured hero copy consumption and hero-title regression coverage
 - image/media manifest and srcset contracts
@@ -78,6 +79,14 @@ Run this order before opening a PR:
 
 1. `npm run check`
 2. `npm run test:e2e`
+
+For performance regressions, measure the built preview instead of the dev server:
+
+1. `npm run build`
+2. `npx vite preview --host=0.0.0.0 --port=4173`
+3. `npm run perf:mobile`
+
+`npm run dev` is intentionally optimized for editing feedback. It serves unbundled Vite development modules, so slow-load results there can exaggerate what real visitors see after the production bundle is built.
 
 If a browser test fails, inspect `test-results/` and the Playwright trace zip.
 

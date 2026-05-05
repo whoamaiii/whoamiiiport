@@ -4,7 +4,7 @@
  * for responsive images across the portfolio.
  */
 
-export type ImageSlug =
+type ImageSlug =
   | 'liquid-perception-hero'
   | 'liquid-perception'
   | 'psychedelic-bathroom-portrait'
@@ -14,7 +14,7 @@ export type ImageSlug =
 
 export type ModalImageSlug = Exclude<ImageSlug, 'liquid-perception-hero'>;
 
-export interface ArtworkImage {
+interface ArtworkImage {
   slug: ImageSlug;
   alt: string;
   galleryObjectPosition?: string;
@@ -53,14 +53,14 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
 // Available widths by profile
 export const HERO_WIDTHS = [960, 1440] as const;
 export const HERO_FALLBACK_WIDTH = HERO_WIDTHS[HERO_WIDTHS.length - 1];
-export const GALLERY_WIDTHS = [480, 800, 1200] as const;
+export const GALLERY_WIDTHS = [480, 800, 1024, 1200] as const;
 export const MODAL_WIDTHS = [800, 1200, 1600] as const;
 export const MODAL_FALLBACK_WIDTH = MODAL_WIDTHS[MODAL_WIDTHS.length - 1];
 
 /**
  * Generate srcset string for responsive images
  */
-export function getSrcset(
+function getSrcset(
   slug: ImageSlug, 
   widths: readonly number[], 
   suffix = ''
@@ -127,7 +127,7 @@ export function getHeroSizes(): string {
  * Get appropriate sizes attribute for gallery images
  */
 export function getGallerySizes(): string {
-  return '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw';
+  return '(max-width: 767px) calc(100vw - 4.125rem), (max-width: 1200px) 50vw, 33vw';
 }
 
 /**

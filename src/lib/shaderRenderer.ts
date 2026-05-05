@@ -216,8 +216,8 @@ const heroLiquidFragmentShaderSource = `
       (1.0 - smoothstep(0.58, 0.72, phase)) *
       smoothstep(0.42, 1.08, heat);
 
-    color = mix(color, warmGold, warmAccent * 0.08);
-    return mix(color, mix(cyanGlass, pearl, 0.42), heat * 0.05);
+    color = mix(color, warmGold, warmAccent * 0.12);
+    return mix(color, mix(cyanGlass, pearl, 0.48), heat * 0.075);
   }
 
   vec3 sourceRadiance(vec2 p, float t) {
@@ -230,15 +230,17 @@ const heroLiquidFragmentShaderSource = `
     living.y += cos((p.x * 1.1 - q.y * 0.7 + t * 0.16) * TAU) * 0.026;
 
     float nebula = fbm(living * 2.05 + vec2(t * 0.11, -t * 0.16));
-    float detail = fbm(living * 5.2 + q * 1.4 - vec2(t * 0.36, t * 0.21));
-    float contour = ridge(fract(nebula * 1.18 + detail * 0.36 + p.x * 0.18 - t * 0.12));
+    float detail = fbm(living * 4.45 + q * 1.26 - vec2(t * 0.34, t * 0.20));
+    float contour = ridge(fract(nebula * 1.08 + detail * 0.30 + p.x * 0.18 - t * 0.12));
     float phase = fract(nebula * 0.72 + detail * 0.26 + p.x * 0.22 - p.y * 0.08 - t * 0.10);
     float heat = smoothstep(0.36, 1.08, p.x + detail * 0.28);
 
     vec3 color = heroSpectrum(phase, heat);
-    float radiance = 0.68 + nebula * 0.28 + pow(contour, 3.0) * 0.13;
-    float fineEmission = pow(abs(sin((living.x * 1.55 + living.y * 1.22 + detail * 0.72 - t * 0.34) * TAU)), 10.0);
-    color += fineEmission * vec3(0.15, 0.29, 0.34);
+    float radiance = 0.76 + nebula * 0.24 + pow(contour, 3.0) * 0.075;
+    float fineEmission = pow(abs(sin((living.x * 1.42 + living.y * 1.12 + detail * 0.62 - t * 0.32) * TAU)), 12.0);
+    float liquidThread = pow(abs(sin((living.x * 2.08 - living.y * 1.48 + detail * 0.50 + t * 0.24) * TAU)), 20.0);
+    color += fineEmission * vec3(0.07, 0.18, 0.22);
+    color += liquidThread * vec3(0.035, 0.08, 0.11);
 
     return color * radiance;
   }
@@ -277,7 +279,7 @@ const heroLiquidFragmentShaderSource = `
 
     vec2 mappedTopUv = topUv * u_background_scale + u_background_offset;
     vec2 sampleUv = vec2(mappedTopUv.x, 1.0 - mappedTopUv.y);
-    vec2 blur = vec2(0.0028, 0.0038);
+    vec2 blur = vec2(0.0022, 0.0032);
     vec3 center = texture2D(u_background, clamp(sampleUv, vec2(0.0), vec2(1.0))).rgb;
     vec3 soft = center;
     soft += texture2D(u_background, clamp(sampleUv + blur, vec2(0.0), vec2(1.0))).rgb;
@@ -287,8 +289,8 @@ const heroLiquidFragmentShaderSource = `
     soft /= 5.0;
 
     float luma = dot(soft, vec3(0.299, 0.587, 0.114));
-    soft = mix(soft, vec3(luma), 0.18);
-    soft = pow(soft, vec3(0.94)) * u_background_darken * 0.58;
+    soft = mix(soft, vec3(luma), 0.10);
+    soft = pow(soft, vec3(0.90)) * u_background_darken * 0.66;
     return soft;
   }
 
@@ -314,13 +316,13 @@ const heroLiquidFragmentShaderSource = `
 
     float nearEdge = abs(alpha - aL) + abs(alpha - aR) + abs(alpha - aU) + abs(alpha - aD);
     float farEdge = abs(alpha - aFarL) + abs(alpha - aFarR) + abs(alpha - aFarU) + abs(alpha - aFarD);
-    float edgeSignal = nearEdge + farEdge * 0.44;
-    float rimWidth = clamp(u_rim_width, 0.45, 1.2);
-    float edge = smoothstep(0.035 / rimWidth, 0.34 / rimWidth, edgeSignal);
-    float innerRim = edge * smoothstep(0.16, 0.88, alpha);
-    float wetRim = smoothstep(0.10, 0.46, edge) * smoothstep(0.06, 0.92, alpha);
-    float core = smoothstep(0.30, 0.92, alpha) * (1.0 - wetRim * 0.32);
-    float shellMask = clamp(wetRim * 1.08 + innerRim * 0.82, 0.0, 1.0);
+    float edgeSignal = nearEdge + farEdge * 0.58;
+    float rimWidth = clamp(u_rim_width, 0.45, 1.25);
+    float edge = smoothstep(0.026 / rimWidth, 0.30 / rimWidth, edgeSignal);
+    float innerRim = edge * smoothstep(0.12, 0.84, alpha);
+    float wetRim = smoothstep(0.08, 0.42, edge) * smoothstep(0.05, 0.92, alpha);
+    float core = smoothstep(0.28, 0.94, alpha) * (1.0 - wetRim * 0.28);
+    float shellMask = clamp(wetRim * 1.18 + innerRim * 0.9, 0.0, 1.0);
     float coreMask = core * (1.0 - shellMask * 0.8);
     vec2 maskNormal = normalize(vec2(aR - aL, aU - aD) + vec2(0.0001));
 
@@ -335,24 +337,24 @@ const heroLiquidFragmentShaderSource = `
     float hx = glassHeight(p + vec2(eps, 0.0), t) - glassHeight(p - vec2(eps, 0.0), t);
     float hy = glassHeight(p + vec2(0.0, eps), t) - glassHeight(p - vec2(0.0, eps), t);
     vec2 slope = vec2(hx, hy) / (eps * 2.0);
-    vec2 opticalNormal = normalize(maskNormal * (0.68 + wetRim * 0.74) + slope * 0.18);
-    vec3 normal = normalize(vec3(-slope * 0.72 - maskNormal * wetRim * 0.5, 1.0));
+    vec2 opticalNormal = normalize(maskNormal * (0.82 + wetRim * 1.08) + slope * 0.34);
+    vec3 normal = normalize(vec3(-slope * 1.05 - maskNormal * wetRim * 0.76, 1.0));
 
     float thickness = 0.72 + centerHeight * 0.28 + innerRim * 0.34 + core * 0.08;
     vec2 viewportTopUv = (u_canvas_viewport_min + topUv * u_canvas_viewport_size) / max(u_viewport_size, vec2(1.0));
-    float refractionZone = clamp(wetRim * 0.85 + innerRim * 0.65 + edge * 0.35, 0.0, 1.0);
-    vec2 refractionOffset = opticalNormal * px * u_refract_pixels * (0.10 + refractionZone * 0.90);
+    float refractionZone = clamp(wetRim * 1.02 + innerRim * 0.82 + edge * 0.44 + core * 0.10, 0.0, 1.0);
+    vec2 refractionOffset = opticalNormal * px * u_refract_pixels * (0.18 + refractionZone * 1.12 + thickness * 0.08);
     vec2 refractedTopUv = viewportTopUv + vec2(refractionOffset.x, -refractionOffset.y);
     vec3 refractedBg = sampleBackground(refractedTopUv);
 
-    float dispersion = u_dispersion_strength * wetRim;
+    float dispersion = u_dispersion_strength * (wetRim * 1.18 + innerRim * 0.32);
     vec3 dispersedBg;
     dispersedBg.r = sampleBackground(refractedTopUv + opticalNormal * dispersion).r;
     dispersedBg.g = refractedBg.g;
     dispersedBg.b = sampleBackground(refractedTopUv - opticalNormal * dispersion).b;
-    refractedBg = mix(refractedBg, dispersedBg, wetRim * 0.42);
+    refractedBg = mix(refractedBg, dispersedBg, clamp(wetRim * 0.56 + innerRim * 0.18, 0.0, 0.72));
 
-    vec2 liquidCoord = p - slope * 0.036 + maskNormal * innerRim * 0.018;
+    vec2 liquidCoord = p - slope * 0.062 + maskNormal * innerRim * 0.031;
     vec3 liquid = sourceRadiance(liquidCoord, t);
     vec3 pearl = vec3(0.78, 0.92, 0.96);
     liquid = mix(liquid, pearl, 0.026 + wetRim * 0.035);
@@ -361,9 +363,10 @@ const heroLiquidFragmentShaderSource = `
     liquid = (liquid - 0.5) * u_core_contrast + 0.5;
     liquid *= u_core_brightness;
 
-    vec3 glassBase = mix(refractedBg, liquid, clamp(u_liquid_opacity, 0.0, 1.0));
-    vec3 color = mix(glassBase, liquid, coreMask * 0.2);
-    color = mix(color, refractedBg, clamp(u_background_mix, 0.0, 0.35) * shellMask * 0.64);
+    float emissionMix = clamp(u_liquid_opacity * (0.72 + coreMask * 0.36), 0.0, 1.0);
+    vec3 glassBase = mix(refractedBg, liquid, emissionMix);
+    vec3 color = mix(glassBase, liquid, coreMask * 0.12);
+    color = mix(color, refractedBg, clamp(u_background_mix, 0.0, 0.35) * shellMask * 0.82);
 
     float hxx = glassHeight(p + vec2(eps * 1.7, 0.0), t) + glassHeight(p - vec2(eps * 1.7, 0.0), t) - centerHeight * 2.0;
     float hyy = glassHeight(p + vec2(0.0, eps * 1.7), t) + glassHeight(p - vec2(0.0, eps * 1.7), t) - centerHeight * 2.0;
@@ -371,7 +374,7 @@ const heroLiquidFragmentShaderSource = `
     float causticNoise = fbm(sharedUv * 8.5 + vec2(t * 0.32, -t * 0.22));
     float causticLine = pow(abs(sin((sharedUv.x * 2.2 + sharedUv.y * 1.55 + centerHeight * 1.62 - t * 0.36) * TAU)), 15.0);
     float caustic = smoothstep(0.74, 0.94, causticNoise + causticLine * 0.2 + curvature * 0.035);
-    caustic *= innerRim * u_caustic_strength * 0.62 * (1.0 - u_reduced_motion * 0.72);
+    caustic *= (innerRim * 0.74 + core * 0.22) * u_caustic_strength * 0.98 * (1.0 - u_reduced_motion * 0.72);
 
     float viewDot = clamp(dot(normal, vec3(0.0, 0.0, 1.0)), 0.0, 1.0);
     float fresnel = pow(1.0 - viewDot + wetRim * 0.28, 2.8);
@@ -383,22 +386,25 @@ const heroLiquidFragmentShaderSource = `
       smoothstep(0.46, 0.98, topLeftLight) *
       pow(abs(sin((sharedUv.x * 4.35 - sharedUv.y * 1.72 + centerHeight * 0.95 - t * 0.22) * TAU)), 24.0);
 
-    color -= vec3(0.018, 0.035, 0.078) * innerRim * u_inner_shadow_strength * (0.92 + lowerShadow * 0.42);
-    color += rimLight * wetRim * u_rim_strength * (0.22 + fresnel * 0.52 + topLeftLight * 0.2);
-    color += vec3(0.88, 0.98, 1.0) * selectiveGlint * u_rim_strength * 0.42;
-    color += vec3(0.72, 0.95, 1.0) * caustic;
+    float innerSheen = smoothstep(0.12, 0.82, alpha) * (1.0 - wetRim * 0.22);
+    float upperLens = smoothstep(0.96, 0.12, topUv.y) * innerSheen;
+    color -= vec3(0.018, 0.036, 0.082) * innerRim * u_inner_shadow_strength * (0.98 + lowerShadow * 0.48);
+    color += rimLight * wetRim * u_rim_strength * (0.30 + fresnel * 0.58 + topLeftLight * 0.24);
+    color += vec3(0.88, 0.98, 1.0) * selectiveGlint * u_rim_strength * 0.52;
+    color += vec3(0.70, 0.96, 1.0) * caustic;
+    color += vec3(0.72, 0.93, 1.0) * upperLens * u_glow_strength * 0.26;
 
     float specular = pow(max(dot(reflect(normalize(vec3(-0.42, -0.36, -0.82)), normal), vec3(0.0, 0.0, 1.0)), 0.0), 34.0);
-    color += vec3(1.0, 0.88, 0.62) * specular * wetRim * 0.18;
-    color += vec3(0.30, 0.78, 0.90) * wetRim * u_glow_strength;
+    color += vec3(1.0, 0.88, 0.62) * specular * wetRim * 0.24;
+    color += vec3(0.30, 0.78, 0.90) * wetRim * u_glow_strength * 1.18;
 
     vec2 center = topUv - vec2(0.5);
     color *= 1.0 - dot(center, center) * 0.22;
     color = mix(color, vec3(0.018, 0.024, 0.045), 0.06 + (1.0 - core) * 0.03);
-    color = color / (color + vec3(0.58));
+    color = color / (color + vec3(0.50));
     float luma = dot(color, vec3(0.299, 0.587, 0.114));
-    color = mix(vec3(luma), color, 1.2);
-    color = pow(clamp(color, vec3(0.0), vec3(0.96)), vec3(0.96));
+    color = mix(vec3(luma), color, 1.28);
+    color = pow(clamp(color, vec3(0.0), vec3(0.98)), vec3(0.92));
 
     float outAlpha = smoothstep(0.012, 0.42, alpha);
     outAlpha = max(outAlpha, wetRim * 0.74);
@@ -438,6 +444,10 @@ export interface HeroLiquidRendererOptions {
 
 export interface ShaderRendererOptions {
   heroLiquid?: HeroLiquidRendererOptions;
+}
+
+interface ShaderRendererStartOptions {
+  maxFps?: number;
 }
 
 const fragmentShaderSources: Record<ShaderRendererVariant, string> = {
@@ -795,7 +805,7 @@ export class ShaderRenderer {
     gl.uniform1f(this.getUniformLocation('u_reduced_motion'), options.reducedMotion ? 1 : 0);
   }
 
-  start(onFrame: (canvas: HTMLCanvasElement, time: number) => void) {
+  start(onFrame: (canvas: HTMLCanvasElement, time: number) => void, options: ShaderRendererStartOptions = {}) {
     if (this.disposed) {
       return;
     }
@@ -805,15 +815,26 @@ export class ShaderRenderer {
     }
 
     this.running = true;
+    const minimumFrameInterval =
+      options.maxFps && options.maxFps > 0 ? 1000 / options.maxFps : 0;
+    let lastRenderedFrameTime = Number.NEGATIVE_INFINITY;
 
     const tick = (frameTime: number) => {
       if (!this.running) {
         return;
       }
 
-      const seconds = frameTime * 0.001;
-      this.render(seconds);
-      onFrame(this.canvas, seconds);
+      if (
+        minimumFrameInterval === 0 ||
+        frameTime < lastRenderedFrameTime ||
+        frameTime - lastRenderedFrameTime >= minimumFrameInterval
+      ) {
+        lastRenderedFrameTime = frameTime;
+        const seconds = frameTime * 0.001;
+        this.render(seconds);
+        onFrame(this.canvas, seconds);
+      }
+
       this.animationFrameId = window.requestAnimationFrame(tick);
     };
 

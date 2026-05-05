@@ -88,7 +88,7 @@ Before adding new motion:
 - Most package ranges use `^`, so a normal install can accept compatible-looking minor updates. Treat dependency bumps, especially React type packages and browser tooling, as code changes that need `npm run typecheck` and `npm run lint`.
 - Keep `fullyParallel: false` in [`playwright.config.ts`](../playwright.config.ts) unless the Playwright setup is changed to start an isolated dev server per worker.
 - [`eslint.config.js`](../eslint.config.js) intentionally ignores `docs/**` because Markdown is reviewed as prose. If executable TypeScript or JavaScript examples are added under docs, add a scoped validation path instead of silently relying on the docs ignore.
-- Local visual QA screenshots and HTML experiments under `analysis/` are ignored by default. Commit only curated Markdown notes or intentionally named evidence artifacts.
+- If local visual QA screenshots or HTML experiments are needed, keep them in an ignored local folder and commit only curated Markdown notes or intentionally named evidence artifacts.
 
 ## Out of Scope
 

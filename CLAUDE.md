@@ -50,8 +50,8 @@ CI (`.github/workflows/ci.yml`) runs `npm ci` → Playwright install → `npm ru
 - `src/lib/shaderRenderer.ts` is the rendering-engine contract. `src/components/shared/shaderTextShared.ts` holds shared math/shadow helpers.
 - Preserve readable text fallback. Do not reintroduce per-frame React state churn.
 
-### Animated text contract
-Decorative animation must never be the only accessible source of meaning. The pattern (used by `AnimatedHeading` wrapping `TextScramble`, and by Contact's scrambled heading): semantic heading owns the real accessible name → `sr-only` text repeats it if needed → animated visual is `aria-hidden="true"`. Don't use `TextScramble` directly as a heading label.
+### Decorative text contract
+Decorative animation must never be the only accessible source of meaning. The old `AnimatedHeading` / `TextScramble` path has been removed; current heading effects route through `ShaderHeading` and `ShaderTextWord`. The pattern remains: semantic heading owns the real accessible name → helper `sr-only` text repeats it if needed → decorative visual output is `aria-hidden="true"`.
 
 ### Content and asset contracts
 - `src/content/siteCopy.ts` — section copy. Hero contract is structured: `eyebrow`, `titleSemantic`, `titleLines`, `subtitle`. `GALLERY_COPY` covers the gallery eyebrow/heading/subtitle.

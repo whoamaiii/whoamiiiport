@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type HTMLAttributes } from 'react';
 import RenderErrorBoundary from './fallback/RenderErrorBoundary';
-import ShaderTextWord from './shared/ShaderTextWord';
+import { ShaderTextWord } from './shared/ShaderTextWord';
 import type { TextShadowConfig } from './shared/shaderTextShared';
 
 type HeadingLevel = 'h1' | 'h2' | 'h3';
@@ -257,5 +257,3 @@ export function ShaderHeading({
     </Component>
   );
 }
-
-export default ShaderHeading;

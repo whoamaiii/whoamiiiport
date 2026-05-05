@@ -8,7 +8,8 @@ import {
   useSpring,
   useTransform,
 } from 'motion/react';
-import { Play, X } from 'lucide-react';
+import Play from 'lucide-react/dist/esm/icons/play.js';
+import X from 'lucide-react/dist/esm/icons/x.js';
 import type { ModalImageSlug } from '../utils/images';
 import {
   getGallerySrcset,
@@ -16,6 +17,7 @@ import {
   getGallerySizes,
   getGalleryImageUrl,
   getModalImageUrl,
+  getImageUrl,
   getImageMetadata,
 } from '../utils/images';
 import type { ArtworkSection, ArtworkTitle } from './artworkData';
@@ -28,6 +30,9 @@ interface InteractiveArtworkCardProps {
   videoSrc?: string;
   title: ArtworkTitle;
   sections: ArtworkSection[];
+  imageLoading?: 'eager' | 'lazy';
+  imageFetchPriority?: 'high' | 'low' | 'auto';
+  deferImageUntilVisible?: boolean;
 }
 
 export default function InteractiveArtworkCard({
@@ -35,6 +40,9 @@ export default function InteractiveArtworkCard({
   videoSrc,
   title,
   sections,
+  imageLoading = 'lazy',
+  imageFetchPriority = 'auto',
+  deferImageUntilVisible = false,
 }: InteractiveArtworkCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
@@ -44,8 +52,11 @@ export default function InteractiveArtworkCard({
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [imageCanLoad, setImageCanLoad] = useState(!deferImageUntilVisible);
+  const [mobileHighResSrc, setMobileHighResSrc] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const isDesktopLayout = useMediaQuery('(min-width: 1024px)', false);
+  const isMobileLayout = useMediaQuery('(max-width: 767px)', false);
 
   // Mouse tracking for glare effect
   const mouseX = useMotionValue(0.5);
@@ -113,7 +124,84 @@ export default function InteractiveArtworkCard({
   const modalSrcset = isVideoArtwork ? undefined : getModalSrcset(imageSlug);
   const sizes = getGallerySizes();
   const fallbackUrl = getGalleryImageUrl(imageSlug);
+  const mobilePreviewUrl = getImageUrl(imageSlug, 480);
+  const mobileHighResUrl = getImageUrl(imageSlug, 1024);
   const modalImageUrl = getModalImageUrl(imageSlug);
+  const useMobileFastPreview = imageCanLoad && isMobileLayout && imageLoading === 'eager';
+  const usePreviewImage = useMobileFastPreview && !mobileHighResSrc;
+  const displayedImageSrc = imageCanLoad
+    ? usePreviewImage
+      ? mobilePreviewUrl
+      : mobileHighResSrc ?? fallbackUrl
+    : undefined;
+  const displayedImageSrcset = imageCanLoad && !usePreviewImage ? gallerySrcset : undefined;
+  const displayedImageSizes = imageCanLoad && !usePreviewImage ? sizes : undefined;
+
+  useEffect(() => {
+    setMobileHighResSrc(null);
+  }, [imageSlug, useMobileFastPreview]);
+
+  useEffect(() => {
+    if (!deferImageUntilVisible) {
+      setImageCanLoad(true);
+      return;
+    }
+
+    setImageCanLoad(false);
+
+    const card = cardRef.current;
+    if (!card || typeof IntersectionObserver === 'undefined') {
+      setImageCanLoad(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting || entry.intersectionRatio > 0)) {
+          setImageCanLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '160px 0px', threshold: 0.01 },
+    );
+
+    observer.observe(card);
+
+    return () => observer.disconnect();
+  }, [deferImageUntilVisible, imageSlug]);
+
+  useEffect(() => {
+    if (!useMobileFastPreview) {
+      return;
+    }
+
+    let cancelled = false;
+    const image = new Image();
+
+    const markLoaded = () => {
+      if (!cancelled && image.naturalWidth > 0) {
+        setMobileHighResSrc(mobileHighResUrl);
+      }
+    };
+
+    image.decoding = 'async';
+    image.onload = markLoaded;
+    image.onerror = () => {
+      if (!cancelled) {
+        setMobileHighResSrc(null);
+      }
+    };
+    image.src = mobileHighResUrl;
+    void image.decode?.().then(markLoaded).catch(() => {
+      if (image.complete) {
+        markLoaded();
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [mobileHighResUrl, useMobileFastPreview]);
 
   const displayTitle = title.secondary
     ? `${title.primary} — ${title.secondary}`
@@ -164,16 +252,17 @@ export default function InteractiveArtworkCard({
         >
           <div className="w-full h-full rounded-2xl overflow-hidden relative">
             <img
-              src={fallbackUrl}
-              srcSet={gallerySrcset}
-              sizes={sizes}
+              src={displayedImageSrc}
+              srcSet={displayedImageSrcset}
+              sizes={displayedImageSizes}
               alt={imageMeta.alt}
-              loading="lazy"
+              loading={imageLoading}
+              fetchPriority={imageFetchPriority}
               decoding="async"
               width={800}
               height={1000}
               style={{ objectPosition: imageMeta.galleryObjectPosition }}
-              className={`w-full h-full object-cover ${
+              className={`w-full h-full object-cover ${imageCanLoad ? '' : 'opacity-0'} ${
                 prefersReducedMotion ? '' : 'transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]'
               }`.trim()}
             />

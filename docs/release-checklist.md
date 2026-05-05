@@ -54,7 +54,7 @@ npm run test:e2e
 - Confirm static assets load correctly.
 - Confirm hashed build assets are cacheable.
 - Verify the hero lockup still renders cleanly in preview, including the decorative title, eyebrow, and subtitle.
-- Verify Adobe Fonts still load for the rest of the site, or that fallback fonts keep non-hero typography usable.
+- Verify the system font stack keeps non-hero typography usable on the target platform.
 - Verify gallery video manifest paths resolve from `public/videos/` on the preview host.
 
 ## Security and Header Review
@@ -62,7 +62,7 @@ npm run test:e2e
 Expected host support:
 
 - CSP and security headers configured at the static host level, not in this repo
-- CSP that allows same-origin images/videos, the Adobe Fonts stylesheet and font endpoints, and any required `data:` or `blob:` sources for effect fallbacks
+- CSP that allows same-origin images/videos and any required `data:` or `blob:` sources for effect fallbacks
 - standard static-site security headers as supported by the host
 - Production error monitoring is not currently wired. [`src/lib/reportError.ts`](../src/lib/reportError.ts) logs only in development, so a release should not claim production telemetry unless that adapter is deliberately expanded.
 

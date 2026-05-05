@@ -19,4 +19,10 @@ describe('document head contract', () => {
   it('keeps the referenced social preview asset in the public runtime bundle', () => {
     expect(existsSync(resolve('public/social-preview.png'))).toBe(true);
   });
+
+  it('keeps a valid static robots.txt instead of serving the app shell to crawlers', () => {
+    const robotsTxt = readFileSync(resolve('public/robots.txt'), 'utf8');
+
+    expect(robotsTxt).toBe('User-agent: *\nAllow: /\n');
+  });
 });

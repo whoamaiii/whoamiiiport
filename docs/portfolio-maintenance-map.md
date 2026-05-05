@@ -7,21 +7,22 @@ runtime risk.
 
 ## Summary
 
-The public site is now much healthier than the source tree. Runtime image
-delivery uses optimized WebP assets and contract tests, but the repository still
-contains raw creative-process residue: large source assets, duplicated media,
-old visual QA screenshots, overlapping docs, and custom shader/glass systems
-that need careful validation.
+The public site and source tree are now much closer to the same truth. Runtime
+image delivery uses optimized WebP assets and contract tests, and the old raw
+creative-process residue has been pruned from tracked source. The main ongoing
+risk is now keeping the custom shader/glass systems disciplined and validating
+future media changes through the image contract.
 
 ## Priority Cleanup Areas
 
 ### 1. Source Asset Bloat
 
-**Status:** Current
+**Status:** Cleaned
 **Risk:** Repository size and maintenance drag
 
-`src/assets` is much larger than the generated `public/images` output. The live
-site uses optimized assets, but the repo still carries large raw originals.
+`src/assets` now keeps only the source inputs required by
+`scripts/optimize-images.js`. The live site still uses generated optimized
+assets from `public/images`.
 
 Recommended cleanup:
 
@@ -31,11 +32,11 @@ Recommended cleanup:
 
 ### 2. Duplicate Asset Sources
 
-**Status:** Current
+**Status:** Cleaned
 **Risk:** Source-of-truth confusion
 
-Some artwork files appear both directly under `src/assets` and in
-`src/assets/first10`.
+The duplicate `src/assets/first10` source pile has been removed from the tracked
+tree.
 
 Recommended cleanup:
 
@@ -46,11 +47,12 @@ Recommended cleanup:
 
 ### 3. Local Screenshot Artifacts
 
-**Status:** Mostly contained
+**Status:** Cleaned
 **Risk:** Git noise and review confusion
 
-`analysis/` contains many local visual review screenshots. The repo now ignores
-local image and HTML artifacts there while keeping markdown notes trackable.
+The previous local `analysis/` artifact folder has been removed from the
+tracked tree. Future visual review screenshots should stay local unless they are
+curated evidence for a specific decision.
 
 Recommended cleanup:
 
@@ -125,11 +127,12 @@ Any future image or video change should update all related pieces together:
 
 ### 8. Documentation Overlap
 
-**Status:** Current
+**Status:** Cleaned
 **Risk:** Conflicting guidance and slower onboarding
 
-The repo has several root docs and focused docs under `docs/`. This is useful
-only if each document has a clear purpose.
+The stale root-level broad design/audit docs and old analysis notes were removed.
+Canonical project docs now live in `README.md`, `AGENTS.md`, `CLAUDE.md`, and
+focused files under `docs/`.
 
 Recommended cleanup:
 
@@ -160,7 +163,7 @@ Use this stack for release-level confidence:
 
 ## Bottom Line
 
-The runtime is now much more disciplined than the workspace history. The main
-remaining work is repo hygiene: reduce raw asset bloat, keep visual QA artifacts
-curated, and avoid expanding the custom rendering stack without matching mobile
-validation.
+The runtime and tracked source are now disciplined enough for normal review.
+Keep future cleanup focused: preserve explicitly documented systems, delete
+only proven-dead assets/code, and avoid expanding the custom rendering stack
+without matching mobile validation.

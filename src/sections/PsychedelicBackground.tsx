@@ -50,5 +50,3 @@ export function PsychedelicBackground({
     </div>
   );
 }
-
-export default PsychedelicBackground;

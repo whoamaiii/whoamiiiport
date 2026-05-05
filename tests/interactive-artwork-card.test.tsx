@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { installMatchMediaMock } from './helpers/matchMedia';
 
@@ -37,5 +37,160 @@ describe('InteractiveArtworkCard image contracts', () => {
 
     expect(screen.getByRole('button', { name: /view ferdigcop video details and notes/i })).toBeInTheDocument();
     expect(getModalSrcset).not.toHaveBeenCalled();
+  });
+
+  it('keeps gallery card images lazy by default', async () => {
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': false,
+      '(min-width: 1024px)': false,
+    });
+    const { default: InteractiveArtworkCard } = await import('../src/components/InteractiveArtworkCard');
+
+    render(
+      <InteractiveArtworkCard
+        imageSlug="liquid-perception"
+        title={{ primary: 'Liquid Perception' }}
+        sections={[{ body: 'Image notes.' }]}
+      />,
+    );
+
+    const image = screen.getByRole('img', {
+      name: /surreal hooded forest portrait/i,
+    });
+    expect(image).toHaveAttribute('loading', 'lazy');
+    expect(image).toHaveAttribute('fetchpriority', 'auto');
+  });
+
+  it('can prioritize the first gallery card image without changing the component default', async () => {
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': false,
+      '(min-width: 1024px)': false,
+    });
+    const { default: InteractiveArtworkCard } = await import('../src/components/InteractiveArtworkCard');
+
+    render(
+      <InteractiveArtworkCard
+        imageSlug="liquid-perception"
+        title={{ primary: 'Liquid Perception' }}
+        sections={[{ body: 'Image notes.' }]}
+        imageLoading="eager"
+        imageFetchPriority="auto"
+      />,
+    );
+
+    const image = screen.getByRole('img', {
+      name: /surreal hooded forest portrait/i,
+    });
+    expect(image).toHaveAttribute('loading', 'eager');
+    expect(image).toHaveAttribute('fetchpriority', 'auto');
+  });
+
+  it('shows a small mobile preview before upgrading the first eager gallery image', async () => {
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': false,
+      '(min-width: 1024px)': false,
+      '(max-width: 767px)': true,
+    });
+
+    vi.stubGlobal('Image', class {
+      complete = true;
+      decoding = 'async';
+      naturalWidth = 1024;
+      onerror: (() => void) | null = null;
+      onload: (() => void) | null = null;
+      #src = '';
+
+      get src() {
+        return this.#src;
+      }
+
+      set src(value: string) {
+        this.#src = value;
+        queueMicrotask(() => this.onload?.());
+      }
+
+      decode() {
+        return Promise.resolve();
+      }
+    });
+
+    const { default: InteractiveArtworkCard } = await import('../src/components/InteractiveArtworkCard');
+
+    render(
+      <InteractiveArtworkCard
+        imageSlug="liquid-perception"
+        title={{ primary: 'Liquid Perception' }}
+        sections={[{ body: 'Image notes.' }]}
+        imageLoading="eager"
+        imageFetchPriority="auto"
+      />,
+    );
+
+    const image = screen.getByRole('img', {
+      name: /surreal hooded forest portrait/i,
+    });
+    expect(image).toHaveAttribute('src', '/images/liquid-perception-480.webp');
+    expect(image).not.toHaveAttribute('srcset');
+
+    await waitFor(() => {
+      expect(image).toHaveAttribute('src', '/images/liquid-perception-1024.webp');
+    });
+  });
+
+  it('withholds lower-priority gallery image requests until the card nears the viewport', async () => {
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': false,
+      '(min-width: 1024px)': false,
+      '(max-width: 767px)': true,
+    });
+
+    let observerCallback: IntersectionObserverCallback | undefined;
+
+    vi.stubGlobal(
+      'IntersectionObserver',
+      class {
+        readonly root = null;
+        readonly rootMargin = '160px 0px';
+        readonly thresholds = [0.01];
+
+        constructor(callback: IntersectionObserverCallback) {
+          observerCallback = callback;
+        }
+
+        disconnect = vi.fn();
+        observe = vi.fn();
+        takeRecords = vi.fn(() => []);
+        unobserve = vi.fn();
+      },
+    );
+
+    const { default: InteractiveArtworkCard } = await import('../src/components/InteractiveArtworkCard');
+
+    render(
+      <InteractiveArtworkCard
+        imageSlug="psychedelic-bathroom-portrait"
+        title={{ primary: 'Bathroom Portrait' }}
+        sections={[{ body: 'Image notes.' }]}
+        deferImageUntilVisible
+      />,
+    );
+
+    const image = screen.getByRole('img', {
+      name: /dark psychedelic bathroom portrait/i,
+    });
+    expect(image).not.toHaveAttribute('src');
+    expect(image).not.toHaveAttribute('srcset');
+
+    act(() => {
+      observerCallback?.(
+        [{ isIntersecting: true, intersectionRatio: 1 } as IntersectionObserverEntry],
+        {} as IntersectionObserver,
+      );
+    });
+
+    await waitFor(() => {
+      expect(image).toHaveAttribute('src', '/images/psychedelic-bathroom-portrait-800.webp');
+      expect(image).toHaveAttribute('srcset');
+    });
   });
 });

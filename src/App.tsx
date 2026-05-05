@@ -1,19 +1,31 @@
-import { useEffect, useRef, type MouseEvent } from 'react';
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent as ReactMouseEvent,
+} from 'react';
 import { useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
 import { ScrollProgress } from './components/ScrollProgress';
 import RenderErrorBoundary from './components/fallback/RenderErrorBoundary';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useReducedMotion } from './hooks/useReducedMotion';
-import AboutSection from './sections/AboutSection';
-import ContactSection from './sections/ContactSection';
-import GallerySection from './sections/GallerySection';
-import HeroSection from './sections/HeroSection';
-import PsychedelicBackground from './sections/PsychedelicBackground';
-import SiteFooter from './sections/SiteFooter';
-import SiteHeader from './sections/SiteHeader';
+import { GallerySection } from './sections/GallerySection';
+import { HeroSection } from './sections/HeroSection';
+import { PsychedelicBackground } from './sections/PsychedelicBackground';
+import { SiteHeader } from './sections/SiteHeader';
+
+const AboutSection = lazy(() => import('./sections/AboutSection'));
+const ContactSection = lazy(() => import('./sections/ContactSection'));
+const SiteFooter = lazy(() => import('./sections/SiteFooter'));
 
 export default function App() {
   const mainRef = useRef<HTMLElement>(null);
+  const [loadDeferredSections, setLoadDeferredSections] = useState(
+    () => typeof window !== 'undefined' && /^#(?:about|contact)$/.test(window.location.hash),
+  );
   const prefersReducedMotion = useReducedMotion();
   const prefersFinePointer = useMediaQuery('(pointer: fine)', false);
   const prefersLargeViewport = useMediaQuery('(min-width: 1024px)', false);
@@ -57,7 +69,7 @@ export default function App() {
       return;
     }
 
-    const handleMouseMove = (event: MouseEvent) => {
+    const handleMouseMove = (event: globalThis.MouseEvent) => {
       mouseX.set(event.clientX);
       mouseY.set(event.clientY);
     };
@@ -66,7 +78,38 @@ export default function App() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, [enableReactivePointerEffects, mouseX, mouseY]);
 
-  const handleSkipLinkClick = (event: MouseEvent<HTMLAnchorElement>) => {
+  const enableDeferredSections = useCallback(() => {
+    setLoadDeferredSections(true);
+  }, []);
+
+  useEffect(() => {
+    if (loadDeferredSections) {
+      return;
+    }
+
+    const enableAfterHeroScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.45) {
+        enableDeferredSections();
+      }
+    };
+    const timeoutId = window.setTimeout(enableDeferredSections, 9000);
+
+    window.addEventListener('scroll', enableAfterHeroScroll, { passive: true });
+    window.addEventListener('hashchange', enableDeferredSections, { once: true });
+    window.addEventListener('pointerdown', enableDeferredSections, { once: true, passive: true });
+    window.addEventListener('keydown', enableDeferredSections, { once: true });
+    enableAfterHeroScroll();
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      window.removeEventListener('scroll', enableAfterHeroScroll);
+      window.removeEventListener('hashchange', enableDeferredSections);
+      window.removeEventListener('pointerdown', enableDeferredSections);
+      window.removeEventListener('keydown', enableDeferredSections);
+    };
+  }, [enableDeferredSections, loadDeferredSections]);
+
+  const handleSkipLinkClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
 
     const main = mainRef.current;
@@ -126,11 +169,19 @@ export default function App() {
           heroReveal={heroReveal}
         />
         <GallerySection reducedMotion={prefersReducedMotion} />
-        <AboutSection />
-        <ContactSection reducedMotion={prefersReducedMotion} />
+        {loadDeferredSections ? (
+          <Suspense fallback={null}>
+            <AboutSection />
+            <ContactSection reducedMotion={prefersReducedMotion} />
+          </Suspense>
+        ) : null}
       </main>
 
-      <SiteFooter />
+      {loadDeferredSections ? (
+        <Suspense fallback={null}>
+          <SiteFooter />
+        </Suspense>
+      ) : null}
     </div>
   );
 }

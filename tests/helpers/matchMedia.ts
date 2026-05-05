@@ -1,6 +1,6 @@
 import { vi } from 'vitest';
 
-export type MatchMediaListener = (event: MediaQueryListEvent) => void;
+type MatchMediaListener = (event: MediaQueryListEvent) => void;
 
 export function installMatchMediaMock(queryMatches: Record<string, boolean>) {
   const listenersByQuery = new Map<string, Set<MatchMediaListener>>();

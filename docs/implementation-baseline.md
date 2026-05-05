@@ -22,7 +22,7 @@ npm run test:e2e
 The implementation work started from a verified audit of these issues:
 
 1. The skip link updated the URL hash without moving keyboard focus into `main`.
-2. `TextScramble` headings could be unnamed during the first render window.
+2. Decorative animated headings could be unnamed during the first render window.
 3. The gallery section referenced a missing `aria-labelledby` target.
 4. The custom cursor could hide the native cursor before a replacement cursor was visible.
 5. Browser smoke coverage was too weak to catch the skip-link regression.

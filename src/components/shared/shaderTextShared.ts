@@ -3,7 +3,7 @@ export type TypographyContext = CanvasRenderingContext2D & {
   letterSpacing?: string;
 };
 
-export interface ShadowLayerConfig {
+interface ShadowLayerConfig {
   shadowColor: string;
   shadowBlur: number;
   shadowOffsetX: number;

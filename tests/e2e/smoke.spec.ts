@@ -17,11 +17,15 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await expect(
     page.getByText(/Dream-burned paintings and digital artifacts pulled from the archive\./i),
   ).toBeVisible();
+  await expect(page.getByRole('main')).toHaveCount(1);
+  await expect(page.getByTestId('site-header').getByRole('link', { name: /whoamiii/i })).toBeVisible();
+  await expect(page.getByText(/Artist Portfolio/i)).toHaveCount(0);
+
+  await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.5));
+
   await expect(
     page.getByRole('heading', { name: /Let's Create Something Trippy\./i }),
   ).toBeVisible();
-  await expect(page.getByRole('main')).toHaveCount(1);
-  await expect(page.getByTestId('site-header').getByRole('link', { name: /whoamiii/i })).toBeVisible();
   await expect(page.getByRole('contentinfo').getByRole('link', { name: /whoamiii/i })).toBeVisible();
   await expect(
     page.getByText(/Psychedelic paintings, altered-state studies, and commission inquiries from the archive\./i),
@@ -29,7 +33,6 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await expect(
     page.getByText(new RegExp(`© ${new Date().getFullYear()} Whoamiii\\. All rights reserved\\.`, 'i')),
   ).toBeVisible();
-  await expect(page.getByText(/Artist Portfolio/i)).toHaveCount(0);
 
   const heroImage = page.locator('section').first().locator('img').first();
   await expect(heroImage).not.toHaveClass(/animate-hue-breathe/);
@@ -79,7 +82,7 @@ test('skip link lands on main content and artwork modal opens and closes', async
       page.locator('[aria-controls]').evaluateAll((nodes) =>
         nodes
           .map((node) => node.getAttribute('aria-controls'))
-          .filter((id): id is string => Boolean(id) && !document.getElementById(id)),
+          .filter((id): id is string => typeof id === 'string' && !document.getElementById(id)),
       ),
     )
     .toEqual([]);
@@ -95,20 +98,19 @@ test('skip link lands on main content and artwork modal opens and closes', async
   await expect(artworkButton).toBeFocused();
 });
 
-test('mobile artwork modal covers the viewport and shows the tapped artwork', async ({ page }) => {
+test('mobile workflow modal opens, advances steps, and restores focus', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/#work');
 
-  const artworkButton = page.getByRole('button', {
-    name: /view psychedelic bathroom portrait/i,
+  const workflowButton = page.getByRole('button', {
+    name: /open larger view and notes for step 1: computational framework/i,
   });
-  await artworkButton.scrollIntoViewIfNeeded();
-  await artworkButton.click();
+  await workflowButton.scrollIntoViewIfNeeded();
+  await workflowButton.click();
 
-  const dialog = page.getByRole('dialog', {
-    name: /psychedelic bathroom portrait/i,
-  });
+  const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('heading', { name: /computational framework/i })).toBeVisible();
 
   const dialogBounds = await dialog.boundingBox();
   expect(dialogBounds).not.toBeNull();
@@ -119,14 +121,19 @@ test('mobile artwork modal covers the viewport and shows the tapped artwork', as
 
   await expect(
     dialog.getByRole('img', {
-      name: /dark psychedelic bathroom portrait/i,
+      name: /computational framework for psychedelic visual phenomena/i,
     }),
   ).toBeVisible();
-  await expect(page.getByRole('button', { name: /close modal/i })).toBeFocused();
+  await expect(dialog.getByRole('heading', { name: /what this step is doing/i })).toBeVisible();
+  await expect(page.getByRole('button', { name: /close workflow step details/i })).toBeFocused();
+
+  await dialog.getByRole('button', { name: /^next$/i }).click();
+  await expect(dialog.getByRole('heading', { name: /simulation stages/i })).toBeVisible();
+  await expect(dialog.getByText(/from receptor to visible simulation/i)).toBeVisible();
 
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
-  await expect(artworkButton).toBeFocused();
+  await expect(workflowButton).toBeFocused();
 });
 
 test('fourth gallery card opens the Ferdigcop video modal', async ({ page }) => {
@@ -211,7 +218,7 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
       page.locator('[aria-controls]').evaluateAll((nodes) =>
         nodes
           .map((node) => node.getAttribute('aria-controls'))
-          .filter((id): id is string => Boolean(id) && !document.getElementById(id)),
+          .filter((id): id is string => typeof id === 'string' && !document.getElementById(id)),
       ),
     )
     .toEqual([]);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-export function getInitialMediaQueryMatch(query: string, defaultValue = false): boolean {
+function getInitialMediaQueryMatch(query: string, defaultValue = false): boolean {
   if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
     return defaultValue;
   }
@@ -34,5 +34,3 @@ export function useMediaQuery(query: string, defaultValue = false): boolean {
 
   return matches;
 }
-
-export default useMediaQuery;

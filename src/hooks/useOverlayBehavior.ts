@@ -30,7 +30,7 @@ function isFocusableElement(element: Element): element is HTMLElement {
   return true;
 }
 
-export function getFocusableElements(root: ParentNode | null): HTMLElement[] {
+function getFocusableElements(root: ParentNode | null): HTMLElement[] {
   if (!root) {
     return [];
   }
@@ -38,7 +38,7 @@ export function getFocusableElements(root: ParentNode | null): HTMLElement[] {
   return Array.from(root.querySelectorAll(FOCUSABLE_SELECTOR)).filter(isFocusableElement);
 }
 
-export function useBodyScrollLock(isLocked: boolean) {
+function useBodyScrollLock(isLocked: boolean) {
   useEffect(() => {
     if (!isLocked || typeof document === 'undefined') {
       return;
@@ -156,5 +156,3 @@ export function useOverlayBehavior({
     };
   }, [containerRef, initialFocusRef, isOpen, restoreFocusRef]);
 }
-
-export default useOverlayBehavior;

@@ -1,10 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   HERO_WORDMARK_SUPPORTED_LINES,
   matchesHeroWordmark,
   type HeroTitleLines,
 } from './heroWordmarkData';
-import ShaderTextWord from './shared/ShaderTextWord';
+import { ShaderTextWord } from './shared/ShaderTextWord';
 import type { TextShadowConfig } from './shared/shaderTextShared';
 import reportError from '../lib/reportError';
 import { getImageUrl } from '../utils/images';
@@ -37,36 +37,36 @@ function getHeroShadowConfig(isMobile: boolean, fontSize: number): TextShadowCon
 
   return {
     ambient: {
-      shadowColor: 'rgba(0, 0, 0, 0.12)',
-      shadowBlur: 9 * baseSize,
+      shadowColor: 'rgba(0, 0, 0, 0.18)',
+      shadowBlur: 11 * baseSize,
       shadowOffsetX: 0,
       shadowOffsetY: 0,
-      strokeColor: 'rgba(3, 7, 14, 0.045)',
-      strokeWidth: 0.014 * baseSize,
+      strokeColor: 'rgba(3, 7, 14, 0.075)',
+      strokeWidth: 0.018 * baseSize,
     },
     halo: {
-      shadowColor: 'rgba(91, 218, 239, 0.14)',
+      shadowColor: 'rgba(154, 232, 248, 0.22)',
       shadowBlur: 8 * baseSize,
       shadowOffsetX: 0,
       shadowOffsetY: -0.4 * baseSize,
-      strokeColor: 'rgba(219, 249, 255, 0.13)',
-      strokeWidth: 0.012 * baseSize,
+      strokeColor: 'rgba(227, 252, 255, 0.19)',
+      strokeWidth: 0.015 * baseSize,
     },
     primary: {
-      shadowColor: 'rgba(0, 0, 0, 0.24)',
-      shadowBlur: 2.4 * baseSize,
+      shadowColor: 'rgba(0, 0, 0, 0.34)',
+      shadowBlur: 3.2 * baseSize,
       shadowOffsetX: 0,
-      shadowOffsetY: 1.2 * baseSize,
-      strokeColor: 'rgba(0, 0, 0, 0.08)',
-      strokeWidth: 0.007 * baseSize,
+      shadowOffsetY: 1.35 * baseSize,
+      strokeColor: 'rgba(0, 0, 0, 0.14)',
+      strokeWidth: 0.009 * baseSize,
     },
     innerGlow: {
-      shadowColor: 'rgba(255, 252, 238, 0.22)',
-      shadowBlur: 3.2 * baseSize,
-      shadowOffsetX: -0.4 * baseSize,
-      shadowOffsetY: -0.9 * baseSize,
-      strokeColor: 'rgba(255, 252, 240, 0.12)',
-      strokeWidth: 0.006 * baseSize,
+      shadowColor: 'rgba(255, 252, 238, 0.34)',
+      shadowBlur: 3.8 * baseSize,
+      shadowOffsetX: -0.45 * baseSize,
+      shadowOffsetY: -1.1 * baseSize,
+      strokeColor: 'rgba(255, 252, 240, 0.18)',
+      strokeWidth: 0.008 * baseSize,
     },
   };
 }
@@ -94,35 +94,50 @@ export function HeroTitleStaticFallback({ titleLines }: { titleLines: HeroTitleL
   );
 }
 
-function HeroShaderLine({ text, line }: { text: string; line: 'first' | 'second' }) {
+function HeroShaderLine({
+  line,
+  onReady,
+  revealWhenReady,
+  text,
+}: {
+  line: 'first' | 'second';
+  onReady: () => void;
+  revealWhenReady: boolean;
+  text: string;
+}) {
   return (
     <ShaderTextWord
       text={text}
+      allowCompactShader
+      revealWhenReady={revealWhenReady}
       wrapperClassName={`hero-title-shader-word hero-title-shader-word--${line}`.trim()}
       measureClassName={`hero-title-shader-measure hero-title-shader-measure--${line}`.trim()}
       canvasClassName={`hero-title-shader-canvas hero-title-shader-canvas--${line}`.trim()}
       fallbackClassName={`hero-title-shader-fallback hero-title-shader-fallback--${line}`.trim()}
-      shaderScale={{ mobile: 0.5, desktop: 0.58, reduced: 0.34 }}
-      shaderClamp={{ minWidth: 120, maxWidth: 880, minHeight: 56, maxHeight: 260 }}
+      onReady={onReady}
+      shaderScale={{ mobile: 0.54, desktop: 0.58, reduced: 0.34 }}
+      shaderClamp={{ minWidth: 120, maxWidth: 820, minHeight: 56, maxHeight: 240 }}
+      shaderFrameRate={{ mobile: 12, desktop: 24 }}
+      shaderSetupDelayMs={line === 'first' ? 120 : 360}
       getShadowConfig={getHeroShadowConfig}
-      finalStroke={{ color: 'rgba(235, 252, 255, 0.12)', scale: 0.0032, minWidth: 0.42 }}
+      finalStroke={{ color: 'rgba(240, 253, 255, 0.28)', scale: 0.0052, minWidth: 0.58 }}
       heroLiquid={{
         backgroundImageUrl: HERO_LIQUID_BACKGROUND,
-        backgroundDarken: 0.4,
-        backgroundMix: 0.115,
-        causticStrength: 0.06,
+        backgroundDarken: 0.62,
+        backgroundMix: 0.28,
+        causticStrength: 0.2,
         coreBrightness: 0.96,
-        coreContrast: 1.1,
-        coreSaturation: 1.02,
-        dispersionStrength: 0.003,
-        glowStrength: 0.045,
-        innerShadowStrength: 0.64,
-        liquidOpacity: 0.64,
+        coreContrast: 1.34,
+        coreSaturation: 1.04,
+        dispersionStrength: 0.0068,
+        glowStrength: 0.11,
+        innerShadowStrength: 1.02,
+        liquidOpacity: 0.38,
         liquidSpeed: 0.026,
-        liquidWarp: 0.04,
-        refractPixels: 4.2,
-        rimStrength: 0.78,
-        rimWidth: 0.5,
+        liquidWarp: 0.058,
+        refractPixels: 10.4,
+        rimStrength: 1.52,
+        rimWidth: 0.82,
         ...HERO_LIQUID_SHARED_UV[line],
       }}
       shaderVariant="heroLiquid"
@@ -137,8 +152,18 @@ export function HeroTitleHybrid({
   forceFallback = false,
 }: HeroTitleHybridProps) {
   const reportedRef = useRef(false);
+  const [readyLines, setReadyLines] = useState({ first: false, second: false });
   const titleMatchesWordmark = matchesHeroWordmark(titleLines);
   const visualSupported = !forceFallback && titleMatchesWordmark;
+  const revealShader = readyLines.first && readyLines.second;
+
+  const markFirstReady = useCallback(() => {
+    setReadyLines((current) => (current.first ? current : { ...current, first: true }));
+  }, []);
+
+  const markSecondReady = useCallback(() => {
+    setReadyLines((current) => (current.second ? current : { ...current, second: true }));
+  }, []);
 
   useEffect(() => {
     if (titleMatchesWordmark || reportedRef.current) {
@@ -152,6 +177,10 @@ export function HeroTitleHybrid({
     });
   }, [semanticTitle, titleLines, titleMatchesWordmark]);
 
+  useEffect(() => {
+    setReadyLines({ first: false, second: false });
+  }, [semanticTitle, titleLines, visualSupported]);
+
   if (!visualSupported) {
     return <HeroTitleStaticFallback titleLines={titleLines} />;
   }
@@ -163,13 +192,22 @@ export function HeroTitleHybrid({
       data-testid="hero-title-visual"
       data-mode="visual"
       data-animated={!reducedMotion ? 'true' : 'false'}
+      data-shader-ready={revealShader ? 'true' : 'false'}
     >
       <span className="hero-title-live-shader">
-        <HeroShaderLine text={HERO_WORDMARK_SUPPORTED_LINES[0]} line="first" />
-        <HeroShaderLine text={HERO_WORDMARK_VISUAL_SECOND_LINE} line="second" />
+        <HeroShaderLine
+          text={HERO_WORDMARK_SUPPORTED_LINES[0]}
+          line="first"
+          onReady={markFirstReady}
+          revealWhenReady={revealShader}
+        />
+        <HeroShaderLine
+          text={HERO_WORDMARK_VISUAL_SECOND_LINE}
+          line="second"
+          onReady={markSecondReady}
+          revealWhenReady={revealShader}
+        />
       </span>
     </span>
   );
 }
-
-export default HeroTitleHybrid;

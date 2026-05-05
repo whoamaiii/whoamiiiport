@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "pd-donut", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Avenir Next", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Avenir Next Condensed", "Avenir Next", "Helvetica Neue", var(--font-sans);
   --font-wordmark: "Avenir Next Condensed", "Avenir Next", "Helvetica Neue", var(--font-sans);
 }
 
@@ -343,35 +343,40 @@
 }
 
 .hero-title-shader-word::before {
-  -webkit-text-stroke: 0.28px rgba(238, 252, 255, 0.18);
+  -webkit-text-stroke: 0.34px rgba(238, 252, 255, 0.32);
   filter:
-    drop-shadow(-0.006em -0.012em 0.014em rgba(255, 255, 255, 0.12))
-    drop-shadow(0.008em 0.022em 0.024em rgba(4, 8, 18, 0.22))
-    drop-shadow(0 0 0.05em rgba(104, 219, 241, 0.08));
+    drop-shadow(-0.006em -0.012em 0.012em rgba(255, 255, 255, 0.2))
+    drop-shadow(0.008em 0.022em 0.024em rgba(4, 8, 18, 0.3))
+    drop-shadow(0 0 0.05em rgba(104, 219, 241, 0.14));
   mix-blend-mode: screen;
-  opacity: 0.014;
+  opacity: 0.018;
 }
 
 .hero-title-shader-word::after {
   -webkit-text-fill-color: transparent;
   background-image:
-    linear-gradient(112deg, rgba(255, 255, 255, 0) 0 34%, rgba(255, 250, 225, 0.34) 43%, rgba(102, 219, 241, 0.24) 50%, rgba(255, 255, 255, 0) 62%),
-    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 17%),
-    radial-gradient(circle at 78% 72%, rgba(226, 138, 86, 0.16) 0%, rgba(226, 138, 86, 0) 24%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(92, 217, 240, 0.04) 32%, rgba(3, 8, 18, 0.12) 84%);
+    linear-gradient(112deg, rgba(255, 255, 255, 0) 0 34%, rgba(255, 250, 225, 0.42) 43%, rgba(102, 219, 241, 0.3) 50%, rgba(255, 255, 255, 0) 62%),
+    radial-gradient(circle at 24% 18%, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0) 17%),
+    radial-gradient(circle at 78% 72%, rgba(226, 138, 86, 0.18) 0%, rgba(226, 138, 86, 0) 24%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(92, 217, 240, 0.06) 32%, rgba(3, 8, 18, 0.15) 84%);
   background-size: 165% 165%, 100% 100%, 100% 100%, 100% 100%;
   background-position: 52% 45%, 50% 50%, 50% 50%, 50% 50%;
   -webkit-background-clip: text;
   background-clip: text;
-  filter: drop-shadow(0 0 0.07em rgba(255, 255, 255, 0.16));
+  filter: drop-shadow(0 0 0.07em rgba(255, 255, 255, 0.2));
   mix-blend-mode: screen;
-  opacity: 0.016;
+  opacity: 0.024;
   transform: translate3d(0, 0, 0);
   animation: hero-title-glass-caustic 5.8s cubic-bezier(0.45, 0, 0.18, 1) infinite alternate;
 }
 
 .hero-title-shader-word--second {
   margin-top: 0.075em;
+}
+
+.hero-title-shader-word[data-render-mode='static']::before,
+.hero-title-shader-word[data-render-mode='static']::after {
+  content: none;
 }
 
 .hero-title-shader-measure {
@@ -392,7 +397,7 @@
 
 .hero-title-shader-canvas {
   opacity: 0;
-  transition: opacity 180ms ease;
+  transition: opacity 260ms ease;
 }
 
 .hero-title-shader-canvas.is-ready {
@@ -403,34 +408,54 @@
   opacity: 1;
   color: transparent;
   background-image:
-    radial-gradient(circle at 18% 26%, rgba(75, 189, 222, 0.32) 0%, rgba(75, 189, 222, 0) 20%),
-    radial-gradient(circle at 78% 40%, rgba(209, 116, 63, 0.28) 0%, rgba(209, 116, 63, 0) 30%),
-    radial-gradient(circle at 52% 18%, rgba(222, 211, 183, 0.18) 0%, rgba(222, 211, 183, 0) 22%),
-    linear-gradient(125deg, #9de7f0 0%, #2f87bd 18%, #c5a985 34%, #b45f3f 52%, #6877b4 72%, #c8ad83 100%);
+    linear-gradient(112deg, rgba(255, 255, 255, 0) 0 31%, rgba(255, 252, 231, 0.72) 43%, rgba(113, 228, 246, 0.54) 51%, rgba(255, 255, 255, 0) 63%),
+    radial-gradient(circle at 18% 20%, rgba(245, 254, 255, 0.62) 0%, rgba(245, 254, 255, 0) 18%),
+    radial-gradient(circle at 70% 34%, rgba(91, 218, 242, 0.34) 0%, rgba(91, 218, 242, 0) 27%),
+    radial-gradient(circle at 78% 72%, rgba(250, 169, 112, 0.2) 0%, rgba(250, 169, 112, 0) 30%),
+    linear-gradient(128deg, #eafcff 0%, #a9edf5 22%, #f5dec0 42%, #d68a78 58%, #b8b1ed 78%, #f6fbff 100%);
   background-position: 0% 48%;
-  background-size: 230% 230%;
+  background-size: 165% 165%, 100% 100%, 100% 100%, 100% 100%, 230% 230%;
   -webkit-background-clip: text;
   background-clip: text;
+  -webkit-text-stroke: 0.48px rgba(238, 252, 255, 0.38);
+  filter:
+    drop-shadow(-0.006em -0.012em 0.006em rgba(255, 255, 255, 0.16))
+    drop-shadow(0.009em 0.022em 0.018em rgba(2, 6, 16, 0.52))
+    drop-shadow(0 0 0.055em rgba(94, 219, 242, 0.16));
   animation: hero-liquid-fallback-flow 5.8s ease-in-out infinite alternate;
-  transition: opacity 180ms ease;
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 260ms;
   white-space: pre;
+}
+
+.hero-title-shader-word[data-render-mode='shader'] .hero-title-shader-fallback {
+  animation: none;
 }
 
 .hero-title-shader-fallback.is-visible {
   opacity: 1;
+  transition:
+    opacity 180ms ease,
+    visibility 0s;
+  visibility: visible;
 }
 
 .hero-title-shader-fallback.is-hidden {
   animation: none;
   opacity: 0;
-  transition: none;
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 260ms;
   visibility: hidden;
 }
 
 .hero-title-shader-canvas.is-ready + .hero-title-shader-fallback {
   animation: none;
   opacity: 0;
-  transition: none;
+  transition:
+    opacity 260ms ease,
+    visibility 0s linear 260ms;
   visibility: hidden;
 }
 
@@ -440,7 +465,7 @@
 
 .hero-title-hybrid[data-animated='false'] .hero-title-shader-word::after {
   animation: none;
-  opacity: 0.2;
+  opacity: 0.03;
   transform: none;
 }
 
@@ -591,12 +616,12 @@
   }
 
   .hero-title-shader-word::before {
-    -webkit-text-stroke-width: 0.28px;
-    opacity: 0.014;
+    -webkit-text-stroke-width: 0.3px;
+    opacity: 0.016;
   }
 
   .hero-title-shader-word::after {
-    opacity: 0.016;
+    opacity: 0.02;
   }
 }
 
@@ -889,10 +914,6 @@ html {
 .deferred-section {
   content-visibility: auto;
   contain-intrinsic-size: auto 960px;
-}
-
-#work.deferred-section {
-  contain-intrinsic-size: auto 1680px;
 }
 
 #about.deferred-section {

@@ -17,14 +17,70 @@
     <meta name="twitter:description" content="Exploring the boundaries of consciousness through vibrant colors, intricate patterns, and surreal landscapes." />
     <meta name="twitter:image" content="https://whoamiii.art/social-preview.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="preconnect" href="https://use.typekit.net" />
-    <link rel="preconnect" href="https://p.typekit.net" />
-    <link rel="stylesheet" href="https://use.typekit.net/hqx2rsx.css" />
+    <link
+      rel="preload"
+      as="image"
+      href="/images/liquid-perception-hero-1440.webp"
+      imagesrcset="/images/liquid-perception-hero-960.webp 960w, /images/liquid-perception-hero-1440.webp 1440w"
+      imagesizes="100vw"
+      fetchpriority="high"
+    />
     <title>Whoamiii — Psychedelic Art Portfolio</title>
     <style>
       /* Critical inline styles to prevent FOUC */
       body { background: #09090b; margin: 0; }
       #root { min-height: 100vh; }
+      #root:empty {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100svh;
+        overflow: hidden;
+        background:
+          radial-gradient(circle at 76% 16%, rgba(48, 128, 168, 0.22), transparent 32%),
+          radial-gradient(circle at 18% 88%, rgba(105, 32, 74, 0.2), transparent 34%),
+          linear-gradient(180deg, #0b0712 0%, #09090b 100%);
+      }
+      #root:empty::before {
+        content: "PSYCHEDELIC ART PORTFOLIO";
+        position: absolute;
+        left: clamp(2rem, 8vw, 5rem);
+        right: 2rem;
+        top: min(68vh, 35.5rem);
+        color: rgba(235, 232, 229, 0.7);
+        font: 500 0.86rem/1.2 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        letter-spacing: 0.32em;
+        text-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, 0.6);
+        white-space: nowrap;
+      }
+      #root:empty::after {
+        content: "Altered\A Perceptions.";
+        position: absolute;
+        left: clamp(2rem, 8vw, 5rem);
+        right: 1.5rem;
+        top: calc(min(68vh, 35.5rem) + 2.5rem);
+        max-width: 36rem;
+        color: transparent;
+        white-space: pre;
+        font: italic 900 clamp(3.02rem, 16.2vw, 4.72rem)/0.8 "Avenir Next Condensed", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: -0.06em;
+        -webkit-text-stroke: 0.48px rgba(238, 252, 255, 0.38);
+        background:
+          linear-gradient(112deg, rgba(255, 255, 255, 0) 0 31%, rgba(255, 252, 231, 0.72) 43%, rgba(113, 228, 246, 0.54) 51%, rgba(255, 255, 255, 0) 63%),
+          linear-gradient(128deg, #eafcff 0%, #a9edf5 22%, #f5dec0 42%, #d68a78 58%, #b8b1ed 78%, #f6fbff 100%);
+        background-size: 165% 165%, 230% 230%;
+        background-position: 52% 45%, 0% 48%;
+        -webkit-background-clip: text;
+        background-clip: text;
+        filter:
+          drop-shadow(0.009em 0.022em 0.018em rgba(2, 6, 16, 0.52))
+          drop-shadow(0 0 0.055em rgba(94, 219, 242, 0.16));
+      }
+      @media (min-width: 768px) {
+        #root:empty::before,
+        #root:empty::after {
+          left: 5rem;
+        }
+      }
     </style>
   </head>
   <body>

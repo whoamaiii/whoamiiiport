@@ -1,7 +1,9 @@
-import { Instagram, Mail, Twitter } from 'lucide-react';
+import Instagram from 'lucide-react/dist/esm/icons/instagram.js';
+import Mail from 'lucide-react/dist/esm/icons/mail.js';
+import Twitter from 'lucide-react/dist/esm/icons/twitter.js';
 import { MagneticButton } from '../components/MagneticButton';
 
-export function SiteFooter() {
+export default function SiteFooter() {
   return (
     <footer className="relative z-20 border-t border-white/10 bg-zinc-950 px-6 py-14 sm:py-16">
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-8 text-center">
@@ -55,5 +57,3 @@ export function SiteFooter() {
     </footer>
   );
 }
-
-export default SiteFooter;

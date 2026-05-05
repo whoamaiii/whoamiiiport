@@ -1,11 +1,10 @@
-import { Suspense, lazy } from 'react';
 import { motion } from 'motion/react';
+import InteractiveArtworkCard from '../components/InteractiveArtworkCard';
 import { StaggerContainer, StaggerItem } from '../components/StaggerContainer';
 import { ShaderHeading } from '../components/ShaderHeading';
+import { WorkflowProcessCard } from '../components/WorkflowProcessCard';
 import { FEATURED_ARTWORKS } from '../content/featuredArtworks';
 import { GALLERY_COPY } from '../content/siteCopy';
-
-const InteractiveArtworkCard = lazy(() => import('../components/InteractiveArtworkCard'));
 
 interface GallerySectionProps {
   reducedMotion: boolean;
@@ -16,7 +15,7 @@ export function GallerySection({ reducedMotion }: GallerySectionProps) {
     <section
       id="work"
       tabIndex={-1}
-      className="section-anchor-target deferred-section relative py-32 px-6 bg-zinc-950 z-20 focus:outline-none"
+      className="section-anchor-target relative py-32 px-6 bg-zinc-950 z-20 focus:outline-none"
       aria-labelledby="selected-works-heading"
     >
       <div className="max-w-7xl mx-auto">
@@ -46,26 +45,25 @@ export function GallerySection({ reducedMotion }: GallerySectionProps) {
         <StaggerContainer
           className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
           staggerDelay={0.15}
+          mobileFastReveal
         >
-          {FEATURED_ARTWORKS.map(({ id, artwork }) => (
-            <Suspense
-              key={id}
-              fallback={<div className="aspect-[4/5] rounded-3xl glass p-2 animate-pulse bg-zinc-800/50" />}
-            >
-              <StaggerItem>
-                <InteractiveArtworkCard
-                  imageSlug={artwork.imageSlug}
-                  videoSrc={artwork.videoSrc}
-                  title={artwork.title}
-                  sections={artwork.sections}
-                />
-              </StaggerItem>
-            </Suspense>
+          {FEATURED_ARTWORKS.map(({ id, artwork }, index) => (
+            <StaggerItem key={id} mobileDistance={16}>
+              <InteractiveArtworkCard
+                imageSlug={artwork.imageSlug}
+                videoSrc={artwork.videoSrc}
+                title={artwork.title}
+                sections={artwork.sections}
+                imageLoading={index === 0 ? 'eager' : 'lazy'}
+                imageFetchPriority={index === 0 ? 'auto' : 'low'}
+                deferImageUntilVisible={index > 0}
+              />
+            </StaggerItem>
           ))}
         </StaggerContainer>
+
+        <WorkflowProcessCard reducedMotion={reducedMotion} />
       </div>
     </section>
   );
 }
-
-export default GallerySection;

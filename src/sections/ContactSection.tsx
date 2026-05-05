@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Mail } from 'lucide-react';
+import Mail from 'lucide-react/dist/esm/icons/mail.js';
 import { MagneticButton } from '../components/MagneticButton';
 import { ShaderHeading } from '../components/ShaderHeading';
 import { CONTACT_COPY } from '../content/siteCopy';
@@ -8,7 +8,7 @@ interface ContactSectionProps {
   reducedMotion: boolean;
 }
 
-export function ContactSection({ reducedMotion }: ContactSectionProps) {
+export default function ContactSection({ reducedMotion }: ContactSectionProps) {
   return (
     <section
       id="contact"
@@ -47,5 +47,3 @@ export function ContactSection({ reducedMotion }: ContactSectionProps) {
     </section>
   );
 }
-
-export default ContactSection;

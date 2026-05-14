@@ -24,6 +24,7 @@ npm run test:e2e
 - Confirm the gallery region is still named from `Selected Works.` and not from the eyebrow or subtitle.
 - Check a narrow mobile viewport and confirm the gallery title still fits without ugly overflow or clipped shader text.
 - Confirm the old neon underline is gone and the section still feels anchored without it.
+- Confirm the ambient background and gallery card glow do not add a red or magenta cast over the whole artwork grid.
 
 ### Keyboard Pass
 

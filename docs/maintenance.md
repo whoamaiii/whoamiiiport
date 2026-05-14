@@ -68,6 +68,12 @@ Before adding new motion:
 - Preserve `id="selected-works-heading"` on the live heading so the artwork region keeps its accessible name.
 - Do not route gallery work through `HeroTitleHybrid` just because the hero and gallery now share visual taste.
 
+## Modifying Gallery Color and Ambient Effects
+
+- Keep the global [`PsychedelicBackground`](../src/sections/PsychedelicBackground.tsx) behind the main sections, not blended above the gallery. A page-wide `color-dodge` or high-opacity magenta layer can tint every artwork and make the gallery look accidentally red.
+- Keep gallery-card hover/focus accents in [`InteractiveArtworkCard`](../src/components/InteractiveArtworkCard.tsx) subtle and cool enough that red-heavy artwork does not turn the whole section into a red wash.
+- If a visual tuning changes ambient background, gallery card glow, or gallery heading fallback color, check the built site in a real browser after scrolling to the gallery. The art may contain strong reds; the page chrome should not be adding a separate red cast.
+
 ## Modifying Overlays
 
 - Reuse [`src/hooks/useOverlayBehavior.ts`](../src/hooks/useOverlayBehavior.ts).

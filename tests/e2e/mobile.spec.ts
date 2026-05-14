@@ -89,6 +89,68 @@ test('mobile menu traps focus and closes back to the trigger', async ({ page }) 
   await expect(menuButton).toBeFocused();
 });
 
+test('cold mobile menu loads and navigates deferred sections', async ({ page }) => {
+  const targets = [
+    { label: 'About', id: 'about', menuLabel: /about/i },
+    { label: 'Contact', id: 'contact', menuLabel: /get in touch/i },
+  ] as const;
+
+  for (const target of targets) {
+    await page.goto('/');
+    await expect(page.getByRole('button', { name: /open menu/i })).toBeVisible();
+    await page.getByRole('button', { name: /open menu/i }).click();
+
+    const menu = page.getByRole('dialog', { name: /navigation menu/i });
+    await expect(menu).toBeVisible();
+    await menu.getByRole('button', { name: target.menuLabel }).click();
+    await expect(menu).toHaveCount(0);
+
+    await expect
+      .poll(
+        () =>
+          page.evaluate((sectionId) => {
+            const section = document.getElementById(sectionId);
+
+            if (!section) {
+              return false;
+            }
+
+            const rect = section.getBoundingClientRect();
+            return document.activeElement === section && rect.top < window.innerHeight && rect.bottom > 0;
+          }, target.id),
+        {
+          message: `${target.label} should mount, scroll into view, and receive focus from a cold menu click`,
+          timeout: 5000,
+        },
+      )
+      .toBe(true);
+  }
+});
+
+test('mobile direct hash loads and focuses a deferred section', async ({ page }) => {
+  await page.goto('/#contact');
+
+  await expect
+    .poll(
+      () =>
+        page.evaluate(() => {
+          const contact = document.getElementById('contact');
+
+          if (!contact) {
+            return false;
+          }
+
+          const rect = contact.getBoundingClientRect();
+          return document.activeElement === contact && rect.top < window.innerHeight && rect.bottom > 0;
+        }),
+      {
+        message: 'Contact should mount, scroll into view, and receive focus from a direct hash load',
+        timeout: 5000,
+      },
+    )
+    .toBe(true);
+});
+
 test('mobile artwork modal covers the viewport and restores focus', async ({ page }) => {
   await page.goto('/#work');
 

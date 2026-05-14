@@ -21,10 +21,26 @@ const AboutSection = lazy(() => import('./sections/AboutSection'));
 const ContactSection = lazy(() => import('./sections/ContactSection'));
 const SiteFooter = lazy(() => import('./sections/SiteFooter'));
 
+function getDeferredSectionIdFromHash() {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+
+  const match = window.location.hash.match(/^#(about|contact)$/);
+  return match ? match[1] : null;
+}
+
+function isDeferredSection(id: string) {
+  return id === 'about' || id === 'contact';
+}
+
 export default function App() {
   const mainRef = useRef<HTMLElement>(null);
   const [loadDeferredSections, setLoadDeferredSections] = useState(
-    () => typeof window !== 'undefined' && /^#(?:about|contact)$/.test(window.location.hash),
+    () => getDeferredSectionIdFromHash() !== null,
+  );
+  const [pendingSectionNavigation, setPendingSectionNavigation] = useState<string | null>(
+    () => getDeferredSectionIdFromHash(),
   );
   const prefersReducedMotion = useReducedMotion();
   const prefersFinePointer = useMediaQuery('(pointer: fine)', false);
@@ -82,6 +98,40 @@ export default function App() {
     setLoadDeferredSections(true);
   }, []);
 
+  const scrollToSection = useCallback(
+    (id: string) => {
+      if (typeof document === 'undefined') {
+        return false;
+      }
+
+      const target = document.getElementById(id);
+      if (!target) {
+        return false;
+      }
+
+      target.scrollIntoView({
+        behavior: prefersReducedMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+      target.focus({ preventScroll: true });
+      return true;
+    },
+    [prefersReducedMotion],
+  );
+
+  const handleSectionNavigation = useCallback(
+    (id: string) => {
+      if (isDeferredSection(id)) {
+        enableDeferredSections();
+      }
+
+      if (!scrollToSection(id)) {
+        setPendingSectionNavigation(id);
+      }
+    },
+    [enableDeferredSections, scrollToSection],
+  );
+
   useEffect(() => {
     if (loadDeferredSections) {
       return;
@@ -108,6 +158,50 @@ export default function App() {
       window.removeEventListener('keydown', enableDeferredSections);
     };
   }, [enableDeferredSections, loadDeferredSections]);
+
+  useEffect(() => {
+    if (!pendingSectionNavigation) {
+      return;
+    }
+
+    let cancelled = false;
+    let frameId = 0;
+    let timeoutId = 0;
+    let attempts = 0;
+
+    const tryNavigate = () => {
+      if (cancelled) {
+        return;
+      }
+
+      if (scrollToSection(pendingSectionNavigation)) {
+        setPendingSectionNavigation((current) =>
+          current === pendingSectionNavigation ? null : current,
+        );
+        return;
+      }
+
+      attempts += 1;
+      if (attempts >= 80) {
+        setPendingSectionNavigation((current) =>
+          current === pendingSectionNavigation ? null : current,
+        );
+        return;
+      }
+
+      timeoutId = window.setTimeout(() => {
+        frameId = window.requestAnimationFrame(tryNavigate);
+      }, 50);
+    };
+
+    frameId = window.requestAnimationFrame(tryNavigate);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [pendingSectionNavigation, scrollToSection]);
 
   const handleSkipLinkClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -157,7 +251,10 @@ export default function App() {
         interactive={enableReactivePointerEffects}
       />
 
-      <SiteHeader reducedMotion={prefersReducedMotion} />
+      <SiteHeader
+        reducedMotion={prefersReducedMotion}
+        onNavigateToSection={handleSectionNavigation}
+      />
 
       <main id="main-content" ref={mainRef} tabIndex={-1} className="focus:outline-none">
         <HeroSection

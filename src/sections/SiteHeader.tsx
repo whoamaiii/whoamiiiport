@@ -316,6 +316,7 @@ function MobileMenuButton({
 interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
+  onNavigateToSection: (id: string) => void;
   menuButtonRef: RefObject<HTMLButtonElement | null>;
   reducedMotion: boolean;
 }
@@ -323,6 +324,7 @@ interface MobileMenuProps {
 function MobileMenu({
   isOpen,
   onClose,
+  onNavigateToSection,
   menuButtonRef,
   reducedMotion,
 }: MobileMenuProps) {
@@ -339,19 +341,9 @@ function MobileMenu({
   });
 
   const navigateToSection = (id: string) => {
-    const target = document.getElementById(id);
-    if (!target) {
-      onClose();
-      return;
-    }
-
     onClose();
     window.setTimeout(() => {
-      target.scrollIntoView({
-        behavior: reducedMotion ? 'auto' : 'smooth',
-        block: 'start',
-      });
-      target.focus({ preventScroll: true });
+      onNavigateToSection(id);
     }, reducedMotion ? 0 : 120);
   };
 
@@ -416,9 +408,10 @@ function MobileMenu({
 
 interface SiteHeaderProps {
   reducedMotion: boolean;
+  onNavigateToSection: (id: string) => void;
 }
 
-export function SiteHeader({ reducedMotion }: SiteHeaderProps) {
+export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -451,6 +444,7 @@ export function SiteHeader({ reducedMotion }: SiteHeaderProps) {
       <MobileMenu
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
+        onNavigateToSection={onNavigateToSection}
         menuButtonRef={menuButtonRef}
         reducedMotion={reducedMotion}
       />

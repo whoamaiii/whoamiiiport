@@ -37,18 +37,37 @@
     <style>
       /* Critical inline styles to prevent FOUC */
       body { background: #09090b; margin: 0; }
-      #root { min-height: 100vh; }
-      #root:empty {
-        position: relative;
+      #root,
+      .app-boot-shell {
         min-height: 100vh;
         min-height: 100svh;
+      }
+      .app-boot-shell {
+        position: relative;
         overflow: hidden;
         background:
-          radial-gradient(circle at 76% 16%, rgba(48, 128, 168, 0.22), transparent 32%),
-          radial-gradient(circle at 18% 88%, rgba(105, 32, 74, 0.2), transparent 34%),
+          linear-gradient(90deg, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.48) 42%, rgba(9, 9, 11, 0.18) 100%),
+          linear-gradient(0deg, rgba(9, 9, 11, 0.92) 0%, rgba(9, 9, 11, 0.18) 40%, rgba(9, 9, 11, 0.38) 100%),
+          url("/images/liquid-perception-hero-720.webp") center / cover no-repeat,
           linear-gradient(180deg, #0b0712 0%, #09090b 100%);
       }
-      #root:empty::before {
+      .app-boot-shell::before {
+        content: "WHOAMIII";
+        position: absolute;
+        left: clamp(1.75rem, 5vw, 4.25rem);
+        top: clamp(1.5rem, 5vw, 3.25rem);
+        min-width: min(18rem, 55vw);
+        border: 1px solid rgba(247, 250, 255, 0.72);
+        border-radius: 999px;
+        padding: 1.08rem 2.1rem;
+        color: rgba(255, 255, 255, 0.92);
+        background: rgba(15, 15, 20, 0.58);
+        box-shadow: 0 0 1.25rem rgba(220, 238, 255, 0.34), inset 0 0 1.6rem rgba(255, 255, 255, 0.13);
+        font: italic 900 clamp(1.05rem, 4vw, 1.6rem)/1 "Arial Narrow", "Avenir Next Condensed", ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: -0.04em;
+        text-shadow: 0 0.08rem 0.25rem rgba(0, 0, 0, 0.7);
+      }
+      .app-boot-shell__kicker {
         content: "PSYCHEDELIC ART PORTFOLIO";
         position: absolute;
         left: clamp(2rem, 8vw, 5rem);
@@ -60,8 +79,7 @@
         text-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, 0.6);
         white-space: nowrap;
       }
-      #root:empty::after {
-        content: "Altered\A Perceptions.";
+      .app-boot-shell__title {
         position: absolute;
         left: clamp(2rem, 8vw, 5rem);
         right: 1.5rem;
@@ -83,16 +101,59 @@
           drop-shadow(0.009em 0.022em 0.018em rgba(2, 6, 16, 0.52))
           drop-shadow(0 0 0.055em rgba(94, 219, 242, 0.16));
       }
+      .app-boot-shell__hint {
+        position: absolute;
+        left: clamp(2rem, 8vw, 5rem);
+        bottom: 2rem;
+        width: 2.8rem;
+        height: 0.18rem;
+        border-radius: 999px;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.18);
+      }
+      .app-boot-shell__hint::after {
+        content: "";
+        display: block;
+        width: 42%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #9eeaf4, #f0dfc3);
+        animation: boot-scan 1.35s ease-in-out infinite;
+      }
+      @keyframes boot-scan {
+        0% { transform: translateX(-110%); }
+        100% { transform: translateX(250%); }
+      }
       @media (min-width: 768px) {
-        #root:empty::before,
-        #root:empty::after {
+        .app-boot-shell {
+          background:
+            linear-gradient(90deg, rgba(9, 9, 11, 0.9) 0%, rgba(9, 9, 11, 0.5) 37%, rgba(9, 9, 11, 0.12) 100%),
+            linear-gradient(0deg, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.12) 48%, rgba(9, 9, 11, 0.3) 100%),
+            url("/images/liquid-perception-hero-1440.webp") center / cover no-repeat,
+            linear-gradient(180deg, #0b0712 0%, #09090b 100%);
+        }
+        .app-boot-shell__kicker,
+        .app-boot-shell__title,
+        .app-boot-shell__hint {
           left: 5rem;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .app-boot-shell__hint::after {
+          animation: none;
+          transform: none;
         }
       }
     </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="app-boot-shell" aria-hidden="true">
+        <div class="app-boot-shell__kicker">PSYCHEDELIC ART PORTFOLIO</div>
+        <div class="app-boot-shell__title">Altered<br />Perceptions.</div>
+        <div class="app-boot-shell__hint"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

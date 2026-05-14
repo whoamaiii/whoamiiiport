@@ -52,6 +52,7 @@ export default function InteractiveArtworkCard({
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const mobileUpgradeTimerRef = useRef<number | null>(null);
   const [imageCanLoad, setImageCanLoad] = useState(!deferImageUntilVisible);
   const prefersReducedMotion = useReducedMotion();
   const isDesktopLayout = useMediaQuery('(min-width: 1024px)', false);
@@ -126,14 +127,31 @@ export default function InteractiveArtworkCard({
   const modalImageUrl = getModalImageUrl(imageSlug);
   const mobilePriorityUrl = getImageUrl(imageSlug, 560);
   const useMobilePriorityImage = imageCanLoad && isMobileLayout && imageLoading === 'eager';
+  const [useMobilePriorityPreview, setUseMobilePriorityPreview] = useState(useMobilePriorityImage);
   const displayedImageSrc =
-    useMobilePriorityImage
+    useMobilePriorityPreview
       ? mobilePriorityUrl
       : imageCanLoad
         ? fallbackUrl
         : undefined;
-  const displayedImageSrcset = imageCanLoad && !useMobilePriorityImage ? gallerySrcset : undefined;
-  const displayedImageSizes = imageCanLoad && !useMobilePriorityImage ? sizes : undefined;
+  const displayedImageSrcset = imageCanLoad && !useMobilePriorityPreview ? gallerySrcset : undefined;
+  const displayedImageSizes = imageCanLoad && !useMobilePriorityPreview ? sizes : undefined;
+
+  useEffect(() => {
+    if (mobileUpgradeTimerRef.current !== null) {
+      window.clearTimeout(mobileUpgradeTimerRef.current);
+      mobileUpgradeTimerRef.current = null;
+    }
+
+    setUseMobilePriorityPreview(useMobilePriorityImage);
+
+    return () => {
+      if (mobileUpgradeTimerRef.current !== null) {
+        window.clearTimeout(mobileUpgradeTimerRef.current);
+        mobileUpgradeTimerRef.current = null;
+      }
+    };
+  }, [imageSlug, useMobilePriorityImage]);
 
   useEffect(() => {
     if (!deferImageUntilVisible) {
@@ -169,6 +187,17 @@ export default function InteractiveArtworkCard({
     : title.primary;
 
   const modalTitleId = `artwork-modal-title-${imageSlug}`;
+
+  const handleGalleryImageLoad = () => {
+    if (!useMobilePriorityPreview || mobileUpgradeTimerRef.current !== null) {
+      return;
+    }
+
+    mobileUpgradeTimerRef.current = window.setTimeout(() => {
+      mobileUpgradeTimerRef.current = null;
+      setUseMobilePriorityPreview(false);
+    }, 120);
+  };
 
   return (
     <>
@@ -220,6 +249,7 @@ export default function InteractiveArtworkCard({
               loading={imageLoading}
               fetchPriority={imageFetchPriority}
               decoding="async"
+              onLoad={handleGalleryImageLoad}
               width={800}
               height={1000}
               style={{ objectPosition: imageMeta.galleryObjectPosition }}

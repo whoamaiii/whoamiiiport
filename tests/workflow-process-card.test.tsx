@@ -27,6 +27,9 @@ describe('WorkflowProcessCard image loading', () => {
     const fourthImage = screen.getByRole('img', {
       name: /neon-infused cortical activation breakdown/i,
     });
+    const fifthImage = screen.getByRole('img', {
+      name: /neural dynamics and pattern formation/i,
+    });
 
     expect(firstImage).toHaveAttribute('src', '/images/workflow/workflow-step-01-800.webp');
     expect(secondImage).toHaveAttribute('src', '/images/workflow/workflow-step-02-800.webp');
@@ -37,5 +40,13 @@ describe('WorkflowProcessCard image loading', () => {
 
     expect(thirdImage).toHaveAttribute('src', '/images/workflow/workflow-step-03-800.webp');
     expect(fourthImage).not.toHaveAttribute('src');
+
+    fireEvent.click(screen.getByRole('button', { name: /go to workflow step 4/i }));
+
+    expect(firstImage).not.toHaveAttribute('src');
+    expect(secondImage).not.toHaveAttribute('src');
+    expect(thirdImage).toHaveAttribute('src', '/images/workflow/workflow-step-03-800.webp');
+    expect(fourthImage).toHaveAttribute('src', '/images/workflow/workflow-step-04-800.webp');
+    expect(fifthImage).toHaveAttribute('src', '/images/workflow/workflow-step-05-800.webp');
   });
 });

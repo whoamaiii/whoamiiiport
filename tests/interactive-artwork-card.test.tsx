@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { installMatchMediaMock } from './helpers/matchMedia';
 
@@ -7,6 +7,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     vi.restoreAllMocks();
     vi.resetModules();
     vi.unstubAllGlobals();
+    vi.useRealTimers();
   });
 
   it('does not compute an unused modal srcset for video artworks', async () => {
@@ -85,7 +86,8 @@ describe('InteractiveArtworkCard image contracts', () => {
     expect(image).toHaveAttribute('fetchpriority', 'auto');
   });
 
-  it('uses a sharper mobile priority candidate immediately for the first eager gallery image', async () => {
+  it('uses a sharper mobile priority candidate immediately, then upgrades the first eager gallery image', async () => {
+    vi.useFakeTimers();
     installMatchMediaMock({
       '(prefers-reduced-motion: reduce)': false,
       '(min-width: 1024px)': false,
@@ -109,6 +111,17 @@ describe('InteractiveArtworkCard image contracts', () => {
     });
     expect(image).toHaveAttribute('src', '/images/liquid-perception-560.webp');
     expect(image).not.toHaveAttribute('srcset');
+
+    act(() => {
+      fireEvent.load(image);
+    });
+
+    act(() => {
+      vi.advanceTimersByTime(140);
+    });
+
+    expect(image).toHaveAttribute('src', '/images/liquid-perception-800.webp');
+    expect(image).toHaveAttribute('srcset', expect.stringContaining('/images/liquid-perception-1024.webp 1024w'));
   });
 
   it('withholds lower-priority gallery image requests until the card nears the viewport', async () => {

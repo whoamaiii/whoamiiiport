@@ -22,32 +22,10 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
-  const [loadedImageIndexes, setLoadedImageIndexes] = useState(() => new Set([0, 1]));
   const stepCount = WORKFLOW_STEPS.length;
   const modalStep = modalIndex === null ? null : WORKFLOW_STEPS[modalIndex];
   const currentModalIndex = modalIndex ?? 0;
   const modalTitleId = 'workflow-step-modal-title';
-
-  const markNearbyImagesLoaded = useCallback(
-    (index: number) => {
-      setLoadedImageIndexes((current) => {
-        const next = new Set(current);
-
-        [index - 1, index, index + 1].forEach((nearbyIndex) => {
-          if (nearbyIndex >= 0 && nearbyIndex < stepCount) {
-            next.add(nearbyIndex);
-          }
-        });
-
-        if (next.size === current.size) {
-          return current;
-        }
-
-        return next;
-      });
-    },
-    [stepCount],
-  );
 
   const scrollToStep = useCallback(
     (index: number) => {
@@ -62,9 +40,8 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
         behavior: reducedMotion ? 'auto' : 'smooth',
       });
       setActiveIndex(nextIndex);
-      markNearbyImagesLoaded(nextIndex);
     },
-    [markNearbyImagesLoaded, reducedMotion, stepCount],
+    [reducedMotion, stepCount],
   );
 
   const openStepDetails = (index: number, trigger: HTMLButtonElement) => {
@@ -106,7 +83,6 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
         const nextIndex = Math.round(container.scrollLeft / Math.max(container.clientWidth, 1));
         const clampedIndex = Math.min(Math.max(nextIndex, 0), stepCount - 1);
         setActiveIndex(clampedIndex);
-        markNearbyImagesLoaded(clampedIndex);
       });
     };
 
@@ -119,7 +95,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
       container.removeEventListener('scroll', updateActiveStep);
       window.removeEventListener('resize', updateActiveStep);
     };
-  }, [markNearbyImagesLoaded, stepCount]);
+  }, [stepCount]);
 
   return (
     <article
@@ -167,7 +143,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                 aria-label={`Open larger view and notes for step ${index + 1}: ${step.title}`}
               >
                 {(() => {
-                  const shouldLoadImage = loadedImageIndexes.has(index);
+                  const shouldLoadImage = Math.abs(index - activeIndex) <= 1;
 
                   return (
                     <img

@@ -274,7 +274,7 @@ Implemented on 2026-05-04:
 - Removed the lazy `InteractiveArtworkCard` chunk and Suspense placeholder from the gallery path.
 - Added `imageLoading` and `imageFetchPriority` controls to `InteractiveArtworkCard`.
 - Made the first gallery card eager and kept later card images lazy/low priority.
-- Added a mobile fast-preview path for the first eager gallery card: phones show the small `480w` preview quickly while the `1024w` upgrade starts in parallel.
+- Added a mobile fast-preview path for the first eager gallery card: phones show the small `560w` preview quickly, then switch to the responsive `srcset` so high-DPR devices can upgrade to `1024w`.
 - Deferred image `src` / `srcset` assignment for lower-priority gallery cards until each card is near the viewport; `loading="lazy"` alone was not enough because the gallery sits directly below the hero.
 - Idle-gated below-fold About, Contact, and Footer imports so their chunks are no longer part of immediate first-render work.
 - Added `1024w` gallery variants and regenerated `public/images`.
@@ -296,7 +296,7 @@ Final production build shape from the 2026-05-05 validation run:
 - Shader renderer chunk: `6.82KB` gzip.
 - Below-fold About, Contact, Footer, and related icon/button chunks: split out of the initial app file.
 - Hero `1440w` image: `59.4KB`, down from about `89.6KB`.
-- First gallery mobile preview: `29.4KB`.
+- First gallery mobile preview: `61.4KB`.
 
 Final mobile built-preview probe:
 
@@ -315,6 +315,12 @@ Final mobile built-preview probe:
 - Compact mobile stayed inside the performance thresholds while preserving the visible hero shader treatment.
 - Console GPU stall / ReadPixels warnings: none
 - Probe failures: none
+
+2026-05-14 follow-up:
+
+- Fixed a regression where the first mobile gallery image could remain on the `560w` fast-preview candidate instead of switching to the responsive `srcset`.
+- Tightened `npm run perf:mobile` so it now requires the first gallery image to resolve beyond the preview candidate.
+- Latest built-preview probe after the fix: FCP `688ms`, hero request start `183ms`, first gallery ready after scroll `573ms`, first gallery upgrade after scroll `889ms`, final first gallery source `/images/liquid-perception-1024.webp`, lower-priority gallery requests before scroll `0`, console warnings/errors `0`, probe failures `0`.
 
 Previous Lighthouse mobile result from the original remediation pass:
 

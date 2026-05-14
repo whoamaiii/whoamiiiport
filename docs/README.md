@@ -5,6 +5,7 @@
 - Accessibility: [accessibility.md](./accessibility.md)
 - UI/UX acceptance contract: [uiux-acceptance-contract.md](./uiux-acceptance-contract.md)
 - Testing: [testing.md](./testing.md)
+- Deployment and domain: [deployment.md](./deployment.md)
 - Release checklist: [release-checklist.md](./release-checklist.md)
 - Maintenance: [maintenance.md](./maintenance.md)
 - Hero title system: [hero-title-hybrid.md](./hero-title-hybrid.md)

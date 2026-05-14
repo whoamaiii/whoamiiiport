@@ -79,6 +79,7 @@ The current implementation docs live in [`docs/README.md`](./docs/README.md).
 - Architecture: [`docs/architecture.md`](./docs/architecture.md)
 - Accessibility rules: [`docs/accessibility.md`](./docs/accessibility.md)
 - Testing strategy: [`docs/testing.md`](./docs/testing.md)
+- Deployment and domain: [`docs/deployment.md`](./docs/deployment.md)
 - Release workflow: [`docs/release-checklist.md`](./docs/release-checklist.md)
 - Load performance report: [`docs/load-performance-report.md`](./docs/load-performance-report.md)
 - Maintenance and asset updates: [`docs/maintenance.md`](./docs/maintenance.md)
@@ -108,6 +109,10 @@ This project is intentionally frontend-only. The expected host should support:
 - immutable caching for hashed assets
 - preview deployments for pull requests if available
 - host-level configurable security headers and CSP, especially for same-origin image/video media plus any `data:` or `blob:` URLs needed by visual effects
+
+Current production deployment details for `whoamiii.art`, including the
+Cloudflare DNS records, GitHub Pages source branch, and HTTPS verification
+steps, live in [`docs/deployment.md`](./docs/deployment.md).
 
 ## Troubleshooting
 

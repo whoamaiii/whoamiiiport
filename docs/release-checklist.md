@@ -57,6 +57,15 @@ npm run test:e2e
 - Verify the system font stack keeps non-hero typography usable on the target platform.
 - Verify gallery video manifest paths resolve from `public/videos/` on the preview host.
 
+## Production Domain Verification
+
+- Confirm GitHub Pages reports `status: built`, `source.branch: gh-pages`, and `cname: whoamiii.art`.
+- Confirm Cloudflare DNS has the four GitHub Pages A records for `whoamiii.art`.
+- Confirm Cloudflare DNS has `www` as a DNS-only CNAME to `whoamaiii.github.io`.
+- Confirm `http://whoamiii.art/` returns `200 OK`.
+- Confirm `http://www.whoamiii.art/` redirects to `http://whoamiii.art/`.
+- Confirm `https://whoamiii.art/` returns a valid certificate and `200 OK` before marking HTTPS complete.
+
 ## Security and Header Review
 
 Expected host support:

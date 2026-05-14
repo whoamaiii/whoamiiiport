@@ -53,7 +53,6 @@ export default function InteractiveArtworkCard({
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [imageCanLoad, setImageCanLoad] = useState(!deferImageUntilVisible);
-  const [mobileHighResSrc, setMobileHighResSrc] = useState<string | null>(null);
   const prefersReducedMotion = useReducedMotion();
   const isDesktopLayout = useMediaQuery('(min-width: 1024px)', false);
   const isMobileLayout = useMediaQuery('(max-width: 767px)', false);
@@ -124,22 +123,17 @@ export default function InteractiveArtworkCard({
   const modalSrcset = isVideoArtwork ? undefined : getModalSrcset(imageSlug);
   const sizes = getGallerySizes();
   const fallbackUrl = getGalleryImageUrl(imageSlug);
-  const mobilePreviewUrl = getImageUrl(imageSlug, 480);
-  const mobileHighResUrl = getImageUrl(imageSlug, 1024);
   const modalImageUrl = getModalImageUrl(imageSlug);
-  const useMobileFastPreview = imageCanLoad && isMobileLayout && imageLoading === 'eager';
-  const usePreviewImage = useMobileFastPreview && !mobileHighResSrc;
-  const displayedImageSrc = imageCanLoad
-    ? usePreviewImage
-      ? mobilePreviewUrl
-      : mobileHighResSrc ?? fallbackUrl
-    : undefined;
-  const displayedImageSrcset = imageCanLoad && !usePreviewImage ? gallerySrcset : undefined;
-  const displayedImageSizes = imageCanLoad && !usePreviewImage ? sizes : undefined;
-
-  useEffect(() => {
-    setMobileHighResSrc(null);
-  }, [imageSlug, useMobileFastPreview]);
+  const mobilePriorityUrl = getImageUrl(imageSlug, 800);
+  const useMobilePriorityImage = imageCanLoad && isMobileLayout && imageLoading === 'eager';
+  const displayedImageSrc =
+    useMobilePriorityImage
+      ? mobilePriorityUrl
+      : imageCanLoad
+        ? fallbackUrl
+        : undefined;
+  const displayedImageSrcset = imageCanLoad && !useMobilePriorityImage ? gallerySrcset : undefined;
+  const displayedImageSizes = imageCanLoad && !useMobilePriorityImage ? sizes : undefined;
 
   useEffect(() => {
     if (!deferImageUntilVisible) {
@@ -169,39 +163,6 @@ export default function InteractiveArtworkCard({
 
     return () => observer.disconnect();
   }, [deferImageUntilVisible, imageSlug]);
-
-  useEffect(() => {
-    if (!useMobileFastPreview) {
-      return;
-    }
-
-    let cancelled = false;
-    const image = new Image();
-
-    const markLoaded = () => {
-      if (!cancelled && image.naturalWidth > 0) {
-        setMobileHighResSrc(mobileHighResUrl);
-      }
-    };
-
-    image.decoding = 'async';
-    image.onload = markLoaded;
-    image.onerror = () => {
-      if (!cancelled) {
-        setMobileHighResSrc(null);
-      }
-    };
-    image.src = mobileHighResUrl;
-    void image.decode?.().then(markLoaded).catch(() => {
-      if (image.complete) {
-        markLoaded();
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [mobileHighResUrl, useMobileFastPreview]);
 
   const displayTitle = title.secondary
     ? `${title.primary} — ${title.secondary}`

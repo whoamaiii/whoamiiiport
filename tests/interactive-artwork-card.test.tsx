@@ -85,33 +85,11 @@ describe('InteractiveArtworkCard image contracts', () => {
     expect(image).toHaveAttribute('fetchpriority', 'auto');
   });
 
-  it('shows a small mobile preview before upgrading the first eager gallery image', async () => {
+  it('uses a sharper mobile priority candidate immediately for the first eager gallery image', async () => {
     installMatchMediaMock({
       '(prefers-reduced-motion: reduce)': false,
       '(min-width: 1024px)': false,
       '(max-width: 767px)': true,
-    });
-
-    vi.stubGlobal('Image', class {
-      complete = true;
-      decoding = 'async';
-      naturalWidth = 1024;
-      onerror: (() => void) | null = null;
-      onload: (() => void) | null = null;
-      #src = '';
-
-      get src() {
-        return this.#src;
-      }
-
-      set src(value: string) {
-        this.#src = value;
-        queueMicrotask(() => this.onload?.());
-      }
-
-      decode() {
-        return Promise.resolve();
-      }
     });
 
     const { default: InteractiveArtworkCard } = await import('../src/components/InteractiveArtworkCard');
@@ -129,12 +107,8 @@ describe('InteractiveArtworkCard image contracts', () => {
     const image = screen.getByRole('img', {
       name: /surreal hooded forest portrait/i,
     });
-    expect(image).toHaveAttribute('src', '/images/liquid-perception-480.webp');
+    expect(image).toHaveAttribute('src', '/images/liquid-perception-800.webp');
     expect(image).not.toHaveAttribute('srcset');
-
-    await waitFor(() => {
-      expect(image).toHaveAttribute('src', '/images/liquid-perception-1024.webp');
-    });
   });
 
   it('withholds lower-priority gallery image requests until the card nears the viewport', async () => {

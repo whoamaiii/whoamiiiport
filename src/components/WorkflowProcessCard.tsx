@@ -22,10 +22,32 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
+  const [loadedImageIndexes, setLoadedImageIndexes] = useState(() => new Set([0, 1]));
   const stepCount = WORKFLOW_STEPS.length;
   const modalStep = modalIndex === null ? null : WORKFLOW_STEPS[modalIndex];
   const currentModalIndex = modalIndex ?? 0;
   const modalTitleId = 'workflow-step-modal-title';
+
+  const markNearbyImagesLoaded = useCallback(
+    (index: number) => {
+      setLoadedImageIndexes((current) => {
+        const next = new Set(current);
+
+        [index - 1, index, index + 1].forEach((nearbyIndex) => {
+          if (nearbyIndex >= 0 && nearbyIndex < stepCount) {
+            next.add(nearbyIndex);
+          }
+        });
+
+        if (next.size === current.size) {
+          return current;
+        }
+
+        return next;
+      });
+    },
+    [stepCount],
+  );
 
   const scrollToStep = useCallback(
     (index: number) => {
@@ -40,8 +62,9 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
         behavior: reducedMotion ? 'auto' : 'smooth',
       });
       setActiveIndex(nextIndex);
+      markNearbyImagesLoaded(nextIndex);
     },
-    [reducedMotion, stepCount],
+    [markNearbyImagesLoaded, reducedMotion, stepCount],
   );
 
   const openStepDetails = (index: number, trigger: HTMLButtonElement) => {
@@ -81,7 +104,9 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
       window.cancelAnimationFrame(frameId);
       frameId = window.requestAnimationFrame(() => {
         const nextIndex = Math.round(container.scrollLeft / Math.max(container.clientWidth, 1));
-        setActiveIndex(Math.min(Math.max(nextIndex, 0), stepCount - 1));
+        const clampedIndex = Math.min(Math.max(nextIndex, 0), stepCount - 1);
+        setActiveIndex(clampedIndex);
+        markNearbyImagesLoaded(clampedIndex);
       });
     };
 
@@ -94,7 +119,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
       container.removeEventListener('scroll', updateActiveStep);
       window.removeEventListener('resize', updateActiveStep);
     };
-  }, [stepCount]);
+  }, [markNearbyImagesLoaded, stepCount]);
 
   return (
     <article
@@ -141,18 +166,26 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                 className="group/workflow-image flex min-h-[21rem] items-center justify-center border-b border-white/10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] p-2 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950 sm:min-h-[34rem] sm:p-4 lg:min-h-[42rem]"
                 aria-label={`Open larger view and notes for step ${index + 1}: ${step.title}`}
               >
-                <img
-                  src={getWorkflowImageUrl(index + 1, 800)}
-                  srcSet={getWorkflowSrcset(index + 1)}
-                  sizes="(max-width: 767px) calc(100vw - 3rem), (max-width: 1200px) 70vw, 58rem"
-                  alt={step.alt}
-                  width={index === 0 ? 1200 : 800}
-                  height={index === 0 ? 800 : 1422}
-                  loading={index === 0 ? 'eager' : 'lazy'}
-                  fetchPriority={index === 0 ? 'auto' : 'low'}
-                  decoding="async"
-                  className="max-h-[20rem] w-full object-contain drop-shadow-[0_22px_38px_rgba(0,0,0,0.48)] transition-transform duration-300 group-hover/workflow-image:scale-[1.015] group-focus-visible/workflow-image:scale-[1.015] sm:max-h-[32rem] lg:max-h-[40rem]"
-                />
+                {(() => {
+                  const shouldLoadImage = loadedImageIndexes.has(index);
+
+                  return (
+                    <img
+                      src={shouldLoadImage ? getWorkflowImageUrl(index + 1, 800) : undefined}
+                      srcSet={shouldLoadImage ? getWorkflowSrcset(index + 1) : undefined}
+                      sizes="(max-width: 767px) calc(100vw - 3rem), (max-width: 1200px) 70vw, 58rem"
+                      alt={step.alt}
+                      width={index === 0 ? 1200 : 800}
+                      height={index === 0 ? 800 : 1422}
+                      loading={index === 0 ? 'eager' : 'lazy'}
+                      fetchPriority={index === 0 ? 'auto' : 'low'}
+                      decoding="async"
+                      className={`max-h-[20rem] w-full object-contain drop-shadow-[0_22px_38px_rgba(0,0,0,0.48)] transition duration-300 group-hover/workflow-image:scale-[1.015] group-focus-visible/workflow-image:scale-[1.015] sm:max-h-[32rem] lg:max-h-[40rem] ${
+                        shouldLoadImage ? 'opacity-100' : 'opacity-0'
+                      }`.trim()}
+                    />
+                  );
+                })()}
               </button>
 
               <div className="grid gap-3 px-4 py-4 sm:grid-cols-[auto_1fr] sm:items-start sm:px-5 sm:py-5">

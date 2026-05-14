@@ -91,7 +91,7 @@ async function main() {
     let firstGalleryUpgradeAfterScroll = null;
     await page.waitForFunction(() => {
       const firstImage = document.querySelector('#work img');
-      return Boolean(firstImage?.currentSrc && /-1024\.webp(?:$|\?)/.test(firstImage.currentSrc));
+      return Boolean(firstImage?.currentSrc && /-(?:800|1024)\.webp(?:$|\?)/.test(firstImage.currentSrc));
     }, { timeout: 8000 }).then(() => {
       firstGalleryUpgradeAfterScroll = Date.now() - galleryScrollStart;
     }).catch(() => undefined);
@@ -150,8 +150,8 @@ async function main() {
       failures.push('gallery card shell was still hidden at opacity 0 after scroll');
     }
 
-    if (!afterGalleryMetrics.firstGalleryImageSrc || !/-1024\.webp(?:$|\?)/.test(afterGalleryMetrics.firstGalleryImageSrc)) {
-      failures.push('first gallery image did not resolve to the 1024w mobile candidate');
+    if (!afterGalleryMetrics.firstGalleryImageSrc || !/-(?:800|1024)\.webp(?:$|\?)/.test(afterGalleryMetrics.firstGalleryImageSrc)) {
+      failures.push('first gallery image did not resolve to the sharper mobile candidate');
     }
 
     if (afterGalleryMetrics.horizontalOverflow) {

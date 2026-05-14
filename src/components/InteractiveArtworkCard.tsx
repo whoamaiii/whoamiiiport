@@ -69,7 +69,7 @@ export default function InteractiveArtworkCard({
   const rotateY = useTransform(glareX, [0, 1], [-8, 8]);
   const glowPositionX = useTransform(glareX, [0, 1], ['0%', '100%']);
   const glowPositionY = useTransform(glareY, [0, 1], ['0%', '100%']);
-  const glowBackground = useMotionTemplate`radial-gradient(circle at ${glowPositionX} ${glowPositionY}, rgba(168,85,247,0.28), rgba(236,72,153,0.14) 18%, rgba(249,115,22,0.1) 34%, transparent 58%)`;
+  const glowBackground = useMotionTemplate`radial-gradient(circle at ${glowPositionX} ${glowPositionY}, rgba(94,234,212,0.16), rgba(125,211,252,0.1) 18%, rgba(129,140,248,0.08) 34%, transparent 58%)`;
   const glareBackground = useTransform([glareX, glareY], ([x, y]) => {
     const angle = Math.atan2((y as number) - 0.5, (x as number) - 0.5) * (180 / Math.PI);
     return `linear-gradient(${angle + 90}deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)`;
@@ -201,7 +201,7 @@ export default function InteractiveArtworkCard({
             setShowInfo(isDesktopLayout);
             setIsModalOpen(true);
           }}
-          className="group w-full h-full text-left rounded-2xl overflow-hidden relative focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-zinc-950"
+          className="group w-full h-full text-left rounded-2xl overflow-hidden relative focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950"
           aria-label={`View ${displayTitle} ${isVideoArtwork ? 'video' : 'artwork'} details and notes`}
           whileHover={
             prefersReducedMotion
@@ -251,7 +251,7 @@ export default function InteractiveArtworkCard({
 
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-visible:opacity-100 transition-opacity duration-500 flex items-end p-4 md:p-6 z-30">
               <div className="w-full transform translate-y-0 lg:translate-y-3 lg:group-hover:translate-y-0 lg:group-focus-visible:translate-y-0 transition-transform duration-500">
-                <p className="text-[10px] uppercase tracking-[0.32em] text-purple-200/75 mb-2">
+                <p className="text-[10px] uppercase tracking-[0.32em] text-cyan-100/70 mb-2">
                   Selected work
                 </p>
                 <p className="font-medium text-white text-lg md:text-xl">{title.primary}</p>
@@ -260,7 +260,7 @@ export default function InteractiveArtworkCard({
                 )}
 
                 <div className="mt-4 flex items-center gap-3 text-sm text-zinc-200">
-                  <span className="h-px w-8 bg-gradient-to-r from-purple-400 via-pink-400 to-transparent" />
+                  <span className="h-px w-8 bg-gradient-to-r from-cyan-200 via-emerald-200 to-transparent" />
                   {isVideoArtwork && <Play size={14} aria-hidden="true" />}
                   <span>{isVideoArtwork ? 'View video' : 'View artwork'}</span>
                 </div>
@@ -302,7 +302,7 @@ export default function InteractiveArtworkCard({
                 setIsModalOpen(false);
                 setShowInfo(false);
               }}
-              className="absolute top-6 right-6 z-20 p-3 text-zinc-400 hover:text-white transition-colors rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              className="absolute top-6 right-6 z-20 p-3 text-zinc-400 hover:text-white transition-colors rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
               aria-label="Close modal"
             >
               <X size={24} />
@@ -345,7 +345,7 @@ export default function InteractiveArtworkCard({
                     <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4">
                       <button
                         onClick={() => setShowInfo(true)}
-                        className="glass-dark w-full max-w-md rounded-full px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                        className="glass-dark w-full max-w-md rounded-full px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                         aria-expanded={showInfo}
                       >
                         Read meaning + process
@@ -374,7 +374,7 @@ export default function InteractiveArtworkCard({
                     >
                       <div className="mb-6 flex items-start justify-between gap-4">
                         <div>
-                          <p className="text-xs uppercase tracking-[0.3em] text-purple-400/80 font-medium mb-2">
+                          <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/80 font-medium mb-2">
                             Artwork notes
                           </p>
                           <h3 className="text-2xl font-bold text-white leading-tight">
@@ -394,13 +394,13 @@ export default function InteractiveArtworkCard({
                         </button>
                       </div>
 
-                      <div className="mb-4 h-px w-14 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full" />
+                      <div className="mb-4 h-px w-14 bg-gradient-to-r from-cyan-300 to-emerald-300 rounded-full" />
 
                       <div className="space-y-6">
                         {sections.map((sec, i) => (
                           <div key={i}>
                             {sec.heading && (
-                              <h4 className="text-sm uppercase tracking-[0.2em] text-purple-300/90 font-semibold mb-3">
+                              <h4 className="text-sm uppercase tracking-[0.2em] text-cyan-100/90 font-semibold mb-3">
                                 {sec.heading}
                               </h4>
                             )}
@@ -410,8 +410,8 @@ export default function InteractiveArtworkCard({
                               </p>
                             ))}
                             {sec.formula && (
-                              <div className="my-4 p-3 rounded-xl bg-black/40 border border-purple-500/20">
-                                <pre className="text-xs text-purple-200/90 font-mono whitespace-pre-wrap leading-relaxed">
+                              <div className="my-4 p-3 rounded-xl bg-black/40 border border-cyan-300/20">
+                                <pre className="text-xs text-cyan-100/90 font-mono whitespace-pre-wrap leading-relaxed">
                                   {sec.formula}
                                 </pre>
                                 {sec.formulaCaption && (
@@ -432,9 +432,9 @@ export default function InteractiveArtworkCard({
                   <div className="lg:w-[26rem] hidden lg:flex items-end">
                     <button
                       onClick={() => setShowInfo(true)}
-                      className="glass-dark w-full rounded-3xl px-6 py-5 text-left transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-purple-400"
+                      className="glass-dark w-full rounded-3xl px-6 py-5 text-left transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                     >
-                      <p className="text-xs uppercase tracking-[0.3em] text-purple-300/80 mb-2">
+                      <p className="text-xs uppercase tracking-[0.3em] text-cyan-100/80 mb-2">
                         Artwork notes
                       </p>
                       <p className="text-xl font-semibold text-white">

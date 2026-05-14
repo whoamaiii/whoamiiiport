@@ -719,7 +719,7 @@
 }
 
 .section-shader-word--gallery::before {
-  -webkit-text-stroke-color: rgba(255, 242, 226, 0.28);
+  -webkit-text-stroke-color: rgba(226, 250, 255, 0.24);
   opacity: 0.38;
 }
 
@@ -770,10 +770,10 @@
 
 .section-shader-fallback--gallery {
   background-image:
-    radial-gradient(circle at 18% 20%, rgba(247, 228, 214, 0.24) 0%, rgba(247, 228, 214, 0) 18%),
-    radial-gradient(circle at 74% 22%, rgba(223, 161, 187, 0.2) 0%, rgba(223, 161, 187, 0) 28%),
-    radial-gradient(circle at 58% 78%, rgba(128, 150, 194, 0.16) 0%, rgba(128, 150, 194, 0) 26%),
-    linear-gradient(134deg, #f1c7b7 2%, #d7a2b8 34%, #b7b7d8 70%, #8aa6bb 100%);
+    radial-gradient(circle at 18% 20%, rgba(226, 250, 255, 0.24) 0%, rgba(226, 250, 255, 0) 18%),
+    radial-gradient(circle at 74% 22%, rgba(135, 220, 210, 0.18) 0%, rgba(135, 220, 210, 0) 28%),
+    radial-gradient(circle at 58% 78%, rgba(132, 158, 210, 0.16) 0%, rgba(132, 158, 210, 0) 26%),
+    linear-gradient(134deg, #d7f0f1 2%, #a8d6d4 34%, #aab8db 70%, #7ea9b6 100%);
   background-size: 165% 165%;
   animation-duration: 5.8s;
 }
@@ -805,10 +805,10 @@
 
 .section-shader-static-fallback--gallery {
   background-image:
-    radial-gradient(circle at 18% 20%, rgba(247, 228, 214, 0.24) 0%, rgba(247, 228, 214, 0) 18%),
-    radial-gradient(circle at 74% 22%, rgba(223, 161, 187, 0.2) 0%, rgba(223, 161, 187, 0) 28%),
-    radial-gradient(circle at 58% 78%, rgba(128, 150, 194, 0.16) 0%, rgba(128, 150, 194, 0) 26%),
-    linear-gradient(134deg, #f1c7b7 2%, #d7a2b8 34%, #b7b7d8 70%, #8aa6bb 100%);
+    radial-gradient(circle at 18% 20%, rgba(226, 250, 255, 0.24) 0%, rgba(226, 250, 255, 0) 18%),
+    radial-gradient(circle at 74% 22%, rgba(135, 220, 210, 0.18) 0%, rgba(135, 220, 210, 0) 28%),
+    radial-gradient(circle at 58% 78%, rgba(132, 158, 210, 0.16) 0%, rgba(132, 158, 210, 0) 26%),
+    linear-gradient(134deg, #d7f0f1 2%, #a8d6d4 34%, #aab8db 70%, #7ea9b6 100%);
   background-size: 165% 165%;
   animation-duration: 5.8s;
 }

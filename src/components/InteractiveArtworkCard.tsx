@@ -124,7 +124,7 @@ export default function InteractiveArtworkCard({
   const sizes = getGallerySizes();
   const fallbackUrl = getGalleryImageUrl(imageSlug);
   const modalImageUrl = getModalImageUrl(imageSlug);
-  const mobilePriorityUrl = getImageUrl(imageSlug, 800);
+  const mobilePriorityUrl = getImageUrl(imageSlug, 560);
   const useMobilePriorityImage = imageCanLoad && isMobileLayout && imageLoading === 'eager';
   const displayedImageSrc =
     useMobilePriorityImage

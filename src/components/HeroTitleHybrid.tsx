@@ -7,6 +7,7 @@ import {
 import { ShaderTextWord } from './shared/ShaderTextWord';
 import type { TextShadowConfig } from './shared/shaderTextShared';
 import reportError from '../lib/reportError';
+import { useMediaQuery } from '../hooks/useMediaQuery';
 import { getImageUrl } from '../utils/images';
 
 interface HeroTitleHybridProps {
@@ -16,7 +17,7 @@ interface HeroTitleHybridProps {
   forceFallback?: boolean;
 }
 
-const HERO_LIQUID_BACKGROUND = getImageUrl('liquid-perception-hero', 960);
+const HERO_LIQUID_BACKGROUND = getImageUrl('liquid-perception-hero', 720);
 const HERO_WORDMARK_VISUAL_SECOND_LINE = `${HERO_WORDMARK_SUPPORTED_LINES[1]}.`;
 
 const HERO_LIQUID_SHARED_UV = {
@@ -153,8 +154,11 @@ export function HeroTitleHybrid({
 }: HeroTitleHybridProps) {
   const reportedRef = useRef(false);
   const [readyLines, setReadyLines] = useState({ first: false, second: false });
+  const [mobileShaderAllowed, setMobileShaderAllowed] = useState(false);
+  const isMobileLayout = useMediaQuery('(max-width: 767px)', false);
   const titleMatchesWordmark = matchesHeroWordmark(titleLines);
   const visualSupported = !forceFallback && titleMatchesWordmark;
+  const deferMobileShader = visualSupported && !reducedMotion && isMobileLayout && !mobileShaderAllowed;
   const revealShader = readyLines.first && readyLines.second;
 
   const markFirstReady = useCallback(() => {
@@ -181,7 +185,43 @@ export function HeroTitleHybrid({
     setReadyLines({ first: false, second: false });
   }, [semanticTitle, titleLines, visualSupported]);
 
+  useEffect(() => {
+    setMobileShaderAllowed(false);
+
+    if (!visualSupported || reducedMotion || !isMobileLayout) {
+      return;
+    }
+
+    const requestIdle = window.requestIdleCallback?.bind(window);
+    let idleCallbackId: number | null = null;
+    let timeoutId: number | null = null;
+
+    const allowShader = () => {
+      setMobileShaderAllowed(true);
+    };
+
+    if (requestIdle) {
+      idleCallbackId = requestIdle(allowShader, { timeout: 1800 });
+    } else {
+      timeoutId = window.setTimeout(allowShader, 1800);
+    }
+
+    return () => {
+      if (idleCallbackId !== null) {
+        window.cancelIdleCallback?.(idleCallbackId);
+      }
+
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [isMobileLayout, reducedMotion, visualSupported]);
+
   if (!visualSupported) {
+    return <HeroTitleStaticFallback titleLines={titleLines} />;
+  }
+
+  if (deferMobileShader) {
     return <HeroTitleStaticFallback titleLines={titleLines} />;
   }
 

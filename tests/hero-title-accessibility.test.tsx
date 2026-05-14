@@ -1,10 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import { motionValue } from 'motion/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HeroTitleHybrid } from '../src/components/HeroTitleHybrid';
 import { HERO_COPY } from '../src/content/siteCopy';
 import reportError from '../src/lib/reportError';
 import { HeroSection } from '../src/sections/HeroSection';
+import { installMatchMediaMock } from './helpers/matchMedia';
 
 vi.mock('../src/lib/reportError', () => ({
   default: vi.fn(),
@@ -82,7 +83,9 @@ describe('Hero title accessibility contract', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     vi.mocked(reportError).mockClear();
   });
 
@@ -121,6 +124,33 @@ describe('Hero title accessibility contract', () => {
     expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Altered');
     expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Perceptions');
     expect(reportError).not.toHaveBeenCalled();
+  });
+
+  it('starts mobile with the static title before upgrading to the live shader after idle', async () => {
+    vi.useFakeTimers();
+    installMatchMediaMock({
+      '(max-width: 767px)': true,
+      '(max-width: 639px)': true,
+      '(prefers-reduced-motion: reduce)': false,
+    });
+
+    render(
+      <h1>
+        <HeroTitleHybrid
+          semanticTitle={HERO_COPY.titleSemantic}
+          titleLines={HERO_COPY.titleLines}
+          reducedMotion={false}
+        />
+      </h1>,
+    );
+
+    expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'fallback');
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1800);
+    });
+
+    expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'visual');
   });
 
   it('reports a visual fallback when the requested title does not match the wordmark asset', async () => {

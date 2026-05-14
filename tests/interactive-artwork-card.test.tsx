@@ -107,7 +107,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     const image = screen.getByRole('img', {
       name: /surreal hooded forest portrait/i,
     });
-    expect(image).toHaveAttribute('src', '/images/liquid-perception-800.webp');
+    expect(image).toHaveAttribute('src', '/images/liquid-perception-560.webp');
     expect(image).not.toHaveAttribute('srcset');
   });
 

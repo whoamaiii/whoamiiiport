@@ -45,18 +45,27 @@ export function HeroSection({
           aria-hidden="true"
         />
 
-        <motion.img
-          src={getImageUrl(HERO_SLUG, HERO_FALLBACK_WIDTH)}
-          srcSet={getHeroSrcset(HERO_SLUG)}
-          sizes={getHeroSizes()}
-          alt={heroMetadata.alt}
-          width={HERO_IMAGE_WIDTH}
-          height={HERO_IMAGE_HEIGHT}
-          fetchPriority="high"
-          decoding="async"
-          className="min-w-[120vw] min-h-[120vh] object-cover object-[39%_center] absolute -top-[10vh] -left-[10vw] md:object-center"
-          style={{ y: parallaxY, x: parallaxX }}
-        />
+        <picture>
+          <source
+            media="(max-width: 767px)"
+            srcSet={getImageUrl(HERO_SLUG, 720)}
+          />
+          <source
+            media="(min-width: 768px)"
+            srcSet={getHeroSrcset(HERO_SLUG)}
+            sizes={getHeroSizes()}
+          />
+          <motion.img
+            src={getImageUrl(HERO_SLUG, HERO_FALLBACK_WIDTH)}
+            alt={heroMetadata.alt}
+            width={HERO_IMAGE_WIDTH}
+            height={HERO_IMAGE_HEIGHT}
+            fetchPriority="high"
+            decoding="async"
+            className="min-w-[120vw] min-h-[120vh] object-cover object-[39%_center] absolute -top-[10vh] -left-[10vw] md:object-center"
+            style={{ y: parallaxY, x: parallaxX }}
+          />
+        </picture>
       </motion.div>
 
       <div className="relative z-20 min-h-[100dvh] w-full">

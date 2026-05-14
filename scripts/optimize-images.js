@@ -4,8 +4,8 @@
  * Generates responsive variants from source assets using Sharp
  * 
  * Profiles:
- * - hero: 960/1440w variants for hero section
- * - gallery: 480/800/1024/1200w variants for gallery cards
+ * - hero: 720/960/1440w variants for hero section
+ * - gallery: 480/560/800/1024/1200w variants for gallery cards
  * - modal: 800/1200/1600w variants for artwork modals
  */
 
@@ -30,6 +30,7 @@ const SOURCES = [
     quality: 70,
     qualityByWidth: {
       480: 25,
+      560: 45,
     },
   },
   { 
@@ -67,8 +68,8 @@ const OUTPUT_DIR = './public/images';
 
 // Size variants by profile
 const PROFILES = {
-  hero: [960, 1440],
-  gallery: [480, 800, 1024, 1200],
+  hero: [720, 960, 1440],
+  gallery: [480, 560, 800, 1024, 1200],
 };
 const MODAL_WIDTHS = [800, 1200, 1600];
 

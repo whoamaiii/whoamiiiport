@@ -32,11 +32,12 @@ const splitSrcset = (srcset: string) =>
 
 describe('image contract', () => {
   it('keeps the hero asset contract explicit and resolvable', () => {
-    expect(HERO_WIDTHS).toEqual([960, 1440]);
+    expect(HERO_WIDTHS).toEqual([720, 960, 1440]);
 
     const srcset = getHeroSrcset('liquid-perception-hero');
     const urls = splitSrcset(srcset);
     expect(urls).toEqual([
+      '/images/liquid-perception-hero-720.webp',
       '/images/liquid-perception-hero-960.webp',
       '/images/liquid-perception-hero-1440.webp',
     ]);
@@ -138,6 +139,7 @@ describe('image contract', () => {
     const urls = splitSrcset(srcset);
     expect(urls).toEqual([
       '/images/about-portrait-480.webp',
+      '/images/about-portrait-560.webp',
       '/images/about-portrait-800.webp',
       '/images/about-portrait-1024.webp',
       '/images/about-portrait-1200.webp',
@@ -148,7 +150,7 @@ describe('image contract', () => {
   });
 
   it('keeps modal URLs aligned with generated files for every modal-capable artwork', () => {
-    expect(GALLERY_WIDTHS).toEqual([480, 800, 1024, 1200]);
+    expect(GALLERY_WIDTHS).toEqual([480, 560, 800, 1024, 1200]);
     expect(MODAL_WIDTHS).toEqual([800, 1200, 1600]);
     expect(MODAL_FALLBACK_WIDTH).toBe(1600);
 

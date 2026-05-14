@@ -11,6 +11,9 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await expect(
     page.getByText(/Digital paintings and dream-burned color studies from altered states\./i),
   ).toBeVisible();
+  await page.evaluate(() => document.querySelector('#work')?.scrollIntoView({ block: 'start' }));
+  await page.waitForFunction(() => Boolean(document.querySelector('#work')));
+
   await expect(page.getByText(/PORTFOLIO HIGHLIGHTS/i)).toBeVisible();
   await expect(page.getByRole('heading', { name: /Selected Works\./i })).toBeVisible();
   await expect(page.getByRole('region', { name: /Selected Works\./i })).toBeVisible();

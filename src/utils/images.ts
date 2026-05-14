@@ -51,9 +51,9 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
 };
 
 // Available widths by profile
-export const HERO_WIDTHS = [960, 1440] as const;
+export const HERO_WIDTHS = [720, 960, 1440] as const;
 export const HERO_FALLBACK_WIDTH = HERO_WIDTHS[HERO_WIDTHS.length - 1];
-export const GALLERY_WIDTHS = [480, 800, 1024, 1200] as const;
+export const GALLERY_WIDTHS = [480, 560, 800, 1024, 1200] as const;
 export const MODAL_WIDTHS = [800, 1200, 1600] as const;
 export const MODAL_FALLBACK_WIDTH = MODAL_WIDTHS[MODAL_WIDTHS.length - 1];
 

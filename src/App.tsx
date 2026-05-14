@@ -12,14 +12,26 @@ import { ScrollProgress } from './components/ScrollProgress';
 import RenderErrorBoundary from './components/fallback/RenderErrorBoundary';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useReducedMotion } from './hooks/useReducedMotion';
-import { GallerySection } from './sections/GallerySection';
 import { HeroSection } from './sections/HeroSection';
 import { PsychedelicBackground } from './sections/PsychedelicBackground';
 import { SiteHeader } from './sections/SiteHeader';
 
+const GallerySection = lazy(() =>
+  import('./sections/GallerySection').then((module) => ({ default: module.GallerySection })),
+);
 const AboutSection = lazy(() => import('./sections/AboutSection'));
 const ContactSection = lazy(() => import('./sections/ContactSection'));
 const SiteFooter = lazy(() => import('./sections/SiteFooter'));
+
+const FIRST_GALLERY_PRELOAD_ID = 'first-gallery-image-preload';
+
+function getInitialGallerySectionLoad() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  return /^#(work|about|contact)$/.test(window.location.hash);
+}
 
 function getDeferredSectionIdFromHash() {
   if (typeof window === 'undefined') {
@@ -34,8 +46,28 @@ function isDeferredSection(id: string) {
   return id === 'about' || id === 'contact';
 }
 
+function preloadFirstGalleryImage() {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  if (document.getElementById(FIRST_GALLERY_PRELOAD_ID)) {
+    return;
+  }
+
+  const link = document.createElement('link');
+  link.id = FIRST_GALLERY_PRELOAD_ID;
+  link.rel = 'preload';
+  link.as = 'image';
+  link.href = '/images/liquid-perception-560.webp';
+  link.media = '(max-width: 767px)';
+  link.fetchPriority = 'low';
+  document.head.append(link);
+}
+
 export default function App() {
   const mainRef = useRef<HTMLElement>(null);
+  const [loadGallerySection, setLoadGallerySection] = useState(getInitialGallerySectionLoad);
   const [loadDeferredSections, setLoadDeferredSections] = useState(
     () => getDeferredSectionIdFromHash() !== null,
   );
@@ -98,6 +130,11 @@ export default function App() {
     setLoadDeferredSections(true);
   }, []);
 
+  const enableGallerySection = useCallback(() => {
+    setLoadGallerySection(true);
+    preloadFirstGalleryImage();
+  }, []);
+
   const scrollToSection = useCallback(
     (id: string) => {
       if (typeof document === 'undefined') {
@@ -121,6 +158,10 @@ export default function App() {
 
   const handleSectionNavigation = useCallback(
     (id: string) => {
+      if (id === 'work' || isDeferredSection(id)) {
+        enableGallerySection();
+      }
+
       if (isDeferredSection(id)) {
         enableDeferredSections();
       }
@@ -129,8 +170,47 @@ export default function App() {
         setPendingSectionNavigation(id);
       }
     },
-    [enableDeferredSections, scrollToSection],
+    [enableDeferredSections, enableGallerySection, scrollToSection],
   );
+
+  useEffect(() => {
+    if (loadGallerySection) {
+      preloadFirstGalleryImage();
+      return;
+    }
+
+    const enableAfterHeroScroll = () => {
+      if (window.scrollY > window.innerHeight * 0.35) {
+        enableGallerySection();
+      }
+    };
+    const requestIdle = window.requestIdleCallback?.bind(window);
+    let idleCallbackId: number | null = null;
+    let timeoutId: number | null = null;
+
+    if (requestIdle) {
+      idleCallbackId = requestIdle(enableGallerySection, { timeout: 1600 });
+    } else {
+      timeoutId = window.setTimeout(enableGallerySection, 1400);
+    }
+
+    window.addEventListener('scroll', enableAfterHeroScroll, { passive: true });
+    window.addEventListener('hashchange', enableGallerySection, { once: true });
+    enableAfterHeroScroll();
+
+    return () => {
+      if (idleCallbackId !== null) {
+        window.cancelIdleCallback?.(idleCallbackId);
+      }
+
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+      }
+
+      window.removeEventListener('scroll', enableAfterHeroScroll);
+      window.removeEventListener('hashchange', enableGallerySection);
+    };
+  }, [enableGallerySection, loadGallerySection]);
 
   useEffect(() => {
     if (loadDeferredSections) {
@@ -265,7 +345,11 @@ export default function App() {
           reducedMotion={prefersReducedMotion}
           heroReveal={heroReveal}
         />
-        <GallerySection reducedMotion={prefersReducedMotion} />
+        {loadGallerySection ? (
+          <Suspense fallback={null}>
+            <GallerySection reducedMotion={prefersReducedMotion} />
+          </Suspense>
+        ) : null}
         {loadDeferredSections ? (
           <Suspense fallback={null}>
             <AboutSection />

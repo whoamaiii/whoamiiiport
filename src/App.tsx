@@ -24,6 +24,7 @@ const ContactSection = lazy(() => import('./sections/ContactSection'));
 const SiteFooter = lazy(() => import('./sections/SiteFooter'));
 
 const FIRST_GALLERY_PRELOAD_ID = 'first-gallery-image-preload';
+const GALLERY_IDLE_LOAD_TIMEOUT_MS = 900;
 
 function getInitialGallerySectionLoad() {
   if (typeof window === 'undefined') {
@@ -61,7 +62,7 @@ function preloadFirstGalleryImage() {
   link.as = 'image';
   link.href = '/images/liquid-perception-560.webp';
   link.media = '(max-width: 767px)';
-  link.fetchPriority = 'low';
+  link.fetchPriority = 'auto';
   document.head.append(link);
 }
 
@@ -189,9 +190,9 @@ export default function App() {
     let timeoutId: number | null = null;
 
     if (requestIdle) {
-      idleCallbackId = requestIdle(enableGallerySection, { timeout: 1600 });
+      idleCallbackId = requestIdle(enableGallerySection, { timeout: GALLERY_IDLE_LOAD_TIMEOUT_MS });
     } else {
-      timeoutId = window.setTimeout(enableGallerySection, 1400);
+      timeoutId = window.setTimeout(enableGallerySection, GALLERY_IDLE_LOAD_TIMEOUT_MS);
     }
 
     window.addEventListener('scroll', enableAfterHeroScroll, { passive: true });

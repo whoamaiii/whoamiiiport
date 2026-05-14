@@ -404,21 +404,21 @@ export default function InteractiveArtworkCard({
                     >
                       <div className="mb-6 flex items-start justify-between gap-4">
                         <div>
-                          <p className="text-xs uppercase tracking-[0.3em] text-cyan-200/80 font-medium mb-2">
+                          <p className="text-xs uppercase tracking-[0.3em] text-cyan-100 font-medium mb-2">
                             Artwork notes
                           </p>
                           <h3 className="text-2xl font-bold text-white leading-tight">
                             {title.primary}
                           </h3>
                           {title.secondary && (
-                            <p className="text-lg text-zinc-400 mt-1">
+                            <p className="text-lg text-zinc-200 mt-1">
                               {title.secondary}
                             </p>
                           )}
                         </div>
                         <button
                           onClick={() => setShowInfo(false)}
-                          className="shrink-0 rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-zinc-300 transition-colors hover:text-white"
+                          className="shrink-0 rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-zinc-100 transition-colors hover:text-white"
                         >
                           Hide notes
                         </button>
@@ -430,12 +430,12 @@ export default function InteractiveArtworkCard({
                         {sections.map((sec, i) => (
                           <div key={i}>
                             {sec.heading && (
-                              <h4 className="text-sm uppercase tracking-[0.2em] text-cyan-100/90 font-semibold mb-3">
+                              <h4 className="text-sm uppercase tracking-[0.2em] text-cyan-50 font-semibold mb-3">
                                 {sec.heading}
                               </h4>
                             )}
                             {sec.body.split('\n\n').map((p, j) => (
-                              <p key={j} className="text-sm leading-[1.7] text-zinc-300/90 mb-3 font-light">
+                              <p key={j} className="text-sm leading-[1.7] text-zinc-100 mb-3 font-light">
                                 {p}
                               </p>
                             ))}

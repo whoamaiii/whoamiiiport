@@ -126,7 +126,7 @@ describe('Hero title accessibility contract', () => {
     expect(reportError).not.toHaveBeenCalled();
   });
 
-  it('starts mobile with the static title before upgrading to the live shader after idle', async () => {
+  it('keeps mobile static through the first load before upgrading to the live shader', async () => {
     vi.useFakeTimers();
     installMatchMediaMock({
       '(max-width: 767px)': true,
@@ -147,7 +147,13 @@ describe('Hero title accessibility contract', () => {
     expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'fallback');
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(1800);
+      await vi.advanceTimersByTimeAsync(4400);
+    });
+
+    expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'fallback');
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(100);
     });
 
     expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'visual');

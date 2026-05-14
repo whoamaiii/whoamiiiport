@@ -19,6 +19,8 @@ interface HeroTitleHybridProps {
 
 const HERO_LIQUID_BACKGROUND = getImageUrl('liquid-perception-hero', 720);
 const HERO_WORDMARK_VISUAL_SECOND_LINE = `${HERO_WORDMARK_SUPPORTED_LINES[1]}.`;
+const MOBILE_SHADER_BOOT_DELAY_MS = 4500;
+const MOBILE_SHADER_IDLE_TIMEOUT_MS = 1500;
 
 const HERO_LIQUID_SHARED_UV = {
   first: {
@@ -192,27 +194,31 @@ export function HeroTitleHybrid({
       return;
     }
 
-    const requestIdle = window.requestIdleCallback?.bind(window);
     let idleCallbackId: number | null = null;
-    let timeoutId: number | null = null;
+    let bootDelayId: number | null = null;
 
     const allowShader = () => {
       setMobileShaderAllowed(true);
     };
 
-    if (requestIdle) {
-      idleCallbackId = requestIdle(allowShader, { timeout: 1800 });
-    } else {
-      timeoutId = window.setTimeout(allowShader, 1800);
-    }
+    bootDelayId = window.setTimeout(() => {
+      const requestIdle = window.requestIdleCallback?.bind(window);
+
+      if (requestIdle) {
+        idleCallbackId = requestIdle(allowShader, { timeout: MOBILE_SHADER_IDLE_TIMEOUT_MS });
+        return;
+      }
+
+      allowShader();
+    }, MOBILE_SHADER_BOOT_DELAY_MS);
 
     return () => {
       if (idleCallbackId !== null) {
         window.cancelIdleCallback?.(idleCallbackId);
       }
 
-      if (timeoutId !== null) {
-        window.clearTimeout(timeoutId);
+      if (bootDelayId !== null) {
+        window.clearTimeout(bootDelayId);
       }
     };
   }, [isMobileLayout, reducedMotion, visualSupported]);

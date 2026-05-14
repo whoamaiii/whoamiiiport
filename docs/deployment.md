@@ -10,6 +10,7 @@ This portfolio is served as a static site from GitHub Pages.
 - GitHub repository: `whoamaiii/whoamiiiport`
 - GitHub Pages source: `gh-pages` branch, `/` root
 - Custom domain file on `gh-pages`: `CNAME` with `whoamiii.art`
+- HTTPS: certificate approved and HTTPS enforcement enabled in GitHub Pages
 
 GoDaddy is not where the live DNS records are managed. GoDaddy only owns the
 domain registration. Cloudflare is the place to edit DNS because the domain
@@ -71,6 +72,8 @@ The Pages API should report:
 - `build_type`: `legacy`
 - `source.branch`: `gh-pages`
 - `cname`: `whoamiii.art`
+- `https_certificate.state`: `approved`
+- `https_enforced`: `true`
 
 ## Live Verification
 
@@ -89,16 +92,17 @@ Expected result:
 Then verify the live site and representative assets:
 
 ```bash
-curl -I --max-time 15 http://whoamiii.art/
-curl -I --max-time 15 http://www.whoamiii.art/
-curl -s --max-time 15 http://whoamiii.art/ | rg 'assets/index-.*\.(js|css)'
-curl -I --max-time 15 http://whoamiii.art/images/liquid-perception-hero-960.webp
+curl -I --max-time 15 https://whoamiii.art/
+curl -I --max-time 15 https://www.whoamiii.art/
+curl -s --max-time 15 https://whoamiii.art/ | rg 'assets/index-.*\.(js|css)'
+curl -I --max-time 15 https://whoamiii.art/images/liquid-perception-hero-960.webp
 ```
 
 Expected result:
 
-- `http://whoamiii.art/` returns `200 OK`.
-- `http://www.whoamiii.art/` redirects to `http://whoamiii.art/`.
+- `https://whoamiii.art/` returns `200 OK`.
+- `https://www.whoamiii.art/` redirects to `https://whoamiii.art/`.
+- `http://whoamiii.art/` redirects to HTTPS.
 - The HTML references the current hashed JS and CSS assets.
 - Image and video assets return `200 OK`.
 - A real browser render check shows the portfolio content, not only a server
@@ -106,8 +110,11 @@ Expected result:
 
 ## HTTPS
 
-HTTPS enforcement depends on GitHub issuing a certificate for `whoamiii.art`.
-Immediately after DNS changes, GitHub may reject HTTPS enforcement with:
+HTTPS is currently active for `whoamiii.art`; GitHub Pages reports the
+certificate as `approved` and `https_enforced` as `true`.
+
+If DNS changes are made later, GitHub may temporarily reject HTTPS enforcement
+with:
 
 ```text
 The certificate does not exist yet

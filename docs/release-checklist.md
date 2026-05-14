@@ -63,9 +63,10 @@ npm run test:e2e
 - Confirm GitHub Pages reports `status: built`, `source.branch: gh-pages`, and `cname: whoamiii.art`.
 - Confirm Cloudflare DNS has the four GitHub Pages A records for `whoamiii.art`.
 - Confirm Cloudflare DNS has `www` as a DNS-only CNAME to `whoamaiii.github.io`.
-- Confirm `http://whoamiii.art/` returns `200 OK`.
-- Confirm `http://www.whoamiii.art/` redirects to `http://whoamiii.art/`.
-- Confirm `https://whoamiii.art/` returns a valid certificate and `200 OK` before marking HTTPS complete.
+- Confirm GitHub Pages reports `https_certificate.state: approved` and `https_enforced: true`.
+- Confirm `https://whoamiii.art/` returns `200 OK`.
+- Confirm `https://www.whoamiii.art/` redirects to `https://whoamiii.art/`.
+- Confirm `http://whoamiii.art/` redirects to HTTPS.
 
 ## Security and Header Review
 

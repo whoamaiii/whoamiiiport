@@ -38,12 +38,25 @@
       /* Critical inline styles to prevent FOUC */
       body { background: #09090b; margin: 0; }
       #root,
-      .app-boot-shell {
+      .app-static-shell {
         min-height: 100vh;
         min-height: 100svh;
       }
-      .app-boot-shell {
+      .app-static-shell {
         position: relative;
+        overflow-x: hidden;
+        color: rgba(246, 242, 238, 0.94);
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: #09090b;
+      }
+      .app-static-shell a {
+        color: inherit;
+        text-decoration: none;
+      }
+      .app-static-hero {
+        position: relative;
+        min-height: 100vh;
+        min-height: 100svh;
         overflow: hidden;
         background:
           linear-gradient(90deg, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.48) 42%, rgba(9, 9, 11, 0.18) 100%),
@@ -51,12 +64,19 @@
           url("/images/liquid-perception-hero-720.webp") center / cover no-repeat,
           linear-gradient(180deg, #0b0712 0%, #09090b 100%);
       }
-      .app-boot-shell::before {
-        content: "WHOAMIII";
+      .app-static-nav {
         position: absolute;
-        left: clamp(1.75rem, 5vw, 4.25rem);
+        z-index: 2;
+        left: clamp(1.25rem, 5vw, 4.25rem);
+        right: clamp(1.25rem, 5vw, 4.25rem);
         top: clamp(1.5rem, 5vw, 3.25rem);
-        min-width: min(18rem, 55vw);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .app-static-logo {
+        min-width: min(18rem, 56vw);
         border: 1px solid rgba(247, 250, 255, 0.72);
         border-radius: 999px;
         padding: 1.08rem 2.1rem;
@@ -67,26 +87,35 @@
         letter-spacing: -0.04em;
         text-shadow: 0 0.08rem 0.25rem rgba(0, 0, 0, 0.7);
       }
-      .app-boot-shell__kicker {
-        content: "PSYCHEDELIC ART PORTFOLIO";
+      .app-static-link {
+        border: 1px solid rgba(247, 250, 255, 0.48);
+        border-radius: 999px;
+        padding: 0.86rem 1rem;
+        background: rgba(15, 15, 20, 0.5);
+        box-shadow: 0 0 1rem rgba(203, 170, 238, 0.2);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .app-static-copy {
         position: absolute;
+        z-index: 1;
         left: clamp(2rem, 8vw, 5rem);
-        right: 2rem;
+        right: 1.5rem;
         top: min(68vh, 35.5rem);
+      }
+      .app-static-kicker {
+        margin: 0 0 2.5rem;
         color: rgba(235, 232, 229, 0.7);
         font: 500 0.86rem/1.2 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
         letter-spacing: 0.32em;
         text-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, 0.6);
-        white-space: nowrap;
       }
-      .app-boot-shell__title {
-        position: absolute;
-        left: clamp(2rem, 8vw, 5rem);
-        right: 1.5rem;
-        top: calc(min(68vh, 35.5rem) + 2.5rem);
+      .app-static-title {
+        margin: 0;
         max-width: 36rem;
         color: transparent;
-        white-space: pre;
         font: italic 900 clamp(3.02rem, 16.2vw, 4.72rem)/0.8 "Avenir Next Condensed", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
         letter-spacing: -0.06em;
         -webkit-text-stroke: 0.48px rgba(238, 252, 255, 0.38);
@@ -101,57 +130,123 @@
           drop-shadow(0.009em 0.022em 0.018em rgba(2, 6, 16, 0.52))
           drop-shadow(0 0 0.055em rgba(94, 219, 242, 0.16));
       }
-      .app-boot-shell__hint {
-        position: absolute;
-        left: clamp(2rem, 8vw, 5rem);
-        bottom: 2rem;
-        width: 2.8rem;
-        height: 0.18rem;
-        border-radius: 999px;
+      .app-static-subtitle {
+        max-width: 18rem;
+        margin: 2.6rem 0 0;
+        color: rgba(248, 244, 241, 0.88);
+        font-size: clamp(1.32rem, 5.4vw, 2rem);
+        line-height: 1.38;
+        text-shadow: 0 0.18rem 0.9rem rgba(0, 0, 0, 0.68);
+      }
+      .app-static-work {
+        padding: 4rem clamp(1.25rem, 5vw, 5rem) 5rem;
+        background:
+          radial-gradient(circle at 18% 0%, rgba(131, 77, 255, 0.17), transparent 32rem),
+          radial-gradient(circle at 90% 8%, rgba(29, 226, 190, 0.12), transparent 28rem),
+          #09090b;
+      }
+      .app-static-work-label {
+        margin: 0 0 0.85rem;
+        color: rgba(235, 232, 229, 0.62);
+        font-size: 0.74rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+      }
+      .app-static-work h2 {
+        margin: 0 0 1.5rem;
+        max-width: 18rem;
+        font-size: clamp(2.1rem, 12vw, 4.8rem);
+        line-height: 0.9;
+        letter-spacing: -0.04em;
+      }
+      .app-static-grid {
+        display: grid;
+        gap: 1rem;
+      }
+      .app-static-card {
+        margin: 0;
         overflow: hidden;
-        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: 1rem;
+        background: rgba(255, 255, 255, 0.05);
       }
-      .app-boot-shell__hint::after {
-        content: "";
+      .app-static-card img {
         display: block;
-        width: 42%;
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(90deg, #9eeaf4, #f0dfc3);
-        animation: boot-scan 1.35s ease-in-out infinite;
+        width: 100%;
+        aspect-ratio: 4 / 5;
+        object-fit: cover;
       }
-      @keyframes boot-scan {
-        0% { transform: translateX(-110%); }
-        100% { transform: translateX(250%); }
+      .app-static-thumb {
+        min-height: 14rem;
+        aspect-ratio: 4 / 5;
+        background:
+          radial-gradient(circle at 22% 18%, rgba(156, 232, 244, 0.26), transparent 28%),
+          radial-gradient(circle at 80% 20%, rgba(247, 98, 153, 0.22), transparent 30%),
+          radial-gradient(circle at 50% 88%, rgba(236, 212, 154, 0.18), transparent 36%),
+          linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+      }
+      .app-static-card figcaption {
+        padding: 0.95rem 1rem 1.1rem;
+        color: rgba(245, 241, 236, 0.82);
+        font-size: 0.95rem;
       }
       @media (min-width: 768px) {
-        .app-boot-shell {
+        .app-static-hero {
           background:
             linear-gradient(90deg, rgba(9, 9, 11, 0.9) 0%, rgba(9, 9, 11, 0.5) 37%, rgba(9, 9, 11, 0.12) 100%),
             linear-gradient(0deg, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.12) 48%, rgba(9, 9, 11, 0.3) 100%),
             url("/images/liquid-perception-hero-1440.webp") center / cover no-repeat,
             linear-gradient(180deg, #0b0712 0%, #09090b 100%);
         }
-        .app-boot-shell__kicker,
-        .app-boot-shell__title,
-        .app-boot-shell__hint {
+        .app-static-copy {
           left: 5rem;
+          top: 14rem;
         }
-      }
-      @media (prefers-reduced-motion: reduce) {
-        .app-boot-shell__hint::after {
-          animation: none;
-          transform: none;
+        .app-static-grid {
+          grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        .app-static-card img {
+          aspect-ratio: 3 / 4;
         }
       }
     </style>
   </head>
   <body>
     <div id="root">
-      <div class="app-boot-shell" aria-hidden="true">
-        <div class="app-boot-shell__kicker">PSYCHEDELIC ART PORTFOLIO</div>
-        <div class="app-boot-shell__title">Altered<br />Perceptions.</div>
-        <div class="app-boot-shell__hint"></div>
+      <div class="app-static-shell">
+        <section class="app-static-hero" aria-label="Whoamiii portfolio preview">
+          <nav class="app-static-nav" aria-label="Preview navigation">
+            <a class="app-static-logo" href="/">WHOAMIII</a>
+            <a class="app-static-link" href="#work">Work</a>
+          </nav>
+          <div class="app-static-copy">
+            <p class="app-static-kicker">PSYCHEDELIC ART PORTFOLIO</p>
+            <h1 class="app-static-title">Altered<br />Perceptions.</h1>
+            <p class="app-static-subtitle">Digital paintings and dream-burned color studies from altered states.</p>
+          </div>
+        </section>
+        <section id="work" class="app-static-work" aria-label="Selected Works preview">
+          <p class="app-static-work-label">Portfolio highlights</p>
+          <h2>Selected Works.</h2>
+          <div class="app-static-grid">
+            <figure class="app-static-card">
+              <img src="/images/liquid-perception-480.webp" alt="Surreal hooded forest portrait with chrome face fragments." loading="eager" />
+              <figcaption>Liquid Perception</figcaption>
+            </figure>
+            <figure class="app-static-card">
+              <div class="app-static-thumb" aria-hidden="true"></div>
+              <figcaption>Psychedelic Bathroom Portrait</figcaption>
+            </figure>
+            <figure class="app-static-card">
+              <div class="app-static-thumb" aria-hidden="true"></div>
+              <figcaption>Bathroom Scream</figcaption>
+            </figure>
+            <figure class="app-static-card">
+              <div class="app-static-thumb" aria-hidden="true"></div>
+              <figcaption>Ferdigcop Video</figcaption>
+            </figure>
+          </div>
+        </section>
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>

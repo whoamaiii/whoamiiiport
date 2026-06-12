@@ -1,7 +1,12 @@
 export const GALLERY_VIDEOS = {
-  ferdigcop: {
-    src: '/videos/ferdigcop-gallery.mp4',
+  handPortal: {
+    src: '/videos/hand-portal-study.mp4',
     type: 'video/mp4',
-    posterSlug: 'ferdigcop-video-poster',
+    posterSlug: 'hand-portal-video-poster',
+  },
+  skinTerrain: {
+    src: '/videos/skin-terrain-study.mp4',
+    type: 'video/mp4',
+    posterSlug: 'skin-terrain-video-poster',
   },
 } as const;

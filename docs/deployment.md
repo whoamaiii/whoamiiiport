@@ -45,6 +45,7 @@ Before publishing, run the normal release checks:
 ```bash
 npm run check
 npm run test:e2e
+npm run test:e2e:preview
 npm run build
 ```
 
@@ -57,6 +58,11 @@ branch must include:
   `social-preview.png`
 - `CNAME` containing exactly `whoamiii.art`
 - `.nojekyll`
+- `sitemap.xml` with `https://whoamiii.art/` as the canonical URL
+
+`CNAME`, `.nojekyll`, `robots.txt`, and `sitemap.xml` live in `public/` so a
+normal Vite build copies them into `dist/`. Do not hand-add those files only on
+the `gh-pages` branch; that makes the deployment output drift from source.
 
 After pushing `gh-pages`, trigger or verify the Pages build:
 
@@ -96,6 +102,7 @@ curl -I --max-time 15 https://whoamiii.art/
 curl -I --max-time 15 https://www.whoamiii.art/
 curl -s --max-time 15 https://whoamiii.art/ | rg 'assets/index-.*\.(js|css)'
 curl -I --max-time 15 https://whoamiii.art/images/liquid-perception-hero-960.webp
+curl -I --max-time 15 https://whoamiii.art/sitemap.xml
 ```
 
 Expected result:
@@ -105,6 +112,7 @@ Expected result:
 - `http://whoamiii.art/` redirects to HTTPS.
 - The HTML references the current hashed JS and CSS assets.
 - Image and video assets return `200 OK`.
+- `sitemap.xml` returns `200 OK`, and `robots.txt` points crawlers to it.
 - A real browser render check shows the portfolio content, not only a server
   status code.
 

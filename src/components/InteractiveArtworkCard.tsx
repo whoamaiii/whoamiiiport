@@ -30,6 +30,7 @@ interface InteractiveArtworkCardProps {
   videoSrc?: string;
   title: ArtworkTitle;
   sections: ArtworkSection[];
+  sectionsLang?: string;
   imageLoading?: 'eager' | 'lazy';
   imageFetchPriority?: 'high' | 'low' | 'auto';
   deferImageUntilVisible?: boolean;
@@ -40,6 +41,7 @@ export default function InteractiveArtworkCard({
   videoSrc,
   title,
   sections,
+  sectionsLang,
   imageLoading = 'lazy',
   imageFetchPriority = 'auto',
   deferImageUntilVisible = false,
@@ -426,7 +428,7 @@ export default function InteractiveArtworkCard({
 
                       <div className="mb-4 h-px w-14 bg-gradient-to-r from-cyan-300 to-emerald-300 rounded-full" />
 
-                      <div className="space-y-6">
+                      <div className="space-y-6" lang={sectionsLang}>
                         {sections.map((sec, i) => (
                           <div key={i}>
                             {sec.heading && (
@@ -462,6 +464,7 @@ export default function InteractiveArtworkCard({
                   <div className="lg:w-[26rem] hidden lg:flex items-end">
                     <button
                       onClick={() => setShowInfo(true)}
+                      aria-expanded={showInfo}
                       className="glass-dark w-full rounded-3xl px-6 py-5 text-left transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                     >
                       <p className="text-xs uppercase tracking-[0.3em] text-cyan-100/80 mb-2">

@@ -15,7 +15,7 @@ export function GallerySection({ reducedMotion }: GallerySectionProps) {
     <section
       id="work"
       tabIndex={-1}
-      className="section-anchor-target relative py-32 px-6 bg-zinc-950 z-20 focus:outline-none"
+      className="section-anchor-target relative px-6 py-20 bg-zinc-950 z-20 focus:outline-none md:py-32"
       aria-labelledby="selected-works-heading"
     >
       <div className="max-w-7xl mx-auto">
@@ -54,6 +54,7 @@ export function GallerySection({ reducedMotion }: GallerySectionProps) {
                 videoSrc={artwork.videoSrc}
                 title={artwork.title}
                 sections={artwork.sections}
+                sectionsLang={artwork.sectionsLang}
                 imageLoading={index === 0 ? 'eager' : 'lazy'}
                 imageFetchPriority={index === 0 ? 'auto' : 'low'}
                 deferImageUntilVisible={index > 0}

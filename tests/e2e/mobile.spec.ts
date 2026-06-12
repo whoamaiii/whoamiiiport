@@ -1,4 +1,59 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+
+const MOBILE_SECTION_LANDING_MAX_VIEWPORT_RATIO = 0.28;
+
+async function expectSectionLanding(
+  page: Page,
+  sectionId: string,
+  label: string,
+  options: { expectFocused?: boolean } = {},
+) {
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          ({ expectFocused, maxViewportRatio, sectionId }) => {
+            const section = document.getElementById(sectionId);
+            const header = document.querySelector('[data-testid="site-header"]');
+
+            if (!section || !header) {
+              return false;
+            }
+
+            const sectionRect = section.getBoundingClientRect();
+            const headerRect = header.getBoundingClientRect();
+            const headerIsVisible = headerRect.bottom > 0 && headerRect.top < window.innerHeight;
+            const sectionIsInViewport =
+              sectionRect.top < window.innerHeight && sectionRect.bottom > 0;
+            const sectionIsClearOfHeader =
+              !headerIsVisible || sectionRect.top - headerRect.bottom >= 12;
+            const sectionDoesNotLandTooLow =
+              sectionRect.top <= window.innerHeight * maxViewportRatio;
+            const hasNoHorizontalOverflow =
+              document.documentElement.scrollWidth - window.innerWidth <= 0;
+            const focusMatches = !expectFocused || document.activeElement === section;
+
+            return (
+              focusMatches
+              && sectionIsInViewport
+              && sectionIsClearOfHeader
+              && sectionDoesNotLandTooLow
+              && hasNoHorizontalOverflow
+            );
+          },
+          {
+            expectFocused: options.expectFocused ?? false,
+            maxViewportRatio: MOBILE_SECTION_LANDING_MAX_VIEWPORT_RATIO,
+            sectionId,
+          },
+        ),
+      {
+        message: `${label} should land visibly near the top of the mobile viewport`,
+        timeout: 5000,
+      },
+    )
+    .toBe(true);
+}
 
 test('mobile first viewport keeps hero and navigation coherent', async ({ page }) => {
   await page.goto('/');
@@ -89,13 +144,15 @@ test('mobile menu traps focus and closes back to the trigger', async ({ page }) 
   await expect(menuButton).toBeFocused();
 });
 
-test('cold mobile menu loads and navigates deferred sections', async ({ page }) => {
+test('mobile menu lands target sections cleanly', async ({ page }) => {
   const targets = [
+    { label: 'Work', id: 'work', menuLabel: /work/i },
     { label: 'About', id: 'about', menuLabel: /about/i },
     { label: 'Contact', id: 'contact', menuLabel: /get in touch/i },
   ] as const;
 
   for (const target of targets) {
+    await page.goto('about:blank');
     await page.goto('/');
     await expect(page.getByRole('button', { name: /open menu/i })).toBeVisible();
     await page.getByRole('button', { name: /open menu/i }).click();
@@ -105,63 +162,35 @@ test('cold mobile menu loads and navigates deferred sections', async ({ page }) 
     await menu.getByRole('button', { name: target.menuLabel }).click();
     await expect(menu).toHaveCount(0);
 
-    await expect
-      .poll(
-        () =>
-          page.evaluate((sectionId) => {
-            const section = document.getElementById(sectionId);
-
-            if (!section) {
-              return false;
-            }
-
-            const rect = section.getBoundingClientRect();
-            return document.activeElement === section && rect.top < window.innerHeight && rect.bottom > 0;
-          }, target.id),
-        {
-          message: `${target.label} should mount, scroll into view, and receive focus from a cold menu click`,
-          timeout: 5000,
-        },
-      )
-      .toBe(true);
+    await expectSectionLanding(page, target.id, target.label, { expectFocused: true });
   }
 });
 
-test('mobile direct hash loads and focuses a deferred section', async ({ page }) => {
-  await page.goto('/#contact');
+test('mobile direct hashes land target sections cleanly', async ({ page }) => {
+  const targets = [
+    { label: 'Work', id: 'work' },
+    { label: 'About', id: 'about' },
+    { label: 'Contact', id: 'contact' },
+  ] as const;
 
-  await expect
-    .poll(
-      () =>
-        page.evaluate(() => {
-          const contact = document.getElementById('contact');
-
-          if (!contact) {
-            return false;
-          }
-
-          const rect = contact.getBoundingClientRect();
-          return document.activeElement === contact && rect.top < window.innerHeight && rect.bottom > 0;
-        }),
-      {
-        message: 'Contact should mount, scroll into view, and receive focus from a direct hash load',
-        timeout: 5000,
-      },
-    )
-    .toBe(true);
+  for (const target of targets) {
+    await page.goto('about:blank');
+    await page.goto(`/#${target.id}`);
+    await expectSectionLanding(page, target.id, target.label);
+  }
 });
 
 test('mobile artwork modal covers the viewport and restores focus', async ({ page }) => {
   await page.goto('/#work');
 
   const artworkButton = page.getByRole('button', {
-    name: /view psychedelic bathroom portrait/i,
+    name: /view mycelial hand/i,
   });
   await artworkButton.scrollIntoViewIfNeeded();
   await artworkButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /psychedelic bathroom portrait/i,
+    name: /mycelial hand/i,
   });
   await expect(dialog).toBeVisible();
   await expect

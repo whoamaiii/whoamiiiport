@@ -891,20 +891,20 @@
 @media (max-width: 767px) {
   :root {
     --nav-offset: 6.75rem;
-    --section-target-offset: calc(var(--nav-offset) + 1rem);
+    --section-target-offset: 0rem;
   }
 }
 
 @media (min-width: 768px) {
   :root {
     --nav-offset: 12.75rem;
-    --section-target-offset: calc(var(--nav-offset) + 1.25rem);
+    --section-target-offset: 0rem;
   }
 }
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: var(--nav-offset);
+  scroll-padding-top: 0;
 }
 
 .section-anchor-target {

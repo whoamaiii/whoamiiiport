@@ -9,7 +9,7 @@ interface WorkflowStep {
   alt: string;
 }
 
-export const WORKFLOW_IMAGE_WIDTHS = [480, 800, 1200] as const;
+export const WORKFLOW_IMAGE_FILE_WIDTHS = [480, 800, 1200] as const;
 
 export const WORKFLOW_STEPS: WorkflowStep[] = [
   {
@@ -299,12 +299,40 @@ export const WORKFLOW_STEPS: WorkflowStep[] = [
   },
 ] as const;
 
-export function getWorkflowImageUrl(stepNumber: number, width: number): string {
-  return `/images/workflow/workflow-step-${String(stepNumber).padStart(2, '0')}-${width}.webp`;
+const WORKFLOW_LARGE_IMAGE_DESCRIPTOR_WIDTHS = [
+  1200,
+  1122,
+  941,
+  941,
+  941,
+  941,
+  941,
+  941,
+  941,
+  941,
+  941,
+  941,
+  941,
+  941,
+  941,
+] as const;
+
+export function getWorkflowImageUrl(stepNumber: number, fileWidth: number): string {
+  return `/images/workflow/workflow-step-${String(stepNumber).padStart(2, '0')}-${fileWidth}.webp`;
+}
+
+export function getWorkflowImageDescriptorWidth(stepNumber: number, fileWidth: number): number {
+  if (fileWidth !== 1200) {
+    return fileWidth;
+  }
+
+  return WORKFLOW_LARGE_IMAGE_DESCRIPTOR_WIDTHS[stepNumber - 1] ?? fileWidth;
 }
 
 export function getWorkflowSrcset(stepNumber: number): string {
-  return WORKFLOW_IMAGE_WIDTHS
-    .map((width) => `${getWorkflowImageUrl(stepNumber, width)} ${width}w`)
+  return WORKFLOW_IMAGE_FILE_WIDTHS
+    .map((fileWidth) => (
+      `${getWorkflowImageUrl(stepNumber, fileWidth)} ${getWorkflowImageDescriptorWidth(stepNumber, fileWidth)}w`
+    ))
     .join(', ');
 }

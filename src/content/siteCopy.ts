@@ -37,9 +37,9 @@ export const GALLERY_COPY: GalleryCopy = {
 export const ABOUT_COPY = {
   heading: 'The Mind Behind the Canvas',
   intro:
-    'My work is deeply influenced by the exploration of altered states of consciousness. I aim to capture the fleeting, geometric, and profoundly vibrant visions that exist just beyond our everyday perception.',
+    'This is me inside the work: a modified selfie pushed through the same chrome, forest light, and altered-perception language that shapes the rest of the portfolio.',
   body:
-    'Using a mix of traditional painting and digital manipulation, I create pieces that feel both organic and synthetic, inviting the viewer to step into a different reality.',
+    'I use digital manipulation, painting logic, and psychedelic image-making to turn personal photographs into pieces that feel organic, synthetic, intimate, and slightly unstable at the same time.',
 } as const;
 
 const CONTACT_HEADING_PARTS = {

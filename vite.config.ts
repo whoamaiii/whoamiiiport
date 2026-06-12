@@ -24,12 +24,18 @@ export default defineConfig(() => {
       hmr: process.env.DISABLE_HMR !== 'true',
     },
     build: {
-      // Split vendor chunks for better caching
+      // Split vendor chunks for better caching. Rollup 5 (Vite 8) only accepts
+      // the function form, so each vendor's transitive packages are listed.
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vendor-react': ['react', 'react-dom'],
-            'vendor-motion': ['motion/react'],
+          manualChunks(id: string) {
+            if (/node_modules\/(react|react-dom|scheduler)\//.test(id)) {
+              return 'vendor-react';
+            }
+            if (/node_modules\/(motion|framer-motion|motion-dom|motion-utils)\//.test(id)) {
+              return 'vendor-motion';
+            }
+            return undefined;
           },
         },
       },

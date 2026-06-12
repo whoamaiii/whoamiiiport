@@ -12,8 +12,10 @@ test('homepage has no detected accessibility violations', async ({ page }) => {
 test('artwork modal has no detected accessibility violations', async ({ page }) => {
   await page.goto('/');
 
-  await page.getByRole('button', { name: /view liquid perception.*artwork/i }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.getByRole('button', { name: /view mushroom offering.*artwork/i }).click();
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toHaveCSS('opacity', '1');
 
   const results = await new AxeBuilder({ page })
     .include('[role="dialog"]')

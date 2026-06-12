@@ -26,6 +26,11 @@ const SiteFooter = lazy(() => import('./sections/SiteFooter'));
 const FIRST_GALLERY_PRELOAD_ID = 'first-gallery-image-preload';
 const GALLERY_IDLE_LOAD_TIMEOUT_MS = 900;
 
+// Hardcoded (instead of derived from FEATURED_ARTWORKS) so the gallery content
+// modules stay out of the main bundle. tests/image-contract.test.ts asserts it
+// matches the first featured artwork's mobile gallery asset.
+export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/mushroom-offering-560.webp';
+
 function getInitialGallerySectionLoad() {
   if (typeof window === 'undefined') {
     return false;
@@ -34,12 +39,12 @@ function getInitialGallerySectionLoad() {
   return /^#(work|about|contact)$/.test(window.location.hash);
 }
 
-function getDeferredSectionIdFromHash() {
+function getSectionIdFromHash() {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  const match = window.location.hash.match(/^#(about|contact)$/);
+  const match = window.location.hash.match(/^#(work|about|contact)$/);
   return match ? match[1] : null;
 }
 
@@ -60,7 +65,7 @@ function preloadFirstGalleryImage() {
   link.id = FIRST_GALLERY_PRELOAD_ID;
   link.rel = 'preload';
   link.as = 'image';
-  link.href = '/images/liquid-perception-560.webp';
+  link.href = FIRST_GALLERY_PRELOAD_IMAGE_URL;
   link.media = '(max-width: 767px)';
   link.fetchPriority = 'auto';
   document.head.append(link);
@@ -70,10 +75,13 @@ export default function App() {
   const mainRef = useRef<HTMLElement>(null);
   const [loadGallerySection, setLoadGallerySection] = useState(getInitialGallerySectionLoad);
   const [loadDeferredSections, setLoadDeferredSections] = useState(
-    () => getDeferredSectionIdFromHash() !== null,
+    () => {
+      const sectionId = getSectionIdFromHash();
+      return sectionId !== null && isDeferredSection(sectionId);
+    },
   );
   const [pendingSectionNavigation, setPendingSectionNavigation] = useState<string | null>(
-    () => getDeferredSectionIdFromHash(),
+    () => getSectionIdFromHash(),
   );
   const prefersReducedMotion = useReducedMotion();
   const prefersFinePointer = useMediaQuery('(pointer: fine)', false);
@@ -152,6 +160,12 @@ export default function App() {
         block: 'start',
       });
       target.focus({ preventScroll: true });
+      window.setTimeout(() => {
+        target.scrollIntoView({
+          behavior: 'auto',
+          block: 'start',
+        });
+      }, prefersReducedMotion ? 0 : 240);
       return true;
     },
     [prefersReducedMotion],
@@ -246,7 +260,6 @@ export default function App() {
     }
 
     let cancelled = false;
-    let frameId = 0;
     let timeoutId = 0;
     let attempts = 0;
 
@@ -271,16 +284,15 @@ export default function App() {
       }
 
       timeoutId = window.setTimeout(() => {
-        frameId = window.requestAnimationFrame(tryNavigate);
+        tryNavigate();
       }, 50);
     };
 
-    frameId = window.requestAnimationFrame(tryNavigate);
+    tryNavigate();
 
     return () => {
       cancelled = true;
       window.clearTimeout(timeoutId);
-      window.cancelAnimationFrame(frameId);
     };
   }, [pendingSectionNavigation, scrollToSection]);
 

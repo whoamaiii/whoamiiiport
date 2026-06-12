@@ -6,11 +6,11 @@
 
 type ImageSlug =
   | 'liquid-perception-hero'
+  | 'mushroom-offering'
   | 'liquid-perception'
-  | 'psychedelic-bathroom-portrait'
-  | 'psychedelic-bathroom-scream'
-  | 'ferdigcop-video-poster'
-  | 'about-portrait';
+  | 'mycelial-hand'
+  | 'hand-portal-video-poster'
+  | 'skin-terrain-video-poster';
 
 export type ModalImageSlug = Exclude<ImageSlug, 'liquid-perception-hero'>;
 
@@ -23,30 +23,32 @@ interface ArtworkImage {
 export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
   'liquid-perception-hero': {
     slug: 'liquid-perception-hero',
-    alt: 'Liquid psychedelic forest portrait with chrome face distortion and red nails',
+    alt: 'Chrome-masked psychedelic forest portrait beneath an electric blue cellular sky',
+  },
+  'mushroom-offering': {
+    slug: 'mushroom-offering',
+    alt: 'Hand holding a mushroom over soft psychedelic skin patterns and rainbow light',
+    galleryObjectPosition: '50% 48%',
   },
   'liquid-perception': {
     slug: 'liquid-perception',
-    alt: 'Surreal hooded forest portrait with chrome face fragments, red nails, and an electric cellular sky',
-    galleryObjectPosition: '52% 54%',
+    alt: 'Modified selfie portrait of the artist with chrome face fragments and refracted psychedelic forest light',
+    galleryObjectPosition: '50% 44%',
   },
-  'psychedelic-bathroom-portrait': {
-    slug: 'psychedelic-bathroom-portrait',
-    alt: 'Dark psychedelic bathroom portrait with rainbow distortion and patterned tiled wall',
-    galleryObjectPosition: '40% 50%',
+  'mycelial-hand': {
+    slug: 'mycelial-hand',
+    alt: 'Hand with mushrooms and chrome resin growing from the fingers under a psychedelic forest sky',
+    galleryObjectPosition: '50% 48%',
   },
-  'psychedelic-bathroom-scream': {
-    slug: 'psychedelic-bathroom-scream',
-    alt: 'Psychedelic bathroom portrait with screaming figure covered in rainbow contour patterns',
-    galleryObjectPosition: '46% 50%',
+  'hand-portal-video-poster': {
+    slug: 'hand-portal-video-poster',
+    alt: 'Poster frame of a hand opening into a nested organic portal in a dark forest',
+    galleryObjectPosition: '50% 52%',
   },
-  'ferdigcop-video-poster': {
-    slug: 'ferdigcop-video-poster',
-    alt: 'Poster frame from Ferdigcop video artwork'
-  },
-  'about-portrait': {
-    slug: 'about-portrait',
-    alt: 'Portrait of the artist in a hooded sweatshirt'
+  'skin-terrain-video-poster': {
+    slug: 'skin-terrain-video-poster',
+    alt: 'Macro video poster of skin-like ridges forming a soft topographic terrain',
+    galleryObjectPosition: '50% 50%',
   },
 };
 

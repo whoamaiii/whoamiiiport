@@ -15,7 +15,7 @@ describe('InteractiveArtworkCard image contracts', () => {
       '(prefers-reduced-motion: reduce)': false,
       '(min-width: 1024px)': false,
     });
-    const getModalSrcset = vi.fn(() => '/images/ferdigcop-video-poster-modal-1600.webp 1600w');
+    const getModalSrcset = vi.fn(() => '/images/hand-portal-video-poster-modal-1600.webp 1600w');
 
     vi.doMock('../src/utils/images', async (importOriginal) => {
       const actual = await importOriginal<typeof import('../src/utils/images')>();
@@ -29,15 +29,40 @@ describe('InteractiveArtworkCard image contracts', () => {
 
     render(
       <InteractiveArtworkCard
-        imageSlug="ferdigcop-video-poster"
-        videoSrc="/videos/ferdigcop-gallery.mp4"
-        title={{ primary: 'Ferdigcop' }}
+        imageSlug="hand-portal-video-poster"
+        videoSrc="/videos/hand-portal-study.mp4"
+        title={{ primary: 'Hand Portal' }}
         sections={[{ body: 'Video notes.' }]}
       />,
     );
 
-    expect(screen.getByRole('button', { name: /view ferdigcop video details and notes/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /view hand portal video details and notes/i })).toBeInTheDocument();
     expect(getModalSrcset).not.toHaveBeenCalled();
+  });
+
+  it('marks Norwegian artwork notes with a lang attribute for assistive tech', async () => {
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': true,
+      '(min-width: 1024px)': true,
+      '(max-width: 767px)': false,
+    });
+    const { default: InteractiveArtworkCard } = await import('../src/components/InteractiveArtworkCard');
+
+    render(
+      <InteractiveArtworkCard
+        imageSlug="mushroom-offering"
+        title={{ primary: 'Mushroom Offering' }}
+        sections={[{ heading: 'Mening', body: 'Norsk beskrivelse av verket.' }]}
+        sectionsLang="no"
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /view mushroom offering artwork details and notes/i }),
+    );
+
+    const noteBody = await screen.findByText('Norsk beskrivelse av verket.');
+    expect(noteBody.closest('[lang]')).toHaveAttribute('lang', 'no');
   });
 
   it('keeps gallery card images lazy by default', async () => {
@@ -56,7 +81,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     const image = screen.getByRole('img', {
-      name: /surreal hooded forest portrait/i,
+      name: /modified selfie portrait/i,
     });
     expect(image).toHaveAttribute('loading', 'lazy');
     expect(image).toHaveAttribute('fetchpriority', 'auto');
@@ -80,7 +105,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     const image = screen.getByRole('img', {
-      name: /surreal hooded forest portrait/i,
+      name: /modified selfie portrait/i,
     });
     expect(image).toHaveAttribute('loading', 'eager');
     expect(image).toHaveAttribute('fetchpriority', 'auto');
@@ -107,7 +132,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     const image = screen.getByRole('img', {
-      name: /surreal hooded forest portrait/i,
+      name: /modified selfie portrait/i,
     });
     expect(image).toHaveAttribute('src', '/images/liquid-perception-560.webp');
     expect(image).not.toHaveAttribute('srcset');
@@ -155,15 +180,15 @@ describe('InteractiveArtworkCard image contracts', () => {
 
     render(
       <InteractiveArtworkCard
-        imageSlug="psychedelic-bathroom-portrait"
-        title={{ primary: 'Bathroom Portrait' }}
+        imageSlug="mycelial-hand"
+        title={{ primary: 'Mycelial Hand' }}
         sections={[{ body: 'Image notes.' }]}
         deferImageUntilVisible
       />,
     );
 
     const image = screen.getByRole('img', {
-      name: /dark psychedelic bathroom portrait/i,
+      name: /hand with mushrooms/i,
     });
     expect(image).not.toHaveAttribute('src');
     expect(image).not.toHaveAttribute('srcset');
@@ -176,7 +201,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     });
 
     await waitFor(() => {
-      expect(image).toHaveAttribute('src', '/images/psychedelic-bathroom-portrait-800.webp');
+      expect(image).toHaveAttribute('src', '/images/mycelial-hand-800.webp');
       expect(image).toHaveAttribute('srcset');
     });
   });

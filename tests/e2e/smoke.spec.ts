@@ -53,10 +53,10 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   );
 
   const aboutImage = page.getByRole('img', {
-    name: /portrait of the artist in a hooded sweatshirt/i,
+    name: /modified selfie portrait of the artist/i,
   });
-  await expect(aboutImage).toHaveAttribute('src', /\/images\/about-portrait-800\.webp$/);
-  await expect(aboutImage).toHaveAttribute('srcset', /about-portrait-1200\.webp 1200w/);
+  await expect(aboutImage).toHaveAttribute('src', /\/images\/liquid-perception-800\.webp$/);
+  await expect(aboutImage).toHaveAttribute('srcset', /liquid-perception-1200\.webp 1200w/);
   await expect(aboutImage).toHaveAttribute('loading', 'lazy');
 });
 
@@ -71,12 +71,12 @@ test('skip link lands on main content and artwork modal opens and closes', async
   await expect(page.locator('#main-content')).toBeFocused();
 
   const artworkButton = page.getByRole('button', {
-    name: /view liquid perception.*artwork/i,
+    name: /view mushroom offering.*artwork/i,
   });
   await artworkButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /liquid perception/i,
+    name: /mushroom offering/i,
   });
   await expect(dialog).toBeVisible();
   await expect(page.getByRole('button', { name: /close modal/i })).toBeFocused();
@@ -92,7 +92,7 @@ test('skip link lands on main content and artwork modal opens and closes', async
 
   await expect(
     dialog.getByRole('img', {
-      name: /surreal hooded forest portrait/i,
+      name: /hand holding a mushroom/i,
     }),
   ).toBeVisible();
 
@@ -139,17 +139,17 @@ test('mobile workflow modal opens, advances steps, and restores focus', async ({
   await expect(workflowButton).toBeFocused();
 });
 
-test('fourth gallery card opens the Ferdigcop video modal', async ({ page }) => {
+test('third gallery card opens the Hand Portal video modal', async ({ page }) => {
   await page.goto('/#work');
 
   const videoButton = page.getByRole('button', {
-    name: /view ferdigcop.*video/i,
+    name: /view hand portal.*video/i,
   });
   await videoButton.scrollIntoViewIfNeeded();
   await videoButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /ferdigcop/i,
+    name: /hand portal/i,
   });
   await expect(dialog).toBeVisible();
 
@@ -158,7 +158,7 @@ test('fourth gallery card opens the Ferdigcop video modal', async ({ page }) => 
   await expect(video).toHaveJSProperty('autoplay', true);
   await expect(video).toHaveJSProperty('muted', true);
   await expect(video).toHaveAttribute('preload', 'metadata');
-  await expect(video.locator('source')).toHaveAttribute('src', '/videos/ferdigcop-gallery.mp4');
+  await expect(video.locator('source')).toHaveAttribute('src', '/videos/hand-portal-study.mp4');
   await expect
     .poll(() => video.evaluate((element) => !(element as HTMLVideoElement).paused))
     .toBe(true);
@@ -354,10 +354,14 @@ test('menu section buttons scroll to and focus target sections with breathing ro
             const targetRect = target.getBoundingClientRect();
             const navRect = nav.getBoundingClientRect();
 
-            return document.activeElement === target && targetRect.top - navRect.bottom >= 12;
+            return (
+              document.activeElement === target
+              && targetRect.top - navRect.bottom >= 12
+              && targetRect.top <= window.innerHeight * 0.28
+            );
           }, section.id),
         {
-          message: `${section.label} section should be focused and clear of the header`,
+          message: `${section.label} section should be focused, clear of the header, and not land too low`,
           timeout: 3000,
         },
       )

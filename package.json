@@ -18,12 +18,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "test:e2e:preview": "npm run build && playwright test --config=playwright.preview.config.ts",
     "optimize-images": "node scripts/optimize-images.js",
     "perf:mobile": "node scripts/measure-load-performance.mjs http://localhost:4173/"
   },
   "dependencies": {
-    "@tailwindcss/vite": "^4.1.14",
-    "@vitejs/plugin-react": "^5.0.4",
     "lucide-react": "^0.546.0",
     "motion": "^12.23.24",
     "react": "^19.0.0",
@@ -33,12 +32,14 @@
     "@axe-core/playwright": "^4.11.1",
     "@eslint/js": "^9.39.4",
     "@playwright/test": "^1.58.2",
+    "@tailwindcss/vite": "^4.3.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.14.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.2",
     "eslint": "^9.39.4",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.0.1",
@@ -46,10 +47,10 @@
     "jsdom": "^29.0.1",
     "knip": "^6.11.0",
     "sharp": "^0.34.5",
-    "tailwindcss": "^4.1.14",
+    "tailwindcss": "^4.3.1",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.57.2",
-    "vite": "^6.2.0",
-    "vitest": "^4.1.2"
+    "vite": "^8.0.16",
+    "vitest": "^4.1.8"
   }
 }

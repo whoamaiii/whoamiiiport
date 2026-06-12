@@ -1,8 +1,8 @@
 import {
-  ferdigcopVideoArtwork,
-  liquidPerceptionArtwork,
-  psychedelicBathroomPortrait,
-  psychedelicBathroomScream,
+  handPortalVideoArtwork,
+  mushroomOfferingArtwork,
+  mycelialHandArtwork,
+  skinTerrainVideoArtwork,
   type SpecialArtwork,
 } from '../components/artworkData';
 
@@ -13,19 +13,19 @@ interface FeaturedArtworkEntry {
 
 export const FEATURED_ARTWORKS: FeaturedArtworkEntry[] = [
   {
-    id: 'liquid-perception',
-    artwork: liquidPerceptionArtwork,
+    id: 'mushroom-offering',
+    artwork: mushroomOfferingArtwork,
   },
   {
-    id: 'psychedelic-bathroom-portrait',
-    artwork: psychedelicBathroomPortrait,
+    id: 'mycelial-hand',
+    artwork: mycelialHandArtwork,
   },
   {
-    id: 'psychedelic-bathroom-scream',
-    artwork: psychedelicBathroomScream,
+    id: 'hand-portal-video',
+    artwork: handPortalVideoArtwork,
   },
   {
-    id: 'ferdigcop-video',
-    artwork: ferdigcopVideoArtwork,
+    id: 'skin-terrain-video',
+    artwork: skinTerrainVideoArtwork,
   },
 ];

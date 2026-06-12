@@ -134,7 +134,7 @@ function AnimatedImageReveal(props: ImageRevealProps) {
   return (
     <div ref={ref} className={`relative overflow-hidden ${className}`}>
       <motion.div
-        className="absolute inset-0 z-10 bg-purple-500"
+        className="absolute inset-0 z-10 bg-zinc-950"
         data-testid="image-reveal-mask"
         initial={overlayInitial}
         animate={isInView ? overlayAnimate : overlayInitial}
@@ -142,7 +142,11 @@ function AnimatedImageReveal(props: ImageRevealProps) {
           ...transition,
           delay: delay + 0.1,
         }}
-        style={{ transformOrigin: overlayOrigin }}
+        style={{
+          transformOrigin: overlayOrigin,
+          backgroundImage:
+            'linear-gradient(135deg, rgba(5,5,5,0.96), rgba(76,29,149,0.72) 48%, rgba(6,182,212,0.28))',
+        }}
       />
 
       <motion.div

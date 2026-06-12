@@ -35,8 +35,9 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
       }
 
       const nextIndex = Math.min(Math.max(index, 0), stepCount - 1);
+      const target = container.children.item(nextIndex) as HTMLElement | null;
       container.scrollTo({
-        left: container.clientWidth * nextIndex,
+        left: target?.offsetLeft ?? container.clientWidth * nextIndex,
         behavior: reducedMotion ? 'auto' : 'smooth',
       });
       setActiveIndex(nextIndex);
@@ -80,7 +81,18 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
     const updateActiveStep = () => {
       window.cancelAnimationFrame(frameId);
       frameId = window.requestAnimationFrame(() => {
-        const nextIndex = Math.round(container.scrollLeft / Math.max(container.clientWidth, 1));
+        const children = Array.from(container.children) as HTMLElement[];
+        const nextIndex = children.reduce(
+          (closestIndex, child, index) => {
+            const currentDistance = Math.abs(child.offsetLeft - container.scrollLeft);
+            const closestDistance = Math.abs(
+              children[closestIndex]?.offsetLeft - container.scrollLeft,
+            );
+
+            return currentDistance < closestDistance ? index : closestIndex;
+          },
+          0,
+        );
         const clampedIndex = Math.min(Math.max(nextIndex, 0), stepCount - 1);
         setActiveIndex(clampedIndex);
       });
@@ -99,7 +111,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
 
   return (
     <article
-      className="relative mx-auto mt-10 max-w-5xl overflow-hidden rounded-[1.65rem] border border-white/12 bg-black/48 shadow-[0_24px_90px_-52px_rgba(217,70,239,0.72)] backdrop-blur-2xl"
+      className="relative mx-auto mt-14 max-w-5xl overflow-hidden rounded-[1.45rem] border border-white/12 bg-black/54 shadow-[0_24px_90px_-52px_rgba(217,70,239,0.72)] backdrop-blur-2xl sm:mt-[4.5rem] sm:rounded-[1.65rem]"
       aria-labelledby="workflow-process-heading"
     >
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-fuchsia-300/70 to-transparent" />
@@ -127,19 +139,19 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
 
         <div
           ref={scrollRef}
-          className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain scroll-smooth rounded-[1.15rem] border border-white/10 bg-zinc-950/72 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth rounded-[1.05rem] border border-white/10 bg-zinc-950/72 p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:rounded-[1.15rem] sm:p-0"
           aria-label="Science and art workflow steps"
         >
           {WORKFLOW_STEPS.map((step, index) => (
             <section
               key={step.id}
-              className="grid min-w-full snap-center grid-rows-[minmax(0,1fr)_auto] bg-black/28"
+              className="grid min-w-[88%] snap-center grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[0.85rem] border border-white/8 bg-black/32 sm:min-w-full sm:rounded-none sm:border-0"
               aria-label={`Step ${index + 1}: ${step.title}`}
             >
               <button
                 type="button"
                 onClick={(event) => openStepDetails(index, event.currentTarget)}
-                className="group/workflow-image flex min-h-[21rem] items-center justify-center border-b border-white/10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] p-2 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950 sm:min-h-[34rem] sm:p-4 lg:min-h-[42rem]"
+                className="group/workflow-image flex min-h-[18rem] items-center justify-center border-b border-white/10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] p-2 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950 sm:min-h-[34rem] sm:p-4 lg:min-h-[42rem]"
                 aria-label={`Open larger view and notes for step ${index + 1}: ${step.title}`}
               >
                 {(() => {
@@ -156,7 +168,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                       loading={index === 0 ? 'eager' : 'lazy'}
                       fetchPriority={index === 0 ? 'auto' : 'low'}
                       decoding="async"
-                      className={`max-h-[20rem] w-full object-contain drop-shadow-[0_22px_38px_rgba(0,0,0,0.48)] transition duration-300 group-hover/workflow-image:scale-[1.015] group-focus-visible/workflow-image:scale-[1.015] sm:max-h-[32rem] lg:max-h-[40rem] ${
+                      className={`max-h-[17rem] w-full object-contain drop-shadow-[0_22px_38px_rgba(0,0,0,0.48)] transition duration-300 group-hover/workflow-image:scale-[1.015] group-focus-visible/workflow-image:scale-[1.015] sm:max-h-[32rem] lg:max-h-[40rem] ${
                         shouldLoadImage ? 'opacity-100' : 'opacity-0'
                       }`.trim()}
                     />
@@ -186,7 +198,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
             type="button"
             onClick={() => scrollToStep(activeIndex - 1)}
             disabled={activeIndex === 0}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
             aria-label="Previous workflow step"
           >
             <ArrowLeft size={18} aria-hidden="true" />
@@ -198,8 +210,8 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                 key={step.id}
                 type="button"
                 onClick={() => scrollToStep(index)}
-                className={`h-2 rounded-full transition-all active:scale-95 ${
-                  activeIndex === index ? 'w-6 bg-cyan-200' : 'w-2 bg-white/28 hover:bg-white/50'
+                className={`h-2.5 rounded-full transition-all active:scale-95 ${
+                  activeIndex === index ? 'w-7 bg-cyan-200' : 'w-2.5 bg-white/28 hover:bg-white/50'
                 }`}
                 aria-label={`Go to workflow step ${index + 1}: ${step.title}`}
                 aria-current={activeIndex === index ? 'step' : undefined}
@@ -211,7 +223,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
             type="button"
             onClick={() => scrollToStep(activeIndex + 1)}
             disabled={activeIndex === stepCount - 1}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
+            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
             aria-label="Next workflow step"
           >
             <ArrowRight size={18} aria-hidden="true" />

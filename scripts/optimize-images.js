@@ -13,7 +13,12 @@ import sharp from 'sharp';
 import { existsSync, mkdirSync, statSync } from 'fs';
 import { join } from 'path';
 
-// Source image configurations
+// Source image configurations.
+// Only slugs with originals under src/assets/ belong here. The current gallery
+// artworks (mushroom-offering, mycelial-hand, hand-portal-video-poster,
+// skin-terrain-video-poster) and the workflow carousel are manually managed
+// runtime assets under public/images/ until their originals are recovered —
+// see CLAUDE.md and tests/image-contract.test.ts.
 const SOURCES = [
   {
     input: './src/assets/liquid-perception-hero.png',
@@ -32,34 +37,6 @@ const SOURCES = [
       480: 25,
       560: 45,
     },
-  },
-  { 
-    input: './src/assets/psychedelic-bathroom-portrait.jpg', 
-    slug: 'psychedelic-bathroom-portrait', 
-    profile: 'gallery',
-    alt: 'Dark psychedelic bathroom portrait with rainbow distortion and patterned tiled wall',
-    quality: 65,
-  },
-  { 
-    input: './src/assets/psychedelic-bathroom-scream.png', 
-    slug: 'psychedelic-bathroom-scream', 
-    profile: 'gallery',
-    alt: 'Psychedelic bathroom portrait with screaming figure covered in rainbow contour patterns',
-    quality: 65,
-  },
-  { 
-    input: './src/assets/ferdigcop-video-poster.jpg', 
-    slug: 'ferdigcop-video-poster', 
-    profile: 'gallery',
-    alt: 'Poster frame from Ferdigcop video artwork',
-    quality: 65,
-  },
-  {
-    input: './src/assets/photoshootwhiletripping.png',
-    slug: 'about-portrait',
-    profile: 'gallery',
-    alt: 'Portrait of the artist in a hooded sweatshirt',
-    quality: 68,
   },
 ];
 

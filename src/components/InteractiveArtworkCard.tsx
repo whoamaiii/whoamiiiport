@@ -247,7 +247,7 @@ export default function InteractiveArtworkCard({
               src={displayedImageSrc}
               srcSet={displayedImageSrcset}
               sizes={displayedImageSizes}
-              alt={imageMeta.alt}
+              alt={imageCanLoad ? imageMeta.alt : ''}
               loading={imageLoading}
               fetchPriority={imageFetchPriority}
               decoding="async"

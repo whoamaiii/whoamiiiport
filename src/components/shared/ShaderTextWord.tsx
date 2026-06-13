@@ -22,7 +22,6 @@ import {
 interface ShaderScaleConfig {
   mobile: number;
   desktop: number;
-  reduced: number;
 }
 
 interface ShaderClampConfig {
@@ -817,7 +816,6 @@ export function ShaderTextWord({
     shaderFrameRate?.mobile,
     shaderScale.desktop,
     shaderScale.mobile,
-    shaderScale.reduced,
     shaderSetupDelayMs,
     shaderVariant,
     size.height,

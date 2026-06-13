@@ -30,7 +30,7 @@ function renderShaderTextWord({
       measureClassName="section-shader-measure"
       canvasClassName="section-shader-canvas"
       fallbackClassName="section-shader-fallback"
-      shaderScale={{ mobile: 0.8, desktop: 1, reduced: 0.5 }}
+      shaderScale={{ mobile: 0.8, desktop: 1 }}
       shaderClamp={{ minWidth: 1, maxWidth: 1024, minHeight: 1, maxHeight: 512 }}
       getShadowConfig={() => ({
         ambient: shadowLayer,

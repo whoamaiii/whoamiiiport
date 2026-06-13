@@ -14,6 +14,14 @@ interface WorkflowProcessCardProps {
   reducedMotion: boolean;
 }
 
+const WORKFLOW_CHAPTERS = [
+  { label: 'Framework', stepIndex: 0 },
+  { label: 'Perception', stepIndex: 3 },
+  { label: 'Geometry', stepIndex: 6 },
+  { label: 'Pattern', stepIndex: 9 },
+  { label: 'Pipeline', stepIndex: 12 },
+] as const;
+
 export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -23,6 +31,10 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
   const [activeIndex, setActiveIndex] = useState(0);
   const [modalIndex, setModalIndex] = useState<number | null>(null);
   const stepCount = WORKFLOW_STEPS.length;
+  const activeChapterIndex = Math.min(
+    Math.floor(activeIndex / 3),
+    WORKFLOW_CHAPTERS.length - 1,
+  );
   const modalStep = modalIndex === null ? null : WORKFLOW_STEPS[modalIndex];
   const currentModalIndex = modalIndex ?? 0;
   const modalTitleId = 'workflow-step-modal-title';
@@ -151,7 +163,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
               <button
                 type="button"
                 onClick={(event) => openStepDetails(index, event.currentTarget)}
-                className="group/workflow-image flex min-h-[18rem] items-center justify-center border-b border-white/10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] p-2 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950 sm:min-h-[34rem] sm:p-4 lg:min-h-[42rem]"
+                className="group/workflow-image flex min-h-[14rem] items-center justify-center border-b border-white/10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] p-2 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950 sm:min-h-[34rem] sm:p-4 lg:min-h-[42rem]"
                 aria-label={`Open larger view and notes for step ${index + 1}: ${step.title}`}
               >
                 {(() => {
@@ -162,13 +174,13 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                       src={shouldLoadImage ? getWorkflowImageUrl(index + 1, 800) : undefined}
                       srcSet={shouldLoadImage ? getWorkflowSrcset(index + 1) : undefined}
                       sizes="(max-width: 767px) calc(100vw - 3rem), (max-width: 1200px) 70vw, 58rem"
-                      alt={step.alt}
+                      alt={shouldLoadImage ? step.alt : ''}
                       width={index === 0 ? 1200 : 800}
                       height={index === 0 ? 800 : 1422}
                       loading={index === 0 ? 'eager' : 'lazy'}
                       fetchPriority={index === 0 ? 'auto' : 'low'}
                       decoding="async"
-                      className={`max-h-[17rem] w-full object-contain drop-shadow-[0_22px_38px_rgba(0,0,0,0.48)] transition duration-300 group-hover/workflow-image:scale-[1.015] group-focus-visible/workflow-image:scale-[1.015] sm:max-h-[32rem] lg:max-h-[40rem] ${
+                      className={`max-h-[13rem] w-full object-contain drop-shadow-[0_22px_38px_rgba(0,0,0,0.48)] transition duration-300 group-hover/workflow-image:scale-[1.015] group-focus-visible/workflow-image:scale-[1.015] sm:max-h-[32rem] lg:max-h-[40rem] ${
                         shouldLoadImage ? 'opacity-100' : 'opacity-0'
                       }`.trim()}
                     />
@@ -184,7 +196,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                   <h4 className="text-xl font-bold leading-tight text-white sm:text-2xl">
                     {step.title}
                   </h4>
-                  <p className="mt-2 max-w-[56ch] text-sm leading-6 text-zinc-300/90">
+                  <p className="mt-2 line-clamp-3 max-w-[56ch] text-sm leading-6 text-zinc-300/90 sm:line-clamp-none">
                     {step.description}
                   </p>
                 </div>
@@ -193,41 +205,57 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
           ))}
         </div>
 
-        <div className="mt-4 flex items-center justify-between gap-4">
-          <button
-            type="button"
-            onClick={() => scrollToStep(activeIndex - 1)}
-            disabled={activeIndex === 0}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
-            aria-label="Previous workflow step"
+        <div className="mt-3 grid gap-1.5 sm:mt-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
+          <div
+            className="flex items-center justify-center gap-0.5"
+            aria-label="Workflow chapters"
           >
-            <ArrowLeft size={18} aria-hidden="true" />
-          </button>
-
-          <div className="flex max-w-[11rem] flex-wrap justify-center gap-1.5" aria-label="Workflow step position">
-            {WORKFLOW_STEPS.map((step, index) => (
+            {WORKFLOW_CHAPTERS.map((chapter, index) => (
               <button
-                key={step.id}
+                key={chapter.label}
                 type="button"
-                onClick={() => scrollToStep(index)}
-                className={`h-2.5 rounded-full transition-all active:scale-95 ${
-                  activeIndex === index ? 'w-7 bg-cyan-200' : 'w-2.5 bg-white/28 hover:bg-white/50'
-                }`}
-                aria-label={`Go to workflow step ${index + 1}: ${step.title}`}
-                aria-current={activeIndex === index ? 'step' : undefined}
-              />
+                onClick={() => scrollToStep(chapter.stepIndex)}
+                className="group/chapter inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-white/8 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-200"
+                aria-label={`Go to workflow chapter ${index + 1}, ${chapter.label}, starting at step ${chapter.stepIndex + 1}`}
+                aria-current={activeChapterIndex === index ? 'step' : undefined}
+              >
+                <span
+                  className={`block h-2.5 rounded-full transition-all ${
+                    activeChapterIndex === index
+                      ? 'w-6 bg-cyan-200'
+                      : 'w-2.5 bg-white/28 group-hover/chapter:bg-white/50'
+                  }`}
+                  aria-hidden="true"
+                />
+              </button>
             ))}
           </div>
 
-          <button
-            type="button"
-            onClick={() => scrollToStep(activeIndex + 1)}
-            disabled={activeIndex === stepCount - 1}
-            className="inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
-            aria-label="Next workflow step"
-          >
-            <ArrowRight size={18} aria-hidden="true" />
-          </button>
+          <div className="flex items-center justify-between sm:contents">
+            <button
+              type="button"
+              onClick={() => scrollToStep(activeIndex - 1)}
+              disabled={activeIndex === 0}
+              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35 sm:order-first"
+              aria-label="Previous workflow step"
+            >
+              <ArrowLeft size={18} aria-hidden="true" />
+            </button>
+
+            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-zinc-500 sm:hidden">
+              Swipe or step through
+            </p>
+
+            <button
+              type="button"
+              onClick={() => scrollToStep(activeIndex + 1)}
+              disabled={activeIndex === stepCount - 1}
+              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
+              aria-label="Next workflow step"
+            >
+              <ArrowRight size={18} aria-hidden="true" />
+            </button>
+          </div>
         </div>
 
       </div>

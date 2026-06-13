@@ -118,7 +118,7 @@ function HeroShaderLine({
       canvasClassName={`hero-title-shader-canvas hero-title-shader-canvas--${line}`.trim()}
       fallbackClassName={`hero-title-shader-fallback hero-title-shader-fallback--${line}`.trim()}
       onReady={onReady}
-      shaderScale={{ mobile: 0.54, desktop: 0.58, reduced: 0.34 }}
+      shaderScale={{ mobile: 0.54, desktop: 0.58 }}
       shaderClamp={{ minWidth: 120, maxWidth: 820, minHeight: 56, maxHeight: 240 }}
       shaderFrameRate={{ mobile: 12, desktop: 24 }}
       shaderSetupDelayMs={line === 'first' ? 120 : 360}

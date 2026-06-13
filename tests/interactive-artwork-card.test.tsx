@@ -178,7 +178,7 @@ describe('InteractiveArtworkCard image contracts', () => {
 
     const { default: InteractiveArtworkCard } = await import('../src/components/InteractiveArtworkCard');
 
-    render(
+    const { container } = render(
       <InteractiveArtworkCard
         imageSlug="mycelial-hand"
         title={{ primary: 'Mycelial Hand' }}
@@ -187,11 +187,13 @@ describe('InteractiveArtworkCard image contracts', () => {
       />,
     );
 
-    const image = screen.getByRole('img', {
-      name: /hand with mushrooms/i,
-    });
+    // Located structurally rather than by accessible name: a deferred slide drops
+    // its alt so AT does not announce a phantom imageless node before it loads.
+    const image = container.querySelector('img');
+    expect(image).not.toBeNull();
     expect(image).not.toHaveAttribute('src');
     expect(image).not.toHaveAttribute('srcset');
+    expect(image).toHaveAttribute('alt', '');
 
     act(() => {
       observerCallback?.(
@@ -203,6 +205,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     await waitFor(() => {
       expect(image).toHaveAttribute('src', '/images/mycelial-hand-800.webp');
       expect(image).toHaveAttribute('srcset');
+      expect(image).toHaveAttribute('alt', expect.stringMatching(/hand with mushrooms/i));
     });
   });
 });

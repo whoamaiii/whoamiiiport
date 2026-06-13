@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, type HTMLAttributes } from 'react';
+import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from 'react';
 import RenderErrorBoundary from './fallback/RenderErrorBoundary';
 import { ShaderTextWord } from './shared/ShaderTextWord';
 import type { TextShadowConfig } from './shared/shaderTextShared';
@@ -98,7 +98,6 @@ interface ShaderHeadingPreset {
   shaderScale: {
     mobile: number;
     desktop: number;
-    reduced: number;
   };
   shaderClamp: {
     minWidth: number;
@@ -123,7 +122,7 @@ const SHADER_HEADING_PRESETS: Record<ShaderHeadingVariant, ShaderHeadingPreset> 
     canvasClassName: 'section-shader-canvas--default',
     fallbackClassName: 'section-shader-fallback--default',
     staticFallbackClassName: 'section-shader-static-fallback--default',
-    shaderScale: { mobile: 0.5, desktop: 0.6, reduced: 0.4 },
+    shaderScale: { mobile: 0.5, desktop: 0.6 },
     shaderClamp: { minWidth: 80, maxWidth: 700, minHeight: 48, maxHeight: 350 },
     finalStroke: { color: 'rgba(228, 250, 255, 0.24)', scale: 0.0065, minWidth: 0.72 },
     glassSurface: 'section',
@@ -136,7 +135,7 @@ const SHADER_HEADING_PRESETS: Record<ShaderHeadingVariant, ShaderHeadingPreset> 
     canvasClassName: 'section-shader-canvas--gallery',
     fallbackClassName: 'section-shader-fallback--gallery',
     staticFallbackClassName: 'section-shader-static-fallback--gallery',
-    shaderScale: { mobile: 0.44, desktop: 0.52, reduced: 0.34 },
+    shaderScale: { mobile: 0.44, desktop: 0.52 },
     shaderClamp: { minWidth: 80, maxWidth: 760, minHeight: 48, maxHeight: 320 },
     finalStroke: { color: 'rgba(235, 252, 255, 0.28)', scale: 0.0054, minWidth: 0.72 },
     glassSurface: 'section',
@@ -155,9 +154,9 @@ function SectionWordFallback({
 }) {
   return (
     <span className="section-shader-lines" aria-hidden="true">
-      {lines.map((line) => (
+      {lines.map((line, index) => (
         <span
-          key={line}
+          key={`${line}-${index}`}
           className={`section-shader-word ${wordClassName}`.trim()}
           data-text={line}
         >
@@ -193,6 +192,7 @@ export function ShaderHeading({
   ...headingProps
 }: ShaderHeadingProps) {
   const [isReady, setIsReady] = useState(false);
+  const readyLinesRef = useRef<Set<number>>(new Set());
   const preset = SHADER_HEADING_PRESETS[variant];
   const lines = visualLines?.length ? visualLines : [children];
   const { 'aria-label': htmlAriaLabel, ...semanticHeadingProps } = headingProps;
@@ -210,9 +210,15 @@ export function ShaderHeading({
     return () => window.clearTimeout(timer);
   }, [delay, isReady, onReady]);
 
-  const handleReady = useCallback(() => {
-    setIsReady(true);
-  }, []);
+  const handleLineReady = useCallback(
+    (index: number) => {
+      readyLinesRef.current.add(index);
+      if (readyLinesRef.current.size >= lines.length) {
+        setIsReady(true);
+      }
+    },
+    [lines.length],
+  );
 
   return (
     <Component
@@ -247,7 +253,7 @@ export function ShaderHeading({
                   getShadowConfig={preset.getShadowConfig}
                   finalStroke={preset.finalStroke}
                   glassSurface={preset.glassSurface}
-                  onReady={handleReady}
+                  onReady={() => handleLineReady(index)}
                 />
               </span>
             ))}

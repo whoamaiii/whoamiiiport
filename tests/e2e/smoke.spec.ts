@@ -42,6 +42,19 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await expect(heroImage).toHaveAttribute('width', '1672');
   await expect(heroImage).toHaveAttribute('height', '941');
 
+  const heroImageGeometry = await heroImage.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+
+    return {
+      bottom: rect.bottom,
+      top: rect.top,
+      viewportHeight: window.innerHeight,
+    };
+  });
+
+  expect(heroImageGeometry.top).toBeLessThan(-heroImageGeometry.viewportHeight * 0.45);
+  expect(heroImageGeometry.bottom).toBeGreaterThan(heroImageGeometry.viewportHeight);
+
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://whoamiii.art/');
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     'content',

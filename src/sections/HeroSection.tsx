@@ -62,7 +62,7 @@ export function HeroSection({
             height={HERO_IMAGE_HEIGHT}
             fetchPriority="high"
             decoding="async"
-            className="min-w-[120vw] min-h-[120vh] object-cover object-[39%_center] absolute -top-[10vh] -left-[10vw] md:object-center"
+            className="hero-background-image absolute min-h-[120vh] min-w-[120vw] object-cover"
             style={{ y: parallaxY, x: parallaxX }}
           />
         </picture>

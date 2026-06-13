@@ -310,6 +310,23 @@
   }
 }
 
+.hero-background-image {
+  top: -10vh;
+  left: -10vw;
+  object-position: 39% center;
+}
+
+@media (min-width: 768px) {
+  .hero-background-image {
+    /*
+     * The portrait source is intentionally oversized to preserve the reactive
+     * parallax margin. Anchor its face near the desktop viewport center.
+     */
+    top: calc(50% - 73.5vw);
+    object-position: center;
+  }
+}
+
 .hero-glass-title {
   color: rgb(255 255 255 / 0.96);
 }

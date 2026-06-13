@@ -172,21 +172,21 @@ test('mobile menu traps focus and restores it to the trigger', async ({ page }) 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
 
-  const menuButton = page.getByRole('button', { name: /open menu/i });
+  const menuButton = page.locator('.site-reference-menu-trigger');
+  await expect(menuButton).toHaveAccessibleName(/open menu/i);
   await menuButton.click();
 
   const dialog = page.getByRole('dialog', { name: /navigation menu/i });
-  const dialogCloseButton = dialog.getByRole('button', { name: /close menu/i });
   const mobileContactCta = dialog.getByRole('button', { name: /get in touch/i });
   await expect(dialog).toBeVisible();
-  await expect(dialogCloseButton).toBeFocused();
+  await expect(menuButton).toBeFocused();
   await expect(mobileContactCta).toBeVisible();
 
   await page.keyboard.press('Shift+Tab');
   await expect(mobileContactCta).toBeFocused();
 
   await page.keyboard.press('Tab');
-  await expect(dialogCloseButton).toBeFocused();
+  await expect(menuButton).toBeFocused();
 
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
@@ -213,8 +213,9 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
   await menuButton.click();
   await expect(menuButton).toHaveAccessibleName(/close navigation menu/i);
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+  await expect(menuButton).toHaveAttribute('aria-controls', 'mobile-menu');
   await expect(page.getByRole('dialog', { name: /navigation menu/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^close menu$/i })).toHaveCount(1);
+  await expect(page.getByRole('button', { name: /^close menu$/i })).toHaveCount(0);
   await expect(page.getByRole('button', { name: /get in touch/i })).toBeVisible();
   await expect
     .poll(() =>

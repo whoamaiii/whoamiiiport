@@ -115,7 +115,6 @@ export function useOverlayBehavior({
     };
 
     const focusFrame = window.requestAnimationFrame(focusOverlay);
-    const restoreFocusTarget = restoreFocusRef?.current;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (closeOnEscapeRef.current && event.key === 'Escape') {
@@ -151,7 +150,13 @@ export function useOverlayBehavior({
     return () => {
       window.cancelAnimationFrame(focusFrame);
       window.removeEventListener('keydown', handleKeyDown);
-      (restoreFocusTarget ?? previousFocusRef.current)?.focus?.();
+      // Intentionally read the ref's CURRENT value at cleanup time, not a value
+      // captured at effect setup: the caller may swap restoreFocusRef.current
+      // (e.g. a trigger element) while the overlay is open, and focus must return
+      // to whatever the trigger is when the overlay actually closes.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      const restoreTarget = restoreFocusRef?.current ?? previousFocusRef.current;
+      restoreTarget?.focus?.();
       previousFocusRef.current = null;
     };
   }, [containerRef, initialFocusRef, isOpen, restoreFocusRef]);

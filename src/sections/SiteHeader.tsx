@@ -1,6 +1,5 @@
 import { useRef, useState, type RefObject } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import X from 'lucide-react/dist/esm/icons/x.js';
 import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
 
 const HEADER_GLASS_PATH = [
@@ -303,6 +302,8 @@ function MobileMenuButton({
       aria-label={triggerLabel}
       aria-expanded={isOpen}
       aria-haspopup="dialog"
+      aria-controls={isOpen ? 'mobile-menu' : undefined}
+      data-open={isOpen ? 'true' : 'false'}
     >
       <span className="site-reference-menu-trigger-lines" aria-hidden="true">
         <span />
@@ -317,7 +318,6 @@ interface MobileMenuProps {
   isOpen: boolean;
   onClose: () => void;
   onNavigateToSection: (id: string) => void;
-  menuButtonRef: RefObject<HTMLButtonElement | null>;
   reducedMotion: boolean;
 }
 
@@ -325,20 +325,9 @@ function MobileMenu({
   isOpen,
   onClose,
   onNavigateToSection,
-  menuButtonRef,
   reducedMotion,
 }: MobileMenuProps) {
-  const menuRef = useRef<HTMLDivElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
   const menuTitleId = 'mobile-menu-title';
-
-  useOverlayBehavior({
-    isOpen,
-    containerRef: menuRef,
-    initialFocusRef: closeButtonRef,
-    restoreFocusRef: menuButtonRef,
-    onClose,
-  });
 
   const navigateToSection = (id: string) => {
     onClose();
@@ -351,7 +340,6 @@ function MobileMenu({
     <AnimatePresence initial={false}>
       {isOpen && (
         <motion.div
-          ref={menuRef}
           id="mobile-menu"
           role="dialog"
           tabIndex={-1}
@@ -366,14 +354,6 @@ function MobileMenu({
           <h2 id={menuTitleId} className="sr-only">
             Navigation menu
           </h2>
-          <button
-            ref={closeButtonRef}
-            className="absolute top-5 right-5 rounded-full p-2 text-white transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400 sm:top-6 sm:right-6"
-            onClick={onClose}
-            aria-label="Close menu"
-          >
-            <X size={32} />
-          </button>
           <div className="flex w-full max-w-sm flex-col gap-5 text-center">
             <nav className="flex flex-col gap-4 text-center" aria-label="Mobile menu">
               <button
@@ -414,13 +394,24 @@ interface SiteHeaderProps {
 export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const menuShellRef = useRef<HTMLDivElement>(null);
+
+  useOverlayBehavior({
+    isOpen: isMobileMenuOpen,
+    containerRef: menuShellRef,
+    initialFocusRef: menuButtonRef,
+    restoreFocusRef: menuButtonRef,
+    onClose: () => setIsMobileMenuOpen(false),
+  });
 
   return (
-    <>
+    <div ref={menuShellRef}>
       <nav
         aria-label="Primary"
         data-testid="site-header"
-        className="absolute top-3 left-1/2 z-50 w-full max-w-[100rem] -translate-x-1/2 px-3 sm:top-4 sm:px-5 md:top-6 md:px-12"
+        className={`absolute top-3 left-1/2 w-full max-w-[100rem] -translate-x-1/2 px-3 sm:top-4 sm:px-5 md:top-6 md:px-12 ${
+          isMobileMenuOpen ? 'z-[70]' : 'z-50'
+        }`}
       >
         <div className="site-reference-nav relative mx-auto">
           <HeaderGlassSurface reducedMotion={reducedMotion} />
@@ -428,6 +419,8 @@ export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderPro
             href="#main-content"
             aria-label="Whoamiii — jump to main content"
             className="site-reference-wordmark absolute top-1/2 z-10 flex -translate-y-1/2 cursor-pointer items-center justify-center text-white"
+            aria-hidden={isMobileMenuOpen || undefined}
+            tabIndex={isMobileMenuOpen ? -1 : undefined}
             whileHover={reducedMotion ? undefined : { scale: 1.05 }}
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
           >
@@ -445,9 +438,8 @@ export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderPro
         isOpen={isMobileMenuOpen}
         onClose={() => setIsMobileMenuOpen(false)}
         onNavigateToSection={onNavigateToSection}
-        menuButtonRef={menuButtonRef}
         reducedMotion={reducedMotion}
       />
-    </>
+    </div>
   );
 }

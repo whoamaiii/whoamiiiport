@@ -195,6 +195,7 @@ export function ShaderHeading({
   const readyLinesRef = useRef<Set<number>>(new Set());
   const preset = SHADER_HEADING_PRESETS[variant];
   const lines = visualLines?.length ? visualLines : [children];
+  const linesKey = lines.map((line) => String(line)).join('|');
   const { 'aria-label': htmlAriaLabel, ...semanticHeadingProps } = headingProps;
   const semanticText = ariaLabel ?? htmlAriaLabel ?? children;
 
@@ -219,6 +220,11 @@ export function ShaderHeading({
     },
     [lines.length],
   );
+
+  useEffect(() => {
+    readyLinesRef.current.clear();
+    setIsReady(false);
+  }, [linesKey]);
 
   return (
     <Component

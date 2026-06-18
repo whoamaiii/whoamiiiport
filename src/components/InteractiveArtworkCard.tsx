@@ -8,8 +8,7 @@ import {
   useSpring,
   useTransform,
 } from 'motion/react';
-import Play from 'lucide-react/dist/esm/icons/play.js';
-import X from 'lucide-react/dist/esm/icons/x.js';
+import { Play, X } from 'lucide-react';
 import type { ModalImageSlug } from '../utils/images';
 import {
   getGallerySrcset,
@@ -376,9 +375,11 @@ export default function InteractiveArtworkCard({
                   {!isDesktopLayout && !showInfo && (
                     <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4">
                       <button
+                        type="button"
                         onClick={() => setShowInfo(true)}
                         className="glass-dark w-full max-w-md rounded-full px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                         aria-expanded={showInfo}
+                        aria-controls="artwork-info-panel"
                       >
                         Read meaning + process
                       </button>
@@ -463,8 +464,10 @@ export default function InteractiveArtworkCard({
                 {isDesktopLayout && !showInfo && (
                   <div className="lg:w-[26rem] hidden lg:flex items-end">
                     <button
+                      type="button"
                       onClick={() => setShowInfo(true)}
                       aria-expanded={showInfo}
+                      aria-controls="artwork-info-panel"
                       className="glass-dark w-full rounded-3xl px-6 py-5 text-left transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                     >
                       <p className="text-xs uppercase tracking-[0.3em] text-cyan-100/80 mb-2">

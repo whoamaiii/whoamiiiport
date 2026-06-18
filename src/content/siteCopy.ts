@@ -25,7 +25,7 @@ export const HERO_COPY: HeroCopy = {
   eyebrow: 'Psychedelic Art Portfolio',
   titleSemantic: 'Altered Perceptions.',
   titleLines: ['Altered', 'Perceptions'],
-  subtitle: 'Digital paintings and dream-burned color studies from altered states.',
+  subtitle: 'Paintings from the other side of the glass.',
 } as const;
 
 export const GALLERY_COPY: GalleryCopy = {

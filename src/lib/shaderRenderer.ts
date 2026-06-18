@@ -192,32 +192,31 @@ const heroLiquidFragmentShaderSource = `
   }
 
   vec3 heroSpectrum(float phase, float heat) {
-    vec3 deepBlue = vec3(0.014, 0.11, 0.38);
-    vec3 electricBlue = vec3(0.025, 0.34, 0.92);
-    vec3 cyanGlass = vec3(0.13, 0.78, 0.94);
-    vec3 pearl = vec3(0.82, 0.94, 0.99);
-    vec3 paleGlass = vec3(0.58, 0.78, 0.96);
-    vec3 periwinkle = vec3(0.50, 0.57, 0.92);
-    vec3 violet = vec3(0.31, 0.24, 0.62);
-    vec3 softPink = vec3(0.84, 0.42, 0.72);
-    vec3 warmGold = vec3(0.98, 0.66, 0.38);
+    // Apple Liquid Glass: luminous, bright, mostly pearl/white with a faint
+    // cool tint. Warmth appears only as a tiny iridescent accent at the
+    // thinnest refracting edge — like a soap bubble catching warm light.
+    vec3 pearl = vec3(0.97, 0.99, 1.0);
+    vec3 brightWhite = vec3(1.0);
+    vec3 paleCyan = vec3(0.84, 0.94, 0.98);
+    vec3 ice = vec3(0.74, 0.88, 0.95);
+    vec3 softBlue = vec3(0.70, 0.82, 0.92);
+    vec3 thinAmber = vec3(0.98, 0.88, 0.66);
+    vec3 thinRose = vec3(0.96, 0.84, 0.86);
 
-    vec3 color = mix(deepBlue, electricBlue, smoothstep(0.02, 0.17, phase));
-    color = mix(color, cyanGlass, smoothstep(0.14, 0.30, phase));
-    color = mix(color, pearl, smoothstep(0.28, 0.42, phase));
-    color = mix(color, paleGlass, smoothstep(0.40, 0.52, phase));
-    color = mix(color, periwinkle, smoothstep(0.50, 0.64, phase));
-    color = mix(color, violet, smoothstep(0.62, 0.78, phase));
-    color = mix(color, softPink, smoothstep(0.76, 0.84, phase) * 0.64);
-    color = mix(color, deepBlue, smoothstep(0.84, 1.0, phase));
+    vec3 color = mix(pearl, brightWhite, smoothstep(0.0, 0.18, phase));
+    color = mix(color, paleCyan, smoothstep(0.16, 0.34, phase));
+    color = mix(color, brightWhite, smoothstep(0.32, 0.50, phase));
+    color = mix(color, ice, smoothstep(0.48, 0.66, phase));
+    color = mix(color, softBlue, smoothstep(0.64, 0.82, phase));
+    color = mix(color, pearl, smoothstep(0.80, 1.0, phase));
 
-    float warmAccent =
-      smoothstep(0.46, 0.56, phase) *
-      (1.0 - smoothstep(0.58, 0.72, phase)) *
-      smoothstep(0.42, 1.08, heat);
-
-    color = mix(color, warmGold, warmAccent * 0.12);
-    return mix(color, mix(cyanGlass, pearl, 0.48), heat * 0.075);
+    // Iridescent accent only at the thinnest glass edge (high heat): a whisper
+    // of amber and rose, like a real soap bubble's edge. Very subtle.
+    float thinEdge = smoothstep(0.16, 0.30, phase) * (1.0 - smoothstep(0.32, 0.46, phase));
+    color = mix(color, thinAmber, thinEdge * heat * 0.08);
+    color = mix(color, thinRose, thinEdge * heat * 0.05);
+    // Keep it luminous — bias toward white throughout.
+    return mix(color, brightWhite, 0.12);
   }
 
   vec3 sourceRadiance(vec2 p, float t) {
@@ -289,8 +288,10 @@ const heroLiquidFragmentShaderSource = `
     soft /= 5.0;
 
     float luma = dot(soft, vec3(0.299, 0.587, 0.114));
-    soft = mix(soft, vec3(luma), 0.10);
-    soft = pow(soft, vec3(0.90)) * u_background_darken * 0.66;
+    soft = mix(soft, vec3(luma), 0.08);
+    soft = pow(soft, vec3(0.92)) * u_background_darken * 0.82;
+    // Luminosity lift: Apple liquid glass brightens what's behind it slightly.
+    soft += vec3(0.04, 0.05, 0.06);
     return soft;
   }
 
@@ -394,17 +395,17 @@ const heroLiquidFragmentShaderSource = `
     color += vec3(0.70, 0.96, 1.0) * caustic;
     color += vec3(0.72, 0.93, 1.0) * upperLens * u_glow_strength * 0.26;
 
-    float specular = pow(max(dot(reflect(normalize(vec3(-0.42, -0.36, -0.82)), normal), vec3(0.0, 0.0, 1.0)), 0.0), 34.0);
-    color += vec3(1.0, 0.88, 0.62) * specular * wetRim * 0.24;
+    float specular = pow(max(dot(reflect(normalize(vec3(-0.42, -0.36, -0.82)), normal), vec3(0.0, 0.0, 1.0)), 0.0), 22.0);
+    color += vec3(0.95, 0.98, 1.0) * specular * wetRim * 0.30;
     color += vec3(0.30, 0.78, 0.90) * wetRim * u_glow_strength * 1.18;
 
     vec2 center = topUv - vec2(0.5);
-    color *= 1.0 - dot(center, center) * 0.22;
-    color = mix(color, vec3(0.018, 0.024, 0.045), 0.06 + (1.0 - core) * 0.03);
-    color = color / (color + vec3(0.50));
+    color *= 1.0 - dot(center, center) * 0.18;
+    color = mix(color, vec3(0.10, 0.12, 0.16), 0.03 + (1.0 - core) * 0.02);
+    color = color / (color + vec3(0.38));
     float luma = dot(color, vec3(0.299, 0.587, 0.114));
-    color = mix(vec3(luma), color, 1.28);
-    color = pow(clamp(color, vec3(0.0), vec3(0.98)), vec3(0.92));
+    color = mix(vec3(luma), color, 1.12);
+    color = pow(clamp(color, vec3(0.0), vec3(0.99)), vec3(0.90));
 
     float outAlpha = smoothstep(0.012, 0.42, alpha);
     outAlpha = max(outAlpha, wetRim * 0.74);
@@ -444,6 +445,7 @@ export interface HeroLiquidRendererOptions {
 
 export interface ShaderRendererOptions {
   heroLiquid?: HeroLiquidRendererOptions;
+  onContextLost?: () => void;
 }
 
 interface ShaderRendererStartOptions {
@@ -500,6 +502,13 @@ export class ShaderRenderer {
   private animationFrameId: number | null = null;
   private running = false;
   private disposed = false;
+  private onContextLost?: () => void;
+
+  private handleContextLost = (event: Event) => {
+    event.preventDefault();
+    this.stop();
+    this.onContextLost?.();
+  };
 
   constructor(
     width: number,
@@ -509,6 +518,8 @@ export class ShaderRenderer {
   ) {
     this.canvas = document.createElement('canvas');
     this.variant = variant;
+    this.onContextLost = options.onContextLost;
+    this.canvas.addEventListener('webglcontextlost', this.handleContextLost);
     this.heroLiquidOptions = {
       backgroundDarken: 0.62,
       backgroundMix: 0.24,
@@ -857,6 +868,7 @@ export class ShaderRenderer {
 
     this.disposed = true;
     this.stop();
+    this.canvas.removeEventListener('webglcontextlost', this.handleContextLost);
     this.gl.deleteBuffer(this.positionBuffer);
     if (this.maskTexture) {
       this.gl.deleteTexture(this.maskTexture);

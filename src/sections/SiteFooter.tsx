@@ -1,6 +1,4 @@
-import Instagram from 'lucide-react/dist/esm/icons/instagram.js';
-import Mail from 'lucide-react/dist/esm/icons/mail.js';
-import Twitter from 'lucide-react/dist/esm/icons/twitter.js';
+import { Instagram, Mail, Twitter } from 'lucide-react';
 import { MagneticButton } from '../components/MagneticButton';
 
 export default function SiteFooter() {

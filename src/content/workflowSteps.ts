@@ -317,6 +317,30 @@ const WORKFLOW_LARGE_IMAGE_DESCRIPTOR_WIDTHS = [
   941,
 ] as const;
 
+const WORKFLOW_LARGE_IMAGE_HEIGHTS = [
+  800,
+  1402,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+  1672,
+] as const;
+
+export function getWorkflowImageDimensions(stepNumber: number): { width: number; height: number } {
+  const width = WORKFLOW_LARGE_IMAGE_DESCRIPTOR_WIDTHS[stepNumber - 1] ?? 1200;
+  const height = WORKFLOW_LARGE_IMAGE_HEIGHTS[stepNumber - 1] ?? 1200;
+  return { width, height };
+}
+
 export function getWorkflowImageUrl(stepNumber: number, fileWidth: number): string {
   return `/images/workflow/workflow-step-${String(stepNumber).padStart(2, '0')}-${fileWidth}.webp`;
 }

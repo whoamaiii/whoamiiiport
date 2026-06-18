@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import ArrowLeft from 'lucide-react/dist/esm/icons/arrow-left.js';
-import ArrowRight from 'lucide-react/dist/esm/icons/arrow-right.js';
-import X from 'lucide-react/dist/esm/icons/x.js';
+import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import {
   WORKFLOW_STEPS,
+  getWorkflowImageDimensions,
   getWorkflowImageUrl,
   getWorkflowSrcset,
 } from '../content/workflowSteps';
@@ -155,10 +154,12 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
           aria-label="Science and art workflow steps"
         >
           {WORKFLOW_STEPS.map((step, index) => (
-            <section
+            <div
               key={step.id}
-              className="grid min-w-[88%] snap-center grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[0.85rem] border border-white/8 bg-black/32 sm:min-w-full sm:rounded-none sm:border-0"
+              role="group"
               aria-label={`Step ${index + 1}: ${step.title}`}
+              data-testid="workflow-slide"
+              className="grid min-w-[88%] snap-center grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[0.85rem] border border-white/8 bg-black/32 sm:min-w-full sm:rounded-none sm:border-0"
             >
               <button
                 type="button"
@@ -168,6 +169,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
               >
                 {(() => {
                   const shouldLoadImage = Math.abs(index - activeIndex) <= 1;
+                  const { width, height } = getWorkflowImageDimensions(index + 1);
 
                   return (
                     <img
@@ -175,8 +177,8 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                       srcSet={shouldLoadImage ? getWorkflowSrcset(index + 1) : undefined}
                       sizes="(max-width: 767px) calc(100vw - 3rem), (max-width: 1200px) 70vw, 58rem"
                       alt={shouldLoadImage ? step.alt : ''}
-                      width={index === 0 ? 1200 : 800}
-                      height={index === 0 ? 800 : 1422}
+                      width={width}
+                      height={height}
                       loading={index === 0 ? 'eager' : 'lazy'}
                       fetchPriority={index === 0 ? 'auto' : 'low'}
                       decoding="async"
@@ -201,7 +203,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                   </p>
                 </div>
               </div>
-            </section>
+            </div>
           ))}
         </div>
 
@@ -266,11 +268,10 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-0 backdrop-blur-xl sm:p-5">
               <button
                 type="button"
-                className="absolute inset-0 cursor-pointer"
+                className="absolute inset-0"
                 onClick={() => setModalIndex(null)}
                 aria-hidden="true"
                 tabIndex={-1}
-                aria-label="Close workflow step details"
               />
               <div
                 ref={modalRef}
@@ -291,16 +292,22 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                 </button>
 
                 <div className="flex min-h-0 items-center justify-center rounded-[1rem] border border-white/10 bg-black/50 p-2 sm:p-4">
-                  <img
-                    src={getWorkflowImageUrl(currentModalIndex + 1, 1200)}
-                    srcSet={getWorkflowSrcset(currentModalIndex + 1)}
-                    sizes="(max-width: 1024px) calc(100vw - 3rem), 64vw"
-                    alt={modalStep.alt}
-                    width={currentModalIndex === 0 ? 1200 : 800}
-                    height={currentModalIndex === 0 ? 800 : 1422}
-                    decoding="async"
-                    className="max-h-[44vh] w-full object-contain lg:max-h-[84vh]"
-                  />
+                  {(() => {
+                    const { width, height } = getWorkflowImageDimensions(currentModalIndex + 1);
+
+                    return (
+                      <img
+                        src={getWorkflowImageUrl(currentModalIndex + 1, 1200)}
+                        srcSet={getWorkflowSrcset(currentModalIndex + 1)}
+                        sizes="(max-width: 1024px) calc(100vw - 3rem), 64vw"
+                        alt={modalStep.alt}
+                        width={width}
+                        height={height}
+                        decoding="async"
+                        className="max-h-[44vh] w-full object-contain lg:max-h-[84vh]"
+                      />
+                    );
+                  })()}
                 </div>
 
                 <div

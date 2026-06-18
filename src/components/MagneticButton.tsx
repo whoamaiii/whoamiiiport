@@ -102,6 +102,7 @@ export function MagneticButton({
       ref={buttonRef}
       type="button"
       className={`relative inline-block ${className}`.trim()}
+      aria-label={ariaLabel}
       style={prefersReducedMotion ? {} : { x: springX, y: springY }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}

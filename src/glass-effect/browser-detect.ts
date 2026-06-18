@@ -7,8 +7,9 @@ const ua = typeof navigator !== "undefined" ? navigator.userAgent : ""
 
 /** True for Blink-based engines (Chrome, Edge, Opera, etc.) */
 export const isChromium = (): boolean =>
+  typeof window !== 'undefined' &&
   !!(window as unknown as Record<string, unknown>).chrome &&
-  !ua.includes("Firefox")
+  !ua.includes('Firefox');
 
 /** True for WebKit (Safari — not Chrome which also uses WebKit on iOS) */
 export const isWebKit = (): boolean =>

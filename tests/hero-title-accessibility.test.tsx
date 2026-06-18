@@ -104,7 +104,7 @@ describe('Hero title accessibility contract', () => {
 
     expect(screen.getByText(/psychedelic art portfolio/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/digital paintings and dream-burned color studies from altered states\./i),
+      screen.getByText(/paintings from the other side of the glass\./i),
     ).toBeInTheDocument();
   });
 

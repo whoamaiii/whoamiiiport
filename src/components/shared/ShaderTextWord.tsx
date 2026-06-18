@@ -78,6 +78,7 @@ interface ShaderTextWordProps {
 
 let shaderRendererUnavailable = false;
 let cachedWebGLSupport: boolean | null = null;
+const MAX_BACKGROUND_IMAGES = 6;
 const backgroundImageCache = new Map<string, Promise<HTMLImageElement | null>>();
 
 function isAutomatedOrHeadlessBrowser() {
@@ -215,6 +216,14 @@ function loadImage(source: string) {
   });
 
   backgroundImageCache.set(source, imagePromise);
+
+  if (backgroundImageCache.size > MAX_BACKGROUND_IMAGES) {
+    const oldestKey = backgroundImageCache.keys().next().value;
+    if (oldestKey !== undefined) {
+      backgroundImageCache.delete(oldestKey);
+    }
+  }
+
   return imagePromise;
 }
 
@@ -282,14 +291,17 @@ export function ShaderTextWord({
   const heroTitleUvOffset = heroLiquid?.titleUvOffset;
   const heroTitleUvScale = heroLiquid?.titleUvScale;
 
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
+
   const notifyReady = useCallback(() => {
     if (readyNotifiedRef.current) {
       return;
     }
 
     readyNotifiedRef.current = true;
-    onReady?.();
-  }, [onReady]);
+    onReadyRef.current?.();
+  }, []);
 
   useEffect(() => {
     if (useStaticFallback) {
@@ -564,6 +576,7 @@ export function ShaderTextWord({
           try {
             renderer = new ShaderRenderer(shaderWidth, shaderHeight, shaderVariant, {
               heroLiquid: baseHeroOptions,
+              onContextLost: () => setUseFallback(true),
             });
             activeRenderer = renderer;
             setUseFallback(false);

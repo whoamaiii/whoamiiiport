@@ -18,7 +18,7 @@ describe('WorkflowProcessCard image loading', () => {
     // Carousel slides render in step order; scope to them so unloaded slides
     // (which intentionally drop both src and alt) can still be located.
     const slideImages = Array.from(
-      container.querySelectorAll<HTMLImageElement>('section[aria-label^="Step "] img'),
+      container.querySelectorAll<HTMLImageElement>('[data-testid="workflow-slide"] img'),
     );
 
     const [firstImage, secondImage, thirdImage, fourthImage, fifthImage] = slideImages;

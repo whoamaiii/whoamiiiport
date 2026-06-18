@@ -140,6 +140,23 @@ describe('ShaderRenderer', () => {
     expect(onFrame).toHaveBeenCalledTimes(callCount);
   });
 
+  it('stops the animation loop and notifies the caller when the WebGL context is lost', () => {
+    const onContextLost = vi.fn();
+    renderer = new ShaderRenderer(320, 180, 'section', { onContextLost });
+    const onFrame = vi.fn();
+
+    renderer.start(onFrame);
+    vi.advanceTimersByTime(48);
+    const framesBeforeLoss = onFrame.mock.calls.length;
+    expect(framesBeforeLoss).toBeGreaterThan(0);
+
+    renderer.element.dispatchEvent(new Event('webglcontextlost', { cancelable: true }));
+
+    expect(onContextLost).toHaveBeenCalledTimes(1);
+    vi.advanceTimersByTime(48);
+    expect(onFrame).toHaveBeenCalledTimes(framesBeforeLoss);
+  });
+
   it('reuses stable hero liquid texture sources instead of uploading them every frame', () => {
     const textMask = document.createElement('canvas');
     const backgroundImage = document.createElement('img');

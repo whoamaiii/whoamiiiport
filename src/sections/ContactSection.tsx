@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import Mail from 'lucide-react/dist/esm/icons/mail.js';
+import { Mail } from 'lucide-react';
 import { MagneticButton } from '../components/MagneticButton';
 import { ShaderHeading } from '../components/ShaderHeading';
 import { CONTACT_COPY } from '../content/siteCopy';

@@ -23,6 +23,7 @@ import {
   WORKFLOW_IMAGE_FILE_WIDTHS,
   WORKFLOW_STEPS,
   getWorkflowImageDescriptorWidth,
+  getWorkflowImageDimensions,
   getWorkflowImageUrl,
   getWorkflowSrcset,
 } from '../src/content/workflowSteps';
@@ -174,6 +175,14 @@ describe('image contract', () => {
         descriptorWidth: getWorkflowImageDescriptorWidth(stepNumber, fileWidth),
       }));
       expect(splitSrcsetEntries(getWorkflowSrcset(stepNumber))).toEqual(expectedSrcsetEntries);
+
+      // Lock the intrinsic width/height hints against the real decoded pixels so
+      // an edit to the dimension arrays cannot silently introduce layout shift.
+      const declaredDimensions = getWorkflowImageDimensions(stepNumber);
+      const largeImagePath = resolve(workflowImagesDir, workflowImageFilename(stepNumber, 1200));
+      const largeMetadata = await sharp(largeImagePath).metadata();
+      expect(largeMetadata.width).toBe(declaredDimensions.width);
+      expect(largeMetadata.height).toBe(declaredDimensions.height);
 
       for (const fileWidth of WORKFLOW_IMAGE_FILE_WIDTHS) {
         const filename = workflowImageFilename(stepNumber, fileWidth);

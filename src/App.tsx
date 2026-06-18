@@ -31,6 +31,12 @@ const GALLERY_IDLE_LOAD_TIMEOUT_MS = 900;
 // matches the first featured artwork's mobile gallery asset.
 export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/mushroom-offering-560.webp';
 
+const HERO_REVEAL_REDUCED_CONFIG = {
+  initial: false as const,
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0 },
+};
+
 function getInitialGallerySectionLoad() {
   if (typeof window === 'undefined') {
     return false;
@@ -90,8 +96,25 @@ export default function App() {
     !prefersReducedMotion && prefersFinePointer && prefersLargeViewport;
   const { scrollY } = useScroll();
 
-  const headerY = useTransform(scrollY, [0, 1000], prefersReducedMotion ? [0, 0] : [0, 300]);
-  const headerOpacity = useTransform(scrollY, [0, 500], prefersReducedMotion ? [1, 1] : [1, 0]);
+  const prefersReducedMotionRef = useRef(prefersReducedMotion);
+  prefersReducedMotionRef.current = prefersReducedMotion;
+  const enableReactivePointerEffectsRef = useRef(enableReactivePointerEffects);
+  enableReactivePointerEffectsRef.current = enableReactivePointerEffects;
+
+  const headerY = useTransform(scrollY, (value) => {
+    if (prefersReducedMotionRef.current) {
+      return 0;
+    }
+    const progress = Math.min(Math.max(value / 1000, 0), 1);
+    return progress * 300;
+  });
+  const headerOpacity = useTransform(scrollY, (value) => {
+    if (prefersReducedMotionRef.current) {
+      return 1;
+    }
+    const progress = Math.min(Math.max(value / 500, 0), 1);
+    return 1 - progress;
+  });
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -99,22 +122,38 @@ export default function App() {
   const smoothY = useSpring(mouseY, { damping: 50, stiffness: 400 });
 
   const parallaxX = useTransform(smoothX, (value) =>
-    enableReactivePointerEffects ? (value - window.innerWidth / 2) * -0.03 : 0,
+    enableReactivePointerEffectsRef.current
+      ? (value - window.innerWidth / 2) * -0.03
+      : 0,
   );
   const parallaxY = useTransform(smoothY, (value) =>
-    enableReactivePointerEffects ? (value - window.innerHeight / 2) * -0.03 : 0,
+    enableReactivePointerEffectsRef.current
+      ? (value - window.innerHeight / 2) * -0.03
+      : 0,
   );
 
-  const blobX1 = useTransform(smoothX, (value) => (enableReactivePointerEffects ? value * 0.05 : 0));
-  const blobY1 = useTransform(smoothY, (value) => (enableReactivePointerEffects ? value * 0.05 : 0));
-  const blobX2 = useTransform(smoothX, (value) => (enableReactivePointerEffects ? value * -0.05 : 0));
-  const blobY2 = useTransform(smoothY, (value) => (enableReactivePointerEffects ? value * -0.05 : 0));
-  const blobX3 = useTransform(smoothX, (value) => (enableReactivePointerEffects ? value * 0.03 : 0));
-  const blobY3 = useTransform(smoothY, (value) => (enableReactivePointerEffects ? value * -0.03 : 0));
+  const blobX1 = useTransform(smoothX, (value) =>
+    enableReactivePointerEffectsRef.current ? value * 0.05 : 0,
+  );
+  const blobY1 = useTransform(smoothY, (value) =>
+    enableReactivePointerEffectsRef.current ? value * 0.05 : 0,
+  );
+  const blobX2 = useTransform(smoothX, (value) =>
+    enableReactivePointerEffectsRef.current ? value * -0.05 : 0,
+  );
+  const blobY2 = useTransform(smoothY, (value) =>
+    enableReactivePointerEffectsRef.current ? value * -0.05 : 0,
+  );
+  const blobX3 = useTransform(smoothX, (value) =>
+    enableReactivePointerEffectsRef.current ? value * 0.03 : 0,
+  );
+  const blobY3 = useTransform(smoothY, (value) =>
+    enableReactivePointerEffectsRef.current ? value * -0.03 : 0,
+  );
 
   const heroReveal = (delay = 0) =>
     prefersReducedMotion
-      ? { initial: false as const, animate: { opacity: 1, y: 0 }, transition: { duration: 0 } }
+      ? HERO_REVEAL_REDUCED_CONFIG
       : {
           initial: { opacity: 0, y: 30 },
           animate: { opacity: 1, y: 0 },
@@ -349,7 +388,12 @@ export default function App() {
         onNavigateToSection={handleSectionNavigation}
       />
 
-      <main id="main-content" ref={mainRef} tabIndex={-1} className="focus:outline-none">
+      <main
+        id="main-content"
+        ref={mainRef}
+        tabIndex={-1}
+        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+      >
         <HeroSection
           headerY={headerY}
           headerOpacity={headerOpacity}

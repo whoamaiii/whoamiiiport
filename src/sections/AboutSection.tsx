@@ -1,5 +1,4 @@
-import Instagram from 'lucide-react/dist/esm/icons/instagram.js';
-import Twitter from 'lucide-react/dist/esm/icons/twitter.js';
+import { Instagram, Twitter } from 'lucide-react';
 import { ImageReveal } from '../components/ImageReveal';
 import { MagneticButton } from '../components/MagneticButton';
 import { ShaderHeading } from '../components/ShaderHeading';

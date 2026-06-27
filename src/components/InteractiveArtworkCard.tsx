@@ -188,6 +188,7 @@ export default function InteractiveArtworkCard({
     : title.primary;
 
   const modalTitleId = `artwork-modal-title-${imageSlug}`;
+  const infoPanelId = `artwork-info-panel-${imageSlug}`;
 
   const handleGalleryImageLoad = () => {
     if (!useMobilePriorityPreview || mobileUpgradeTimerRef.current !== null) {
@@ -379,7 +380,6 @@ export default function InteractiveArtworkCard({
                         onClick={() => setShowInfo(true)}
                         className="glass-dark w-full max-w-md rounded-full px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                         aria-expanded={showInfo}
-                        aria-controls="artwork-info-panel"
                       >
                         Read meaning + process
                       </button>
@@ -390,7 +390,7 @@ export default function InteractiveArtworkCard({
                 <AnimatePresence initial={false}>
                   {showInfo && (
                     <motion.div
-                      id="artwork-info-panel"
+                      id={infoPanelId}
                       initial={
                         prefersReducedMotion
                           ? false
@@ -467,7 +467,6 @@ export default function InteractiveArtworkCard({
                       type="button"
                       onClick={() => setShowInfo(true)}
                       aria-expanded={showInfo}
-                      aria-controls="artwork-info-panel"
                       className="glass-dark w-full rounded-3xl px-6 py-5 text-left transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                     >
                       <p className="text-xs uppercase tracking-[0.3em] text-cyan-100/80 mb-2">

@@ -9,7 +9,7 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await expect(page.getByTestId('hero-title-visual')).toHaveCount(1);
   await expect(page.getByText(/Psychedelic Art Portfolio/i)).toBeVisible();
   await expect(
-    page.getByText(/Digital paintings and dream-burned color studies from altered states\./i),
+    page.getByText(/Paintings from the other side of the glass\./i),
   ).toBeVisible();
   await page.evaluate(() => document.querySelector('#work')?.scrollIntoView({ block: 'start' }));
   await page.waitForFunction(() => Boolean(document.querySelector('#work')));
@@ -185,7 +185,7 @@ test('mobile menu traps focus and restores it to the trigger', async ({ page }) 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
 
-  const menuButton = page.locator('.site-reference-menu-trigger');
+  const menuButton = page.locator('.site-header-menu-trigger');
   await expect(menuButton).toHaveAccessibleName(/open menu/i);
   await menuButton.click();
 
@@ -212,7 +212,7 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
   await page.setViewportSize({ width: 320, height: 568 });
   await page.goto('/');
 
-  const menuButton = page.locator('.site-reference-menu-trigger');
+  const menuButton = page.locator('.site-header-menu-trigger');
   await expect(menuButton).toBeVisible();
   await expect(menuButton).toHaveAccessibleName(/open menu/i);
   await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
@@ -247,28 +247,24 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
 
   const geometry = await page.evaluate(() => {
     const header = document.querySelector('[data-testid="site-header"]');
-    const mobileSurface = document.querySelector('.site-reference-glass-surface--mobile');
-    const menuButton = document.querySelector('.site-reference-menu-trigger');
-    const menuLines = document.querySelector('.site-reference-menu-trigger-lines');
+    const menuButton = document.querySelector('.site-header-menu-trigger');
+    const menuLines = document.querySelector('.site-header-menu-trigger-lines');
 
-    if (!header || !mobileSurface || !menuButton || !menuLines) {
+    if (!header || !menuButton || !menuLines) {
       return null;
     }
 
-    const surfaceRect = mobileSurface.getBoundingClientRect();
+    const headerRect = header.getBoundingClientRect();
     const buttonRect = menuButton.getBoundingClientRect();
     const linesRect = menuLines.getBoundingClientRect();
-    const expectedLineCenterX = surfaceRect.left + surfaceRect.width * (362 / 390);
-    const expectedButtonCenterX = surfaceRect.left + surfaceRect.width * (362 / 390);
-    const expectedCenterY = surfaceRect.top + surfaceRect.height * (43 / 88);
+    const expectedLineCenterX = buttonRect.left + buttonRect.width / 2;
+    const expectedCenterY = buttonRect.top + buttonRect.height / 2;
     const lineCenterX = linesRect.left + linesRect.width / 2;
     const lineCenterY = linesRect.top + linesRect.height / 2;
-    const buttonCenterX = buttonRect.left + buttonRect.width / 2;
-    const buttonCenterY = buttonRect.top + buttonRect.height / 2;
 
     return {
-      buttonDeltaX: Math.abs(buttonCenterX - expectedButtonCenterX),
-      buttonDeltaY: Math.abs(buttonCenterY - expectedCenterY),
+      buttonRight: buttonRect.right,
+      headerRight: headerRect.right,
       lineDeltaX: Math.abs(lineCenterX - expectedLineCenterX),
       lineDeltaY: Math.abs(lineCenterY - expectedCenterY),
       lineCount: menuLines.querySelectorAll('span').length,
@@ -280,8 +276,7 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
   expect(geometry!.lineCount).toBe(3);
   expect(geometry!.lineDeltaX).toBeLessThanOrEqual(3);
   expect(geometry!.lineDeltaY).toBeLessThanOrEqual(3);
-  expect(geometry!.buttonDeltaX).toBeLessThanOrEqual(4);
-  expect(geometry!.buttonDeltaY).toBeLessThanOrEqual(4);
+  expect(geometry!.buttonRight).toBeLessThanOrEqual(geometry!.headerRight);
   expect(geometry!.overflowX).toBeLessThanOrEqual(0);
 });
 

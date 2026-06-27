@@ -38,6 +38,24 @@ function getFocusableElements(root: ParentNode | null): HTMLElement[] {
   return Array.from(root.querySelectorAll(FOCUSABLE_SELECTOR)).filter(isFocusableElement);
 }
 
+function getFocusLoopElements(
+  root: HTMLElement | null,
+  externalFocusElement?: HTMLElement | null,
+): HTMLElement[] {
+  const focusable = getFocusableElements(root);
+
+  if (
+    root
+    && externalFocusElement
+    && isFocusableElement(externalFocusElement)
+    && !root.contains(externalFocusElement)
+  ) {
+    return [externalFocusElement, ...focusable];
+  }
+
+  return focusable;
+}
+
 function useBodyScrollLock(isLocked: boolean) {
   useEffect(() => {
     if (!isLocked || typeof document === 'undefined') {
@@ -126,7 +144,7 @@ export function useOverlayBehavior({
         return;
       }
 
-      const focusable = getFocusableElements(containerRef.current);
+      const focusable = getFocusLoopElements(containerRef.current, initialFocusRef?.current);
       if (focusable.length === 0) {
         event.preventDefault();
         containerRef.current.focus();

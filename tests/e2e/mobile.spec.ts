@@ -113,14 +113,14 @@ test('mobile first viewport keeps hero and navigation coherent', async ({ page }
   await expect(page.getByRole('heading', { name: /Altered Perceptions\./i })).toBeVisible();
   await expect(page.getByText(/Psychedelic Art Portfolio/i)).toBeVisible();
   await expect(
-    page.getByText(/Digital paintings and dream-burned color studies from altered states\./i),
+    page.getByText(/Paintings from the other side of the glass\./i),
   ).toBeVisible();
 });
 
 test('mobile menu traps focus and closes back to the trigger', async ({ page }) => {
   await page.goto('/');
 
-  const menuButton = page.locator('.site-reference-menu-trigger');
+  const menuButton = page.locator('.site-header-menu-trigger');
   await expect(menuButton).toHaveAccessibleName(/open menu/i);
   await menuButton.click();
 

@@ -123,6 +123,7 @@ export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderPro
   useOverlayBehavior({
     isOpen: isMobileMenuOpen,
     containerRef: mobileMenuRef,
+    initialFocusRef: menuButtonRef,
     restoreFocusRef: menuButtonRef,
     onClose: () => setIsMobileMenuOpen(false),
   });
@@ -146,7 +147,7 @@ export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderPro
             whileHover={reducedMotion ? undefined : { scale: 1.04 }}
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
           >
-            WHOAMIII
+            <span className="site-header-wordmark-text">WHOAMIII</span>
           </motion.a>
 
           <div className="site-header-actions">
@@ -157,7 +158,7 @@ export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderPro
               aria-hidden={isMobileMenuOpen || undefined}
               tabIndex={isMobileMenuOpen ? -1 : undefined}
             >
-              Work
+              <span className="site-header-work-pill-text">Work</span>
               <span className="pill-arrow" aria-hidden="true">&rarr;</span>
             </button>
             <MobileMenuButton

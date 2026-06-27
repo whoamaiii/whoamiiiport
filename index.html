@@ -67,36 +67,55 @@
       .app-static-nav {
         position: absolute;
         z-index: 2;
-        left: clamp(1.25rem, 5vw, 4.25rem);
-        right: clamp(1.25rem, 5vw, 4.25rem);
-        top: clamp(1.5rem, 5vw, 3.25rem);
-        display: flex;
+        left: clamp(1rem, 5vw, 4.25rem);
+        right: clamp(1rem, 5vw, 4.25rem);
+        top: clamp(1rem, 4vw, 2rem);
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
         align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
+        gap: clamp(0.42rem, 1.05vw, 0.95rem);
       }
       .app-static-logo {
-        min-width: min(18rem, 56vw);
-        border: 1px solid rgba(247, 250, 255, 0.72);
+        display: inline-flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: min(11.75rem, 57vw);
+        overflow: hidden;
+        border: 1px solid rgba(247, 250, 255, 0.5);
         border-radius: 999px;
-        padding: 1.08rem 2.1rem;
-        color: rgba(255, 255, 255, 0.92);
-        background: rgba(15, 15, 20, 0.58);
-        box-shadow: 0 0 1.25rem rgba(220, 238, 255, 0.34), inset 0 0 1.6rem rgba(255, 255, 255, 0.13);
-        font: italic 900 clamp(1.05rem, 4vw, 1.6rem)/1 "Arial Narrow", "Avenir Next Condensed", ui-sans-serif, system-ui, sans-serif;
-        letter-spacing: -0.04em;
-        text-shadow: 0 0.08rem 0.25rem rgba(0, 0, 0, 0.7);
+        padding: 1rem 1.05rem;
+        color: rgba(225, 249, 255, 0.96);
+        background:
+          radial-gradient(circle at 22% 14%, rgba(255, 255, 255, 0.2), transparent 32%),
+          linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(8, 12, 18, 0.48));
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.42),
+          inset 0 -16px 28px rgba(0, 0, 0, 0.24),
+          0 14px 34px rgba(0, 0, 0, 0.3);
+        font: italic 900 clamp(1.1rem, 5.8vw, 1.78rem)/0.8 "Arial Narrow", "Avenir Next Condensed", ui-sans-serif, system-ui, sans-serif;
+        letter-spacing: -0.055em;
+        text-shadow:
+          0 1px 0 rgba(255, 255, 255, 0.22),
+          0 7px 13px rgba(0, 0, 0, 0.55);
+        backdrop-filter: blur(20px) saturate(150%);
       }
       .app-static-link {
-        border: 1px solid rgba(247, 250, 255, 0.48);
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(230, 246, 255, 0.38);
         border-radius: 999px;
-        padding: 0.86rem 1rem;
-        background: rgba(15, 15, 20, 0.5);
-        box-shadow: 0 0 1rem rgba(203, 170, 238, 0.2);
+        padding: 0.92rem 1rem;
+        background:
+          linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+          rgba(9, 10, 16, 0.34);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.36),
+          0 12px 28px rgba(0, 0, 0, 0.24);
         font-size: 0.78rem;
         font-weight: 800;
-        letter-spacing: 0.14em;
+        letter-spacing: 0.18em;
         text-transform: uppercase;
+        backdrop-filter: blur(20px) saturate(150%);
       }
       .app-static-copy {
         position: absolute;
@@ -189,6 +208,19 @@
             url("/images/liquid-perception-hero-1440.webp") center 42% / cover no-repeat,
             linear-gradient(180deg, #0b0712 0%, #09090b 100%);
         }
+        .app-static-nav {
+          grid-template-columns: minmax(10.5rem, 27vw) minmax(8rem, 1fr);
+        }
+        .app-static-logo {
+          justify-content: center;
+          width: auto;
+          padding: clamp(2.05rem, 2.55vw, 2.55rem) clamp(1.7rem, 3.5vw, 3.5rem);
+          font-size: clamp(1.75rem, 3.65vw, 4.25rem);
+        }
+        .app-static-link {
+          padding: clamp(1.45rem, 1.7vw, 1.75rem) clamp(1.05rem, 2.1vw, 2.05rem);
+          text-align: right;
+        }
         .app-static-copy {
           left: 5rem;
           top: 14rem;
@@ -201,11 +233,11 @@
         }
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-DTRoqIfu.js"></script>
+    <script type="module" crossorigin src="/assets/index-D2Zq_Esb.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-Cyuzqnbw.js">
     <link rel="modulepreload" crossorigin href="/assets/vendor-motion-DPZajhBq.js">
     <link rel="modulepreload" crossorigin href="/assets/vendor-react-DNy7frZ3.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-DkhMFwuH.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-B3JAppyx.css">
   </head>
   <body>
     <div id="root">
@@ -218,7 +250,7 @@
           <div class="app-static-copy">
             <p class="app-static-kicker">PSYCHEDELIC ART PORTFOLIO</p>
             <h1 class="app-static-title">Altered<br />Perceptions.</h1>
-            <p class="app-static-subtitle">Digital paintings and dream-burned color studies from altered states.</p>
+            <p class="app-static-subtitle">Paintings from the other side of the glass.</p>
           </div>
         </section>
         <section id="work" class="app-static-work" aria-label="Selected Works preview">

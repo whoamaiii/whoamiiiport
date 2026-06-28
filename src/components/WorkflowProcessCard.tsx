@@ -121,7 +121,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                 className="absolute inset-0 grid place-items-center bg-zinc-950/70 text-center text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-cyan-100/70"
                 aria-hidden="true"
               >
-                Loading process film
+                Loading film
               </div>
             ) : null}
 

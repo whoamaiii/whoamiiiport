@@ -20,6 +20,7 @@
     "test:e2e": "playwright test",
     "test:e2e:preview": "npm run build && playwright test --config=playwright.preview.config.ts",
     "optimize-images": "node scripts/optimize-images.js",
+    "optimize-avif": "node scripts/generate-avif-images.mjs",
     "perf:mobile": "node scripts/measure-load-performance.mjs http://localhost:4173/"
   },
   "dependencies": {

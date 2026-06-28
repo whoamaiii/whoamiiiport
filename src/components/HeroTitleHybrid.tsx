@@ -7,7 +7,7 @@ import {
 import { ShaderTextWord } from './shared/ShaderTextWord';
 import type { TextShadowConfig } from './shared/shaderTextShared';
 import reportError from '../lib/reportError';
-import { getImageUrl } from '../utils/images';
+import { getAvifImageUrl } from '../utils/images';
 
 interface HeroTitleHybridProps {
   semanticTitle: string;
@@ -16,7 +16,7 @@ interface HeroTitleHybridProps {
   forceFallback?: boolean;
 }
 
-const HERO_LIQUID_BACKGROUND = getImageUrl('liquid-perception-hero', 720);
+const HERO_LIQUID_BACKGROUND = getAvifImageUrl('liquid-perception-hero', 720);
 const HERO_WORDMARK_VISUAL_SECOND_LINE = `${HERO_WORDMARK_SUPPORTED_LINES[1]}.`;
 
 const HERO_LIQUID_SHARED_UV = {

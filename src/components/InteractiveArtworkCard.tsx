@@ -11,7 +11,10 @@ import {
 import { Play, X } from 'lucide-react';
 import type { ModalImageSlug } from '../utils/images';
 import {
+  getAvifImageUrl,
+  getGalleryAvifSrcset,
   getGallerySrcset,
+  getModalAvifSrcset,
   getModalSrcset,
   getGallerySizes,
   getGalleryImageUrl,
@@ -58,8 +61,10 @@ export default function InteractiveArtworkCard({
   const mobileUpgradeTimerRef = useRef<number | null>(null);
   const [imageCanLoad, setImageCanLoad] = useState(!deferImageUntilVisible);
   const prefersReducedMotion = useReducedMotion();
+  const supportsCardMotion = useMediaQuery('(hover: hover) and (pointer: fine)', false);
   const isDesktopLayout = useMediaQuery('(min-width: 1024px)', false);
   const isMobileLayout = useMediaQuery('(max-width: 767px)', false);
+  const enableCardMotion = !prefersReducedMotion && supportsCardMotion;
 
   // Mouse tracking for glare effect
   const mouseX = useMotionValue(0.5);
@@ -80,7 +85,7 @@ export default function InteractiveArtworkCard({
   });
 
   const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (prefersReducedMotion || !cardRef.current) return;
+    if (!enableCardMotion || !cardRef.current) return;
 
     const rect = cardRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
@@ -123,14 +128,23 @@ export default function InteractiveArtworkCard({
 
   const imageMeta = getImageMetadata(imageSlug);
   const isVideoArtwork = Boolean(videoSrc);
+  const galleryAvifSrcset = getGalleryAvifSrcset(imageSlug);
   const gallerySrcset = getGallerySrcset(imageSlug);
+  const modalAvifSrcset = isVideoArtwork ? undefined : getModalAvifSrcset(imageSlug);
   const modalSrcset = isVideoArtwork ? undefined : getModalSrcset(imageSlug);
   const sizes = getGallerySizes();
   const fallbackUrl = getGalleryImageUrl(imageSlug);
   const modalImageUrl = getModalImageUrl(imageSlug);
+  const mobilePriorityAvifUrl = getAvifImageUrl(imageSlug, 560);
   const mobilePriorityUrl = getImageUrl(imageSlug, 560);
   const useMobilePriorityImage = imageCanLoad && isMobileLayout && imageLoading === 'eager';
   const [useMobilePriorityPreview, setUseMobilePriorityPreview] = useState(useMobilePriorityImage);
+  const displayedAvifImageSrcset =
+    imageCanLoad
+      ? useMobilePriorityPreview
+        ? mobilePriorityAvifUrl
+        : galleryAvifSrcset
+      : undefined;
   const displayedImageSrc =
     useMobilePriorityPreview
       ? mobilePriorityUrl
@@ -208,22 +222,22 @@ export default function InteractiveArtworkCard({
       <motion.div
         ref={cardRef}
         className="group relative aspect-[4/5] w-full rounded-3xl overflow-hidden glass p-2 cursor-pointer"
-        onMouseMove={handleMouseMove}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={handleMouseLeave}
+        onMouseMove={enableCardMotion ? handleMouseMove : undefined}
+        onMouseEnter={enableCardMotion ? () => setIsHovered(true) : undefined}
+        onMouseLeave={enableCardMotion ? handleMouseLeave : undefined}
         style={{
-          transformPerspective: 1200,
-          rotateX: prefersReducedMotion ? 0 : rotateX,
-          rotateY: prefersReducedMotion ? 0 : rotateY,
+          transformPerspective: enableCardMotion ? 1200 : undefined,
+          rotateX: enableCardMotion ? rotateX : 0,
+          rotateY: enableCardMotion ? rotateY : 0,
         }}
         animate={
-          prefersReducedMotion
-            ? undefined
-            : {
+          enableCardMotion
+            ? {
                 boxShadow: isHovered
                   ? '0 30px 80px -36px rgba(0,0,0,0.92), 0 0 0 1px rgba(255,255,255,0.08)'
                   : '0 18px 54px -40px rgba(0,0,0,0.86), 0 0 0 1px rgba(255,255,255,0.04)',
               }
+            : undefined
         }
         transition={{ type: 'spring', stiffness: 280, damping: 24 }}
       >
@@ -237,32 +251,41 @@ export default function InteractiveArtworkCard({
           className="group w-full h-full text-left rounded-2xl overflow-hidden relative focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950"
           aria-label={`View ${displayTitle} ${isVideoArtwork ? 'video' : 'artwork'} details and notes`}
           whileHover={
-            prefersReducedMotion
-              ? undefined
-              : { scale: 1.02 }
+            enableCardMotion
+              ? { scale: 1.02 }
+              : undefined
           }
           whileTap={prefersReducedMotion ? undefined : { scale: 0.98 }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
         >
           <div className="w-full h-full rounded-2xl overflow-hidden relative">
-            <img
-              src={displayedImageSrc}
-              srcSet={displayedImageSrcset}
-              sizes={displayedImageSizes}
-              alt={imageCanLoad ? imageMeta.alt : ''}
-              loading={imageLoading}
-              fetchPriority={imageFetchPriority}
-              decoding="async"
-              onLoad={handleGalleryImageLoad}
-              width={800}
-              height={1000}
-              style={{ objectPosition: imageMeta.galleryObjectPosition }}
-              className={`w-full h-full object-cover ${imageCanLoad ? '' : 'opacity-0'} ${
-                prefersReducedMotion ? '' : 'transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]'
-              }`.trim()}
-            />
+            <picture className="block h-full w-full">
+              {displayedAvifImageSrcset ? (
+                <source
+                  type="image/avif"
+                  srcSet={displayedAvifImageSrcset}
+                  sizes={displayedImageSizes}
+                />
+              ) : null}
+              <img
+                src={displayedImageSrc}
+                srcSet={displayedImageSrcset}
+                sizes={displayedImageSizes}
+                alt={imageCanLoad ? imageMeta.alt : ''}
+                loading={imageLoading}
+                fetchPriority={imageFetchPriority}
+                decoding="async"
+                onLoad={handleGalleryImageLoad}
+                width={800}
+                height={1000}
+                style={{ objectPosition: imageMeta.galleryObjectPosition }}
+                className={`w-full h-full object-cover ${imageCanLoad ? '' : 'opacity-0'} ${
+                  enableCardMotion ? 'transition-transform duration-700 group-hover:scale-[1.04] group-focus-visible:scale-[1.04]' : ''
+                }`.trim()}
+              />
+            </picture>
 
-            {!prefersReducedMotion && (
+            {enableCardMotion && (
               <motion.div
                 className="absolute inset-0 pointer-events-none z-10 mix-blend-screen"
                 style={{ background: glowBackground }}
@@ -272,8 +295,7 @@ export default function InteractiveArtworkCard({
               />
             )}
 
-            {/* Glare effect overlay */}
-            {!prefersReducedMotion && (
+            {enableCardMotion && (
               <motion.div
                 className="absolute inset-0 pointer-events-none z-20"
                 style={{ background: glareBackground }}
@@ -363,16 +385,25 @@ export default function InteractiveArtworkCard({
                       <source src={videoSrc} type="video/mp4" />
                     </motion.video>
                   ) : (
-                    <motion.img
-                      initial={prefersReducedMotion ? false : { scale: 0.96, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
-                      src={modalImageUrl}
-                      srcSet={modalSrcset}
-                      sizes="(max-width: 1024px) 100vw, 70vw"
-                      alt={imageMeta.alt}
-                      className="max-w-full max-h-[68vh] lg:max-h-full object-contain rounded-lg"
-                    />
+                    <picture className="flex max-h-[68vh] max-w-full items-center justify-center lg:max-h-full">
+                      {modalAvifSrcset ? (
+                        <source
+                          type="image/avif"
+                          srcSet={modalAvifSrcset}
+                          sizes="(max-width: 1024px) 100vw, 70vw"
+                        />
+                      ) : null}
+                      <motion.img
+                        initial={prefersReducedMotion ? false : { scale: 0.96, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
+                        src={modalImageUrl}
+                        srcSet={modalSrcset}
+                        sizes="(max-width: 1024px) 100vw, 70vw"
+                        alt={imageMeta.alt}
+                        className="max-w-full max-h-[68vh] lg:max-h-full object-contain rounded-lg"
+                      />
+                    </picture>
                   )}
 
                   {!isDesktopLayout && !showInfo && (

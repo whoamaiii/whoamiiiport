@@ -8,10 +8,15 @@ import {
   IMAGE_MANIFEST,
   MODAL_FALLBACK_WIDTH,
   MODAL_WIDTHS,
+  getAvifImageUrl,
+  getGalleryAvifSrcset,
   getGallerySrcset,
+  getHeroAvifSrcset,
   getHeroSrcset,
   getImageMetadata,
   getImageUrl,
+  getModalAvifImageUrl,
+  getModalAvifSrcset,
   getModalImageUrl,
   getModalSrcset,
 } from '../src/utils/images';
@@ -66,6 +71,16 @@ describe('image contract', () => {
     for (const url of urls) {
       expect(existsSync(generatedImagePath(url))).toBe(true);
     }
+
+    const avifSrcset = getHeroAvifSrcset('liquid-perception-hero');
+    expect(splitSrcset(avifSrcset)).toEqual([
+      '/images/liquid-perception-hero-720.avif',
+      '/images/liquid-perception-hero-960.avif',
+      '/images/liquid-perception-hero-1440.avif',
+    ]);
+    splitSrcset(avifSrcset).forEach((url) => {
+      expect(existsSync(generatedImagePath(url))).toBe(true);
+    });
   });
 
   it('maps the current featured artworks to generated gallery assets', () => {
@@ -95,6 +110,9 @@ describe('image contract', () => {
       const urls = splitSrcset(srcset);
       expect(urls.length).toBeGreaterThan(0);
       urls.forEach((url) => expect(existsSync(generatedImagePath(url))).toBe(true));
+      splitSrcset(getGalleryAvifSrcset(artwork.imageSlug)).forEach((url) => {
+        expect(existsSync(generatedImagePath(url))).toBe(true);
+      });
     }
 
     expect(getImageMetadata('mushroom-offering').galleryObjectPosition).toBe('50% 48%');
@@ -132,7 +150,7 @@ describe('image contract', () => {
     const [firstFeatured] = FEATURED_ARTWORKS;
 
     expect(FIRST_GALLERY_PRELOAD_IMAGE_URL).toBe(
-      getImageUrl(firstFeatured.artwork.imageSlug, 560),
+      getAvifImageUrl(firstFeatured.artwork.imageSlug, 560),
     );
     expect(existsSync(generatedImagePath(FIRST_GALLERY_PRELOAD_IMAGE_URL))).toBe(true);
   });
@@ -211,8 +229,12 @@ describe('image contract', () => {
       splitSrcset(getGallerySrcset(artwork.imageSlug)).forEach((url) => {
         expect(existsSync(generatedImagePath(url))).toBe(true);
       });
+      splitSrcset(getGalleryAvifSrcset(artwork.imageSlug)).forEach((url) => {
+        expect(existsSync(generatedImagePath(url))).toBe(true);
+      });
 
       expect(existsSync(generatedImagePath(getModalImageUrl(artwork.imageSlug)))).toBe(true);
+      expect(existsSync(generatedImagePath(getModalAvifImageUrl(artwork.imageSlug)))).toBe(true);
 
       if (artwork.videoSrc) {
         expect(existsSync(resolve('public', artwork.videoSrc.replace(/^\/+/, '')))).toBe(true);
@@ -312,6 +334,9 @@ describe('image contract', () => {
     ]);
 
     urls.forEach((url) => expect(existsSync(generatedImagePath(url))).toBe(true));
+    splitSrcset(getGalleryAvifSrcset(ABOUT_SLUG)).forEach((url) => {
+      expect(existsSync(generatedImagePath(url))).toBe(true);
+    });
     expect(existsSync(generatedImagePath(getModalImageUrl(ABOUT_SLUG)))).toBe(true);
   });
 
@@ -346,16 +371,30 @@ describe('image contract', () => {
       const modalUrl = getModalImageUrl(slug);
       const modalSrcset = getModalSrcset(slug);
       const modalSrcsetUrls = splitSrcset(modalSrcset);
+      const modalAvifUrl = getModalAvifImageUrl(slug);
+      const modalAvifSrcset = getModalAvifSrcset(slug);
 
       expect(modalUrl).toBe(`/images/${slug}-modal-${MODAL_FALLBACK_WIDTH}.webp`);
       expect(modalSrcset).toBe(
         MODAL_WIDTHS.map((width) => `/images/${slug}-modal-${width}.webp ${width}w`).join(', '),
       );
+      expect(modalAvifUrl).toBe(`/images/${slug}-modal-${MODAL_FALLBACK_WIDTH}.avif`);
+      expect(modalAvifSrcset).toBe(
+        MODAL_WIDTHS.map((width) => `/images/${slug}-modal-${width}.avif ${width}w`).join(', '),
+      );
       expect(existsSync(generatedImagePath(modalUrl))).toBe(true);
+      expect(existsSync(generatedImagePath(modalAvifUrl))).toBe(true);
       expect(existsSync(generatedImagePath(getImageUrl(slug, 1024)))).toBe(true);
+      expect(existsSync(generatedImagePath(getAvifImageUrl(slug, 1024)))).toBe(true);
       expect(existsSync(generatedImagePath(getImageUrl(slug, 1200)))).toBe(true);
+      expect(existsSync(generatedImagePath(getAvifImageUrl(slug, 1200)))).toBe(true);
       expect(readFileSync(generatedImagePath(modalUrl)).byteLength).toBeGreaterThan(0);
+      expect(readFileSync(generatedImagePath(modalAvifUrl)).byteLength).toBeGreaterThan(0);
       modalSrcsetUrls.forEach((url) => {
+        expect(existsSync(generatedImagePath(url))).toBe(true);
+        expect(readFileSync(generatedImagePath(url)).byteLength).toBeGreaterThan(0);
+      });
+      splitSrcset(modalAvifSrcset).forEach((url) => {
         expect(existsSync(generatedImagePath(url))).toBe(true);
         expect(readFileSync(generatedImagePath(url)).byteLength).toBeGreaterThan(0);
       });

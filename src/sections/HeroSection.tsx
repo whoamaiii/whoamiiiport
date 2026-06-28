@@ -1,5 +1,13 @@
 import { motion, type MotionValue } from 'motion/react';
-import { HERO_FALLBACK_WIDTH, getHeroSizes, getHeroSrcset, getImageMetadata, getImageUrl } from '../utils/images';
+import {
+  HERO_FALLBACK_WIDTH,
+  getAvifImageUrl,
+  getHeroAvifSrcset,
+  getHeroSizes,
+  getHeroSrcset,
+  getImageMetadata,
+  getImageUrl,
+} from '../utils/images';
 import { HERO_COPY } from '../content/siteCopy';
 import { HeroTitleHybrid, HeroTitleStaticFallback } from '../components/HeroTitleHybrid';
 import RenderErrorBoundary from '../components/fallback/RenderErrorBoundary';
@@ -47,10 +55,23 @@ export function HeroSection({
 
         <picture>
           <source
+            type="image/avif"
+            media="(max-width: 767px)"
+            srcSet={getAvifImageUrl(HERO_SLUG, 720)}
+          />
+          <source
+            type="image/avif"
+            media="(min-width: 768px)"
+            srcSet={getHeroAvifSrcset(HERO_SLUG)}
+            sizes={getHeroSizes()}
+          />
+          <source
+            type="image/webp"
             media="(max-width: 767px)"
             srcSet={getImageUrl(HERO_SLUG, 720)}
           />
           <source
+            type="image/webp"
             media="(min-width: 768px)"
             srcSet={getHeroSrcset(HERO_SLUG)}
             sizes={getHeroSizes()}

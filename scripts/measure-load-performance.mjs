@@ -93,7 +93,7 @@ async function main() {
       const firstImage = document.querySelector('#work img');
       return Boolean(
         firstImage?.currentSrc
-          && /-(?:800|1024|1200)\.webp(?:$|\?)/.test(firstImage.currentSrc),
+          && /-(?:800|1024|1200)\.(?:avif|webp)(?:$|\?)/.test(firstImage.currentSrc),
       );
     }, { timeout: 8000 }).then(() => {
       firstGalleryUpgradeAfterScroll = Date.now() - galleryScrollStart;
@@ -155,7 +155,7 @@ async function main() {
 
     if (
       !afterGalleryMetrics.firstGalleryImageSrc
-        || !/-(?:800|1024|1200)\.webp(?:$|\?)/.test(afterGalleryMetrics.firstGalleryImageSrc)
+        || !/-(?:800|1024|1200)\.(?:avif|webp)(?:$|\?)/.test(afterGalleryMetrics.firstGalleryImageSrc)
     ) {
       failures.push('first gallery image did not upgrade beyond the mobile preview candidate');
     }

@@ -3,7 +3,13 @@ import { ImageReveal } from '../components/ImageReveal';
 import { MagneticButton } from '../components/MagneticButton';
 import { ShaderHeading } from '../components/ShaderHeading';
 import { ABOUT_COPY } from '../content/siteCopy';
-import { getAboutSizes, getGalleryImageUrl, getGallerySrcset, getImageMetadata } from '../utils/images';
+import {
+  getAboutSizes,
+  getGalleryAvifSrcset,
+  getGalleryImageUrl,
+  getGallerySrcset,
+  getImageMetadata,
+} from '../utils/images';
 
 export const ABOUT_SLUG = 'liquid-perception' as const;
 
@@ -15,17 +21,24 @@ function AboutPortrait({ className = '' }: { className?: string }) {
       direction="up"
       duration={0.48}
     >
-      <img
-        src={getGalleryImageUrl(ABOUT_SLUG)}
-        srcSet={getGallerySrcset(ABOUT_SLUG)}
-        sizes={getAboutSizes()}
-        alt={getImageMetadata(ABOUT_SLUG).alt}
-        loading="lazy"
-        decoding="async"
-        width={800}
-        height={1200}
-        className="h-full w-full rounded-[1rem] object-cover object-[50%_50%] contrast-105 saturate-110 md:rounded-2xl"
-      />
+      <picture className="block h-full w-full">
+        <source
+          type="image/avif"
+          srcSet={getGalleryAvifSrcset(ABOUT_SLUG)}
+          sizes={getAboutSizes()}
+        />
+        <img
+          src={getGalleryImageUrl(ABOUT_SLUG)}
+          srcSet={getGallerySrcset(ABOUT_SLUG)}
+          sizes={getAboutSizes()}
+          alt={getImageMetadata(ABOUT_SLUG).alt}
+          loading="lazy"
+          decoding="async"
+          width={800}
+          height={1200}
+          className="h-full w-full rounded-[1rem] object-cover object-[50%_50%] contrast-105 saturate-110 md:rounded-2xl"
+        />
+      </picture>
       <div
         className="pointer-events-none absolute inset-2 rounded-[1rem] opacity-[0.16] mix-blend-screen md:rounded-2xl"
         style={{

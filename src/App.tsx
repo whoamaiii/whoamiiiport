@@ -32,7 +32,7 @@ const GALLERY_IDLE_LOAD_TIMEOUT_MS = 900;
 // Hardcoded (instead of derived from FEATURED_ARTWORKS) so the gallery content
 // modules stay out of the main bundle. tests/image-contract.test.ts asserts it
 // matches the first featured artwork's mobile gallery asset.
-export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/mushroom-offering-560.webp';
+export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/mushroom-offering-560.avif';
 
 const HERO_REVEAL_REDUCED_CONFIG = {
   initial: false as const,
@@ -98,9 +98,15 @@ export default function App() {
       return sectionId !== null && isDeferredSection(sectionId);
     },
   );
-  const [pendingSectionNavigation, setPendingSectionNavigation] = useState<string | null>(
-    () => getSectionIdFromHash(),
-  );
+  const pendingSectionNavigationRef = useRef<string | null>(null);
+  const pendingSectionNavigationInitializedRef = useRef(false);
+  const pendingNavigationTimerRef = useRef<number | null>(null);
+  const pendingNavigationAttemptsRef = useRef(0);
+
+  if (!pendingSectionNavigationInitializedRef.current) {
+    pendingSectionNavigationRef.current = getSectionIdFromHash();
+    pendingSectionNavigationInitializedRef.current = true;
+  }
   const prefersReducedMotion = useReducedMotion();
   const prefersFinePointer = useMediaQuery('(pointer: fine)', false);
   const prefersLargeViewport = useMediaQuery('(min-width: 1024px)', false);
@@ -226,6 +232,45 @@ export default function App() {
     [prefersReducedMotion],
   );
 
+  const clearPendingNavigationTimer = useCallback(() => {
+    if (pendingNavigationTimerRef.current === null) {
+      return;
+    }
+
+    window.clearTimeout(pendingNavigationTimerRef.current);
+    pendingNavigationTimerRef.current = null;
+  }, []);
+
+  const tryPendingSectionNavigation = useCallback(() => {
+    const pendingSectionNavigation = pendingSectionNavigationRef.current;
+
+    if (!pendingSectionNavigation) {
+      clearPendingNavigationTimer();
+      return;
+    }
+
+    if (scrollToSection(pendingSectionNavigation)) {
+      pendingSectionNavigationRef.current = null;
+      pendingNavigationAttemptsRef.current = 0;
+      clearPendingNavigationTimer();
+      return;
+    }
+
+    pendingNavigationAttemptsRef.current += 1;
+
+    if (pendingNavigationAttemptsRef.current >= 80) {
+      pendingSectionNavigationRef.current = null;
+      pendingNavigationAttemptsRef.current = 0;
+      clearPendingNavigationTimer();
+      return;
+    }
+
+    clearPendingNavigationTimer();
+    pendingNavigationTimerRef.current = window.setTimeout(() => {
+      tryPendingSectionNavigation();
+    }, 50);
+  }, [clearPendingNavigationTimer, scrollToSection]);
+
   const handleSectionNavigation = useCallback(
     (id: string) => {
       if (id === 'work' || isDeferredSection(id)) {
@@ -241,10 +286,18 @@ export default function App() {
       }
 
       if (!scrollToSection(id)) {
-        setPendingSectionNavigation(id);
+        pendingSectionNavigationRef.current = id;
+        pendingNavigationAttemptsRef.current = 0;
+        tryPendingSectionNavigation();
       }
     },
-    [enableDeferredSections, enableGallerySection, enableLibrarySection, scrollToSection],
+    [
+      enableDeferredSections,
+      enableGallerySection,
+      enableLibrarySection,
+      scrollToSection,
+      tryPendingSectionNavigation,
+    ],
   );
 
   useEffect(() => {
@@ -331,46 +384,15 @@ export default function App() {
   }, [enableDeferredSections, loadDeferredSections]);
 
   useEffect(() => {
-    if (!pendingSectionNavigation) {
-      return;
-    }
+    tryPendingSectionNavigation();
+  }, [
+    loadDeferredSections,
+    loadGallerySection,
+    loadLibrarySection,
+    tryPendingSectionNavigation,
+  ]);
 
-    let cancelled = false;
-    let timeoutId = 0;
-    let attempts = 0;
-
-    const tryNavigate = () => {
-      if (cancelled) {
-        return;
-      }
-
-      if (scrollToSection(pendingSectionNavigation)) {
-        setPendingSectionNavigation((current) =>
-          current === pendingSectionNavigation ? null : current,
-        );
-        return;
-      }
-
-      attempts += 1;
-      if (attempts >= 80) {
-        setPendingSectionNavigation((current) =>
-          current === pendingSectionNavigation ? null : current,
-        );
-        return;
-      }
-
-      timeoutId = window.setTimeout(() => {
-        tryNavigate();
-      }, 50);
-    };
-
-    tryNavigate();
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timeoutId);
-    };
-  }, [pendingSectionNavigation, scrollToSection]);
+  useEffect(() => clearPendingNavigationTimer, [clearPendingNavigationTimer]);
 
   const handleSkipLinkClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();

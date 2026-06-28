@@ -2,7 +2,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { FEATURED_ARTWORKS } from '../src/content/featuredArtworks';
-import { getImageUrl } from '../src/utils/images';
+import { getAvifImageUrl, getImageUrl } from '../src/utils/images';
 
 const indexHtml = readFileSync(resolve('index.html'), 'utf8');
 
@@ -31,8 +31,11 @@ describe('document head contract', () => {
 
     for (const { artwork } of FEATURED_ARTWORKS) {
       const thumbnailUrl = getImageUrl(artwork.imageSlug, 480);
+      const thumbnailAvifUrl = getAvifImageUrl(artwork.imageSlug, 480);
       expect(indexHtml).toContain(`src="${thumbnailUrl}"`);
+      expect(indexHtml).toContain(`srcset="${thumbnailAvifUrl}"`);
       expect(existsSync(resolve('public', thumbnailUrl.replace(/^\/+/, '')))).toBe(true);
+      expect(existsSync(resolve('public', thumbnailAvifUrl.replace(/^\/+/, '')))).toBe(true);
     }
   });
 

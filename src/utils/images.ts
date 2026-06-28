@@ -34,6 +34,8 @@ interface ArtworkImage {
   galleryObjectPosition?: string;
 }
 
+type ImageFormat = 'avif' | 'webp';
+
 export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
   'liquid-perception-hero': {
     slug: 'liquid-perception-hero',
@@ -149,10 +151,11 @@ export const MODAL_FALLBACK_WIDTH = MODAL_WIDTHS[MODAL_WIDTHS.length - 1];
 function getSrcset(
   slug: ImageSlug, 
   widths: readonly number[], 
-  suffix = ''
+  suffix = '',
+  format: ImageFormat = 'webp',
 ): string {
   return widths
-    .map((w) => `/images/${slug}${suffix ? `-${suffix}` : ''}-${w}.webp ${w}w`)
+    .map((w) => `/images/${slug}${suffix ? `-${suffix}` : ''}-${w}.${format} ${w}w`)
     .join(', ');
 }
 
@@ -162,9 +165,18 @@ function getSrcset(
 export function getImageUrl(
   slug: ImageSlug, 
   width: number, 
-  suffix = ''
+  suffix = '',
+  format: ImageFormat = 'webp',
 ): string {
-  return `/images/${slug}${suffix ? `-${suffix}` : ''}-${width}.webp`;
+  return `/images/${slug}${suffix ? `-${suffix}` : ''}-${width}.${format}`;
+}
+
+export function getAvifImageUrl(
+  slug: ImageSlug,
+  width: number,
+  suffix = '',
+): string {
+  return getImageUrl(slug, width, suffix, 'avif');
 }
 
 /**
@@ -181,11 +193,19 @@ export function getHeroSrcset(slug: ImageSlug): string {
   return getSrcset(slug, HERO_WIDTHS);
 }
 
+export function getHeroAvifSrcset(slug: ImageSlug): string {
+  return getSrcset(slug, HERO_WIDTHS, '', 'avif');
+}
+
 /**
  * Get gallery image srcset
  */
 export function getGallerySrcset(slug: ImageSlug): string {
   return getSrcset(slug, GALLERY_WIDTHS);
+}
+
+export function getGalleryAvifSrcset(slug: ImageSlug): string {
+  return getSrcset(slug, GALLERY_WIDTHS, '', 'avif');
 }
 
 /**
@@ -195,11 +215,19 @@ export function getModalImageUrl(slug: ModalImageSlug): string {
   return `/images/${slug}-modal-${MODAL_FALLBACK_WIDTH}.webp`;
 }
 
+export function getModalAvifImageUrl(slug: ModalImageSlug): string {
+  return `/images/${slug}-modal-${MODAL_FALLBACK_WIDTH}.avif`;
+}
+
 /**
  * Get modal image srcset.
  */
 export function getModalSrcset(slug: ModalImageSlug): string {
   return getSrcset(slug, MODAL_WIDTHS, 'modal');
+}
+
+export function getModalAvifSrcset(slug: ModalImageSlug): string {
+  return getSrcset(slug, MODAL_WIDTHS, 'modal', 'avif');
 }
 
 /**

@@ -20,16 +20,18 @@
     <link
       rel="preload"
       as="image"
-      href="/images/liquid-perception-hero-720.webp"
+      href="/images/liquid-perception-hero-720.avif"
       media="(max-width: 767px)"
+      type="image/avif"
       fetchpriority="high"
     />
     <link
       rel="preload"
       as="image"
-      href="/images/liquid-perception-hero-1440.webp"
+      href="/images/liquid-perception-hero-1440.avif"
       media="(min-width: 768px)"
-      imagesrcset="/images/liquid-perception-hero-960.webp 960w, /images/liquid-perception-hero-1440.webp 1440w"
+      type="image/avif"
+      imagesrcset="/images/liquid-perception-hero-960.avif 960w, /images/liquid-perception-hero-1440.avif 1440w"
       imagesizes="100vw"
       fetchpriority="high"
     />
@@ -61,7 +63,10 @@
         background:
           linear-gradient(90deg, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.48) 42%, rgba(9, 9, 11, 0.18) 100%),
           linear-gradient(0deg, rgba(9, 9, 11, 0.92) 0%, rgba(9, 9, 11, 0.18) 40%, rgba(9, 9, 11, 0.38) 100%),
-          url("/images/liquid-perception-hero-720.webp") center / cover no-repeat,
+          image-set(
+            url("/images/liquid-perception-hero-720.avif") type("image/avif"),
+            url("/images/liquid-perception-hero-720.webp") type("image/webp")
+          ) center / cover no-repeat,
           linear-gradient(180deg, #0b0712 0%, #09090b 100%);
       }
       .app-static-nav {
@@ -195,6 +200,9 @@
         aspect-ratio: 4 / 5;
         object-fit: cover;
       }
+      .app-static-card picture {
+        display: block;
+      }
       .app-static-card figcaption {
         padding: 0.95rem 1rem 1.1rem;
         color: rgba(245, 241, 236, 0.82);
@@ -205,7 +213,10 @@
           background:
             linear-gradient(90deg, rgba(9, 9, 11, 0.9) 0%, rgba(9, 9, 11, 0.5) 37%, rgba(9, 9, 11, 0.12) 100%),
             linear-gradient(0deg, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.12) 48%, rgba(9, 9, 11, 0.3) 100%),
-            url("/images/liquid-perception-hero-1440.webp") center 42% / cover no-repeat,
+            image-set(
+              url("/images/liquid-perception-hero-1440.avif") type("image/avif"),
+              url("/images/liquid-perception-hero-1440.webp") type("image/webp")
+            ) center 42% / cover no-repeat,
             linear-gradient(180deg, #0b0712 0%, #09090b 100%);
         }
         .app-static-nav {
@@ -253,19 +264,31 @@
           <h2>Selected Works.</h2>
           <div class="app-static-grid">
             <figure class="app-static-card">
-              <img src="/images/mushroom-offering-480.webp" alt="Hand holding a mushroom over soft psychedelic skin patterns and rainbow light" loading="lazy" decoding="async" fetchpriority="low" />
+              <picture>
+                <source type="image/avif" srcset="/images/mushroom-offering-480.avif" />
+                <img src="/images/mushroom-offering-480.webp" alt="Hand holding a mushroom over soft psychedelic skin patterns and rainbow light" loading="lazy" decoding="async" fetchpriority="low" />
+              </picture>
               <figcaption>Mushroom Offering</figcaption>
             </figure>
             <figure class="app-static-card">
-              <img src="/images/mycelial-hand-480.webp" alt="Hand with mushrooms and chrome resin growing from the fingers under a psychedelic forest sky" loading="lazy" decoding="async" fetchpriority="low" />
+              <picture>
+                <source type="image/avif" srcset="/images/mycelial-hand-480.avif" />
+                <img src="/images/mycelial-hand-480.webp" alt="Hand with mushrooms and chrome resin growing from the fingers under a psychedelic forest sky" loading="lazy" decoding="async" fetchpriority="low" />
+              </picture>
               <figcaption>Mycelial Hand</figcaption>
             </figure>
             <figure class="app-static-card">
-              <img src="/images/hand-portal-video-poster-480.webp" alt="Poster frame of a hand opening into a nested organic portal in a dark forest" loading="lazy" decoding="async" fetchpriority="low" />
+              <picture>
+                <source type="image/avif" srcset="/images/hand-portal-video-poster-480.avif" />
+                <img src="/images/hand-portal-video-poster-480.webp" alt="Poster frame of a hand opening into a nested organic portal in a dark forest" loading="lazy" decoding="async" fetchpriority="low" />
+              </picture>
               <figcaption>Hand Portal</figcaption>
             </figure>
             <figure class="app-static-card">
-              <img src="/images/skin-terrain-video-poster-480.webp" alt="Macro video poster of skin-like ridges forming a soft topographic terrain" loading="lazy" decoding="async" fetchpriority="low" />
+              <picture>
+                <source type="image/avif" srcset="/images/skin-terrain-video-poster-480.avif" />
+                <img src="/images/skin-terrain-video-poster-480.webp" alt="Macro video poster of skin-like ridges forming a soft topographic terrain" loading="lazy" decoding="async" fetchpriority="low" />
+              </picture>
               <figcaption>Skin Terrain</figcaption>
             </figure>
           </div>

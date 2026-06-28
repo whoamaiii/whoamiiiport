@@ -19,6 +19,9 @@ import { SiteHeader } from './sections/SiteHeader';
 const GallerySection = lazy(() =>
   import('./sections/GallerySection').then((module) => ({ default: module.GallerySection })),
 );
+const LibrarySection = lazy(() =>
+  import('./sections/LibrarySection').then((module) => ({ default: module.LibrarySection })),
+);
 const AboutSection = lazy(() => import('./sections/AboutSection'));
 const ContactSection = lazy(() => import('./sections/ContactSection'));
 const SiteFooter = lazy(() => import('./sections/SiteFooter'));
@@ -45,12 +48,20 @@ function getInitialGallerySectionLoad() {
   return /^#(work|about|contact)$/.test(window.location.hash);
 }
 
+function getInitialLibrarySectionLoad() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+
+  return window.location.hash === '#gallery';
+}
+
 function getSectionIdFromHash() {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  const match = window.location.hash.match(/^#(work|about|contact)$/);
+  const match = window.location.hash.match(/^#(work|gallery|about|contact)$/);
   return match ? match[1] : null;
 }
 
@@ -80,6 +91,7 @@ function preloadFirstGalleryImage() {
 export default function App() {
   const mainRef = useRef<HTMLElement>(null);
   const [loadGallerySection, setLoadGallerySection] = useState(getInitialGallerySectionLoad);
+  const [loadLibrarySection, setLoadLibrarySection] = useState(getInitialLibrarySectionLoad);
   const [loadDeferredSections, setLoadDeferredSections] = useState(
     () => {
       const sectionId = getSectionIdFromHash();
@@ -183,6 +195,10 @@ export default function App() {
     preloadFirstGalleryImage();
   }, []);
 
+  const enableLibrarySection = useCallback(() => {
+    setLoadLibrarySection(true);
+  }, []);
+
   const scrollToSection = useCallback(
     (id: string) => {
       if (typeof document === 'undefined') {
@@ -216,6 +232,10 @@ export default function App() {
         enableGallerySection();
       }
 
+      if (id === 'gallery') {
+        enableLibrarySection();
+      }
+
       if (isDeferredSection(id)) {
         enableDeferredSections();
       }
@@ -224,7 +244,7 @@ export default function App() {
         setPendingSectionNavigation(id);
       }
     },
-    [enableDeferredSections, enableGallerySection, scrollToSection],
+    [enableDeferredSections, enableGallerySection, enableLibrarySection, scrollToSection],
   );
 
   useEffect(() => {
@@ -265,6 +285,23 @@ export default function App() {
       window.removeEventListener('hashchange', enableGallerySection);
     };
   }, [enableGallerySection, loadGallerySection]);
+
+  useEffect(() => {
+    if (loadLibrarySection) {
+      return;
+    }
+
+    const enableFromGalleryHash = () => {
+      if (window.location.hash === '#gallery') {
+        enableLibrarySection();
+      }
+    };
+
+    window.addEventListener('hashchange', enableFromGalleryHash);
+    enableFromGalleryHash();
+
+    return () => window.removeEventListener('hashchange', enableFromGalleryHash);
+  }, [enableLibrarySection, loadLibrarySection]);
 
   useEffect(() => {
     if (loadDeferredSections) {
@@ -360,7 +397,7 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-zinc-950 font-sans selection:bg-purple-500/30">
+    <div className="relative min-h-screen bg-zinc-950 font-sans selection:bg-cyan-300/25">
       <RenderErrorBoundary context="scroll-progress" fallback={null}>
         <ScrollProgress />
       </RenderErrorBoundary>
@@ -404,7 +441,15 @@ export default function App() {
         />
         {loadGallerySection ? (
           <Suspense fallback={null}>
-            <GallerySection reducedMotion={prefersReducedMotion} />
+            <GallerySection
+              reducedMotion={prefersReducedMotion}
+              onNavigateToSection={handleSectionNavigation}
+            />
+          </Suspense>
+        ) : null}
+        {loadLibrarySection ? (
+          <Suspense fallback={null}>
+            <LibrarySection reducedMotion={prefersReducedMotion} />
           </Suspense>
         ) : null}
         {loadDeferredSections ? (

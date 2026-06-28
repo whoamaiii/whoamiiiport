@@ -33,6 +33,7 @@ interface InteractiveArtworkCardProps {
   imageLoading?: 'eager' | 'lazy';
   imageFetchPriority?: 'high' | 'low' | 'auto';
   deferImageUntilVisible?: boolean;
+  eyebrowLabel?: string;
 }
 
 export default function InteractiveArtworkCard({
@@ -44,6 +45,7 @@ export default function InteractiveArtworkCard({
   imageLoading = 'lazy',
   imageFetchPriority = 'auto',
   deferImageUntilVisible = false,
+  eyebrowLabel = 'Selected work',
 }: InteractiveArtworkCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showInfo, setShowInfo] = useState(false);
@@ -284,7 +286,7 @@ export default function InteractiveArtworkCard({
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent opacity-100 lg:opacity-0 lg:group-hover:opacity-100 lg:group-focus-visible:opacity-100 transition-opacity duration-500 flex items-end p-4 md:p-6 z-30">
               <div className="w-full transform translate-y-0 lg:translate-y-3 lg:group-hover:translate-y-0 lg:group-focus-visible:translate-y-0 transition-transform duration-500">
                 <p className="text-[10px] uppercase tracking-[0.32em] text-cyan-100/70 mb-2">
-                  Selected work
+                  {eyebrowLabel}
                 </p>
                 <p className="font-medium text-white text-lg md:text-xl">{title.primary}</p>
                 {title.secondary && (

@@ -7,7 +7,6 @@ import {
 import { ShaderTextWord } from './shared/ShaderTextWord';
 import type { TextShadowConfig } from './shared/shaderTextShared';
 import reportError from '../lib/reportError';
-import { useMediaQuery } from '../hooks/useMediaQuery';
 import { getImageUrl } from '../utils/images';
 
 interface HeroTitleHybridProps {
@@ -19,8 +18,6 @@ interface HeroTitleHybridProps {
 
 const HERO_LIQUID_BACKGROUND = getImageUrl('liquid-perception-hero', 720);
 const HERO_WORDMARK_VISUAL_SECOND_LINE = `${HERO_WORDMARK_SUPPORTED_LINES[1]}.`;
-const MOBILE_SHADER_BOOT_DELAY_MS = 4500;
-const MOBILE_SHADER_IDLE_TIMEOUT_MS = 1500;
 
 const HERO_LIQUID_SHARED_UV = {
   first: {
@@ -121,7 +118,6 @@ function HeroShaderLine({
       shaderScale={{ mobile: 0.54, desktop: 0.58 }}
       shaderClamp={{ minWidth: 120, maxWidth: 820, minHeight: 56, maxHeight: 240 }}
       shaderFrameRate={{ mobile: 12, desktop: 24 }}
-      shaderSetupDelayMs={line === 'first' ? 120 : 360}
       getShadowConfig={getHeroShadowConfig}
       finalStroke={{ color: 'rgba(240, 253, 255, 0.28)', scale: 0.0052, minWidth: 0.58 }}
       heroLiquid={{
@@ -156,11 +152,8 @@ export function HeroTitleHybrid({
 }: HeroTitleHybridProps) {
   const reportedRef = useRef(false);
   const [readyLines, setReadyLines] = useState({ first: false, second: false });
-  const [mobileShaderAllowed, setMobileShaderAllowed] = useState(false);
-  const isMobileLayout = useMediaQuery('(max-width: 767px)', false);
   const titleMatchesWordmark = matchesHeroWordmark(titleLines);
   const visualSupported = !forceFallback && titleMatchesWordmark;
-  const deferMobileShader = visualSupported && !reducedMotion && isMobileLayout && !mobileShaderAllowed;
   const revealShader = readyLines.first && readyLines.second;
 
   const markFirstReady = useCallback(() => {
@@ -187,47 +180,7 @@ export function HeroTitleHybrid({
     setReadyLines({ first: false, second: false });
   }, [semanticTitle, titleLines, visualSupported]);
 
-  useEffect(() => {
-    setMobileShaderAllowed(false);
-
-    if (!visualSupported || reducedMotion || !isMobileLayout) {
-      return;
-    }
-
-    let idleCallbackId: number | null = null;
-    let bootDelayId: number | null = null;
-
-    const allowShader = () => {
-      setMobileShaderAllowed(true);
-    };
-
-    bootDelayId = window.setTimeout(() => {
-      const requestIdle = window.requestIdleCallback?.bind(window);
-
-      if (requestIdle) {
-        idleCallbackId = requestIdle(allowShader, { timeout: MOBILE_SHADER_IDLE_TIMEOUT_MS });
-        return;
-      }
-
-      allowShader();
-    }, MOBILE_SHADER_BOOT_DELAY_MS);
-
-    return () => {
-      if (idleCallbackId !== null) {
-        window.cancelIdleCallback?.(idleCallbackId);
-      }
-
-      if (bootDelayId !== null) {
-        window.clearTimeout(bootDelayId);
-      }
-    };
-  }, [isMobileLayout, reducedMotion, visualSupported]);
-
   if (!visualSupported) {
-    return <HeroTitleStaticFallback titleLines={titleLines} />;
-  }
-
-  if (deferMobileShader) {
     return <HeroTitleStaticFallback titleLines={titleLines} />;
   }
 

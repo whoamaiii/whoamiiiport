@@ -10,7 +10,21 @@ type ImageSlug =
   | 'liquid-perception'
   | 'mycelial-hand'
   | 'hand-portal-video-poster'
-  | 'skin-terrain-video-poster';
+  | 'skin-terrain-video-poster'
+  | 'eye-terrain'
+  | 'trippy-jump'
+  | 'snow-road'
+  | 'fingernail-portal'
+  | 'night-bus'
+  | 'handpose-mouth'
+  | 'tongue-study-poster'
+  | 'tattooed-mushroom-poster'
+  | 'street-trip-poster'
+  | 'feet-signal-poster'
+  | 'corridor-signal-poster'
+  | 'eye-video-poster'
+  | 'nasty-food-poster'
+  | 'april-portal-poster';
 
 export type ModalImageSlug = Exclude<ImageSlug, 'liquid-perception-hero'>;
 
@@ -49,6 +63,76 @@ export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
     slug: 'skin-terrain-video-poster',
     alt: 'Macro video poster of skin-like ridges forming a soft topographic terrain',
     galleryObjectPosition: '50% 50%',
+  },
+  'eye-terrain': {
+    slug: 'eye-terrain',
+    alt: 'Close eye portrait with raised psychedelic skin patterns and prism light',
+    galleryObjectPosition: '50% 44%',
+  },
+  'trippy-jump': {
+    slug: 'trippy-jump',
+    alt: 'Figure falling forward through a saturated psychedelic tunnel of color',
+    galleryObjectPosition: '50% 48%',
+  },
+  'snow-road': {
+    slug: 'snow-road',
+    alt: 'Night road snowbank transformed into bright rippling psychedelic texture',
+    galleryObjectPosition: '50% 52%',
+  },
+  'fingernail-portal': {
+    slug: 'fingernail-portal',
+    alt: 'Fingernail curling inward into a glittering spiral portal of skin and pattern',
+    galleryObjectPosition: '50% 46%',
+  },
+  'night-bus': {
+    slug: 'night-bus',
+    alt: 'Rainy night bus interior with psychedelic patterns spreading across the seats',
+    galleryObjectPosition: '50% 48%',
+  },
+  'handpose-mouth': {
+    slug: 'handpose-mouth',
+    alt: 'Hand-shaped mouth form on a plate with teeth, translucent strands, and rainbow refraction',
+    galleryObjectPosition: '50% 46%',
+  },
+  'tongue-study-poster': {
+    slug: 'tongue-study-poster',
+    alt: 'Poster frame for a tongue study video with wet organic psychedelic texture',
+    galleryObjectPosition: '50% 50%',
+  },
+  'tattooed-mushroom-poster': {
+    slug: 'tattooed-mushroom-poster',
+    alt: 'Poster frame for a tattooed hand holding a mushroom in shifting psychedelic light',
+    galleryObjectPosition: '50% 48%',
+  },
+  'street-trip-poster': {
+    slug: 'street-trip-poster',
+    alt: 'Poster frame for a street trip video with a figure moving through warped color',
+    galleryObjectPosition: '50% 48%',
+  },
+  'feet-signal-poster': {
+    slug: 'feet-signal-poster',
+    alt: 'Poster frame for a feet study video with refracted texture and altered pavement',
+    galleryObjectPosition: '50% 50%',
+  },
+  'corridor-signal-poster': {
+    slug: 'corridor-signal-poster',
+    alt: 'Poster frame for a corridor video with stretched architectural psychedelic light',
+    galleryObjectPosition: '50% 50%',
+  },
+  'eye-video-poster': {
+    slug: 'eye-video-poster',
+    alt: 'Poster frame for an eye video with close skin texture and chromatic distortion',
+    galleryObjectPosition: '50% 44%',
+  },
+  'nasty-food-poster': {
+    slug: 'nasty-food-poster',
+    alt: 'Poster frame for a visceral food study video with organic psychedelic surfaces',
+    galleryObjectPosition: '50% 48%',
+  },
+  'april-portal-poster': {
+    slug: 'april-portal-poster',
+    alt: 'Poster frame for a vertical portal video with dense altered-state texture',
+    galleryObjectPosition: '50% 48%',
   },
 };
 

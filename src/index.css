@@ -6,6 +6,24 @@
   --font-wordmark: "Avenir Next Condensed", "Avenir Next", "Helvetica Neue", var(--font-sans);
 }
 
+:root {
+  --surface-primary: #09090b;
+  --surface-secondary: #111216;
+  --surface-elevated: #18181b;
+  --surface-glass: rgba(255, 255, 255, 0.1);
+  --text-primary: #f6f2ee;
+  --text-secondary: #e8e5e2;
+  --text-muted: #a1a1aa;
+  --border-glass: rgba(255, 255, 255, 0.18);
+  --border-subtle: rgba(255, 255, 255, 0.1);
+  --accent-primary: #67e8f9;
+  --accent-secondary: #a8d6d4;
+  --accent-warm: #f5dec0;
+  --accent-rose: #d68a78;
+  --spectral-deep: #944468;
+  --spectral-blue: #7ea9b6;
+}
+
 @layer utilities {
   .glass {
     @apply bg-white/10 backdrop-blur-2xl backdrop-saturate-200 border border-white/20 shadow-2xl shadow-black/30;
@@ -13,14 +31,127 @@
   .glass-dark {
     @apply bg-black/40 backdrop-blur-3xl backdrop-saturate-200 border border-white/10 shadow-2xl shadow-black/50;
   }
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-pink-500 to-orange-400;
-  }
+}
+
+.social-orb-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  overflow: hidden;
+  border: 1px solid var(--border-glass);
+  border-radius: 999px;
+  color: rgba(228, 244, 246, 0.78);
+  background:
+    radial-gradient(circle at 34% 18%, rgba(255, 255, 255, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+    rgba(8, 12, 18, 0.36);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -12px 22px rgba(0, 0, 0, 0.18),
+    0 14px 34px rgba(0, 0, 0, 0.26);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+  transition:
+    border-color 200ms ease-out,
+    background 200ms ease-out,
+    box-shadow 200ms ease-out,
+    color 200ms ease-out,
+    transform 200ms ease-out;
+}
+
+.social-orb-link:hover {
+  border-color: rgba(103, 232, 249, 0.44);
+  color: white;
+  background:
+    radial-gradient(circle at 34% 18%, rgba(255, 255, 255, 0.22), transparent 34%),
+    linear-gradient(135deg, rgba(103, 232, 249, 0.2), rgba(245, 222, 192, 0.12)),
+    rgba(8, 12, 18, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.42),
+    inset 0 -12px 22px rgba(0, 0, 0, 0.16),
+    0 18px 40px rgba(0, 0, 0, 0.3),
+    0 14px 42px -30px rgba(103, 232, 249, 0.68);
+  transform: translateY(-0.125rem);
+}
+
+.social-orb-link:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.social-orb-link:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+.site-footer-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: center;
+  font-family: var(--font-wordmark);
+  font-size: 1.72rem;
+  font-style: italic;
+  font-weight: 900;
+  line-height: 0.9;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  color: rgba(246, 252, 255, 0.94);
+  text-decoration: none;
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.14))
+    drop-shadow(0 8px 16px rgba(0, 0, 0, 0.42));
+  transition:
+    color 180ms ease-out,
+    transform 180ms ease-out,
+    filter 180ms ease-out;
+}
+
+.site-footer-wordmark span {
+  color: var(--accent-primary);
+}
+
+.site-footer-wordmark:hover {
+  color: white;
+  filter:
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.18))
+    drop-shadow(0 10px 18px rgba(0, 0, 0, 0.46))
+    drop-shadow(0 0 14px rgba(103, 232, 249, 0.12));
+  transform: translateY(-1px);
+}
+
+.site-footer-wordmark:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 4px;
+  border-radius: 0.4rem;
+}
+
+.contact-cta-sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(207, 250, 254, 0.92),
+    rgba(103, 232, 249, 0.8),
+    rgba(245, 222, 192, 0.74)
+  );
+  opacity: 0;
+  transition: opacity 200ms ease-out;
+}
+
+.group:hover .contact-cta-sheen {
+  opacity: 0.3;
+}
+
+.workflow-warm-bloom {
+  background: radial-gradient(circle, rgba(245, 222, 192, 0.12), transparent 68%);
 }
 
 .site-header-bar {
   display: grid;
-  grid-template-columns: minmax(10.5rem, 27vw) minmax(7.75rem, 1fr) auto;
+  grid-template-columns: minmax(10.5rem, 27vw) minmax(7.75rem, 0.95fr) minmax(7rem, 0.68fr) auto;
   align-items: center;
   gap: clamp(0.42rem, 1.05vw, 0.95rem);
   width: 100%;
@@ -212,6 +343,54 @@
   transform: translateX(3px);
 }
 
+.site-header-gallery-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: clamp(3.1rem, 4.2vw, 4.15rem);
+  padding: 0 clamp(0.95rem, 1.7vw, 1.7rem);
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(230, 246, 255, 0.24);
+  background:
+    radial-gradient(circle at 24% 12%, rgba(255, 255, 255, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.026)),
+    rgba(9, 10, 16, 0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -12px 22px rgba(0, 0, 0, 0.18),
+    0 10px 26px rgba(0, 0, 0, 0.22);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.82);
+  white-space: nowrap;
+  transition:
+    border-color 220ms ease-out,
+    background 220ms ease-out,
+    color 220ms ease-out,
+    transform 220ms ease-out;
+  -webkit-backdrop-filter: blur(20px) saturate(145%);
+  backdrop-filter: blur(20px) saturate(145%);
+}
+
+.site-header-gallery-pill:hover {
+  border-color: rgba(103, 232, 249, 0.44);
+  color: white;
+  background:
+    radial-gradient(circle at 24% 12%, rgba(255, 255, 255, 0.18), transparent 34%),
+    linear-gradient(180deg, rgba(103, 232, 249, 0.13), rgba(255, 255, 255, 0.035)),
+    rgba(9, 10, 16, 0.34);
+  transform: translateY(-1px);
+}
+
+.site-header-gallery-pill:active {
+  transform: translateY(0) scale(0.99);
+}
+
 .site-header-menu-trigger {
   position: relative;
   display: grid;
@@ -315,6 +494,10 @@
   }
 
   .site-header-work-pill {
+    display: none;
+  }
+
+  .site-header-gallery-pill {
     display: none;
   }
 
@@ -495,7 +678,8 @@
 }
 
 .hero-title-shader-fallback {
-  opacity: 1;
+  opacity: 0;
+  visibility: hidden;
   color: transparent;
   background-image:
     linear-gradient(112deg, rgba(255, 255, 255, 0) 0 31%, rgba(255, 252, 231, 0.72) 43%, rgba(113, 228, 246, 0.54) 51%, rgba(255, 255, 255, 0) 63%),

@@ -73,7 +73,7 @@ function MobileMenu({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={reducedMotion ? { duration: 0 } : { duration: 0.2 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/92 px-6 backdrop-blur-2xl"
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-950/94 px-6 backdrop-blur-2xl"
         >
           <h2 id={menuTitleId} className="sr-only">
             Navigation menu
@@ -83,14 +83,21 @@ function MobileMenu({
               <button
                 type="button"
                 onClick={() => navigateToSection('work')}
-                className="rounded-2xl px-4 py-3 text-xl font-medium text-white/90 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                className="rounded-[1.1rem] border border-white/10 bg-white/7 px-4 py-3 text-xl font-medium text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-[border-color,background-color,color,transform] duration-200 hover:border-cyan-100/36 hover:bg-cyan-100/10 hover:text-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200"
               >
                 Work
               </button>
               <button
                 type="button"
+                onClick={() => navigateToSection('gallery')}
+                className="rounded-[1.1rem] border border-white/10 bg-white/7 px-4 py-3 text-xl font-medium text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-[border-color,background-color,color,transform] duration-200 hover:border-cyan-100/36 hover:bg-cyan-100/10 hover:text-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200"
+              >
+                Gallery
+              </button>
+              <button
+                type="button"
                 onClick={() => navigateToSection('about')}
-                className="rounded-2xl px-4 py-3 text-xl font-medium text-white/90 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-purple-400"
+                className="rounded-[1.1rem] border border-white/10 bg-white/7 px-4 py-3 text-xl font-medium text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-[border-color,background-color,color,transform] duration-200 hover:border-cyan-100/36 hover:bg-cyan-100/10 hover:text-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200"
               >
                 About
               </button>
@@ -99,7 +106,7 @@ function MobileMenu({
             <button
               type="button"
               onClick={() => navigateToSection('contact')}
-              className="w-full rounded-full bg-white px-6 py-4 text-base font-semibold text-black transition-colors hover:bg-zinc-200 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2 focus:ring-offset-black"
+              className="w-full rounded-full border border-cyan-100/45 bg-cyan-200 px-6 py-4 text-base font-semibold uppercase tracking-[0.18em] text-zinc-950 shadow-[0_16px_42px_-24px_rgba(34,211,238,0.62),inset_0_1px_0_rgba(255,255,255,0.6)] transition-[background-color,transform,box-shadow] duration-200 hover:bg-cyan-100 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-zinc-950"
             >
               Get in touch
             </button>
@@ -160,6 +167,15 @@ export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderPro
             >
               <span className="site-header-work-pill-text">Work</span>
               <span className="pill-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => onNavigateToSection('gallery')}
+              className="site-header-gallery-pill focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
+              aria-hidden={isMobileMenuOpen || undefined}
+              tabIndex={isMobileMenuOpen ? -1 : undefined}
+            >
+              <span>Gallery</span>
             </button>
             <MobileMenuButton
               buttonRef={menuButtonRef}

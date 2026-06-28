@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { ShaderHeading } from '../src/components/ShaderHeading';
 import ContactSection from '../src/sections/ContactSection';
 import { GallerySection } from '../src/sections/GallerySection';
+import { LibrarySection } from '../src/sections/LibrarySection';
 import { CONTACT_COPY, GALLERY_COPY } from '../src/content/siteCopy';
 import { installMatchMediaMock } from './helpers/matchMedia';
 
@@ -75,5 +76,16 @@ describe('section semantics', () => {
     expect(screen.getByRole('region', { name: /selected works\./i })).toBeInTheDocument();
     expect(screen.getByText(GALLERY_COPY.eyebrow)).toBeInTheDocument();
     expect(screen.getByText(GALLERY_COPY.subtitle)).toBeInTheDocument();
+  });
+
+  it('keeps the full gallery region named as a separate library surface', () => {
+    render(<LibrarySection reducedMotion={false} />);
+
+    const heading = screen.getByRole('heading', { name: /gallery\./i });
+    expect(heading).toHaveAttribute('id', 'gallery-library-heading');
+    expect(heading).toHaveAttribute('data-heading-variant', 'gallery');
+    expect(screen.getByRole('region', { name: /gallery\./i })).toBeInTheDocument();
+    expect(screen.getByText(/full artwork library/i)).toBeInTheDocument();
+    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(18);
   });
 });

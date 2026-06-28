@@ -349,7 +349,7 @@ export function ShaderTextWord({
     readyNotifiedRef.current = false;
     canvasReadyRef.current = false;
     setCanvasReady(false);
-    setUseFallback(!useStaticFallback);
+    setUseFallback(false);
     if (useStaticFallback) {
       notifyReady();
     }
@@ -762,7 +762,7 @@ export function ShaderTextWord({
 
     const queueRendererSetup = () => {
       const requestIdle = window.requestIdleCallback?.bind(window);
-      if (requestIdle) {
+      if (requestIdle && shaderVariant !== 'heroLiquid') {
         idleCallbackId = requestIdle(loadAndCreateRenderer, { timeout: 900 });
         return;
       }
@@ -892,9 +892,9 @@ export function ShaderTextWord({
       />
       <span
         aria-hidden="true"
-        className={`${fallbackClassName} ${useFallback || !isCanvasVisible ? 'is-visible' : ''} ${
-          isCanvasVisible ? 'is-hidden' : ''
-        }`.trim()}
+        className={`${fallbackClassName} ${
+          useFallback || (shaderVariant !== 'heroLiquid' && !isCanvasVisible) ? 'is-visible' : ''
+        } ${isCanvasVisible ? 'is-hidden' : ''}`.trim()}
       >
         {text}
       </span>

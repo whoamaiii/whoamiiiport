@@ -65,7 +65,7 @@ export function MagneticButton({
 
   const glow = !prefersReducedMotion && (
     <motion.span
-      className="absolute inset-0 -z-10 rounded-full bg-purple-500/20 blur-xl"
+      className="absolute inset-0 -z-10 rounded-full bg-cyan-300/18 blur-xl"
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{
         opacity: isHovered ? 0.5 : 0,

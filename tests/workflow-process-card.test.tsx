@@ -1,69 +1,69 @@
-import { fireEvent, render } from '@testing-library/react';
-import { afterEach, describe, expect, it, vi } from 'vitest';
-import { WorkflowProcessCard } from '../src/components/WorkflowProcessCard';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  PROCESS_VIDEO,
+  WorkflowProcessCard,
+} from '../src/components/WorkflowProcessCard';
 
-describe('WorkflowProcessCard image loading', () => {
+describe('WorkflowProcessCard video feature', () => {
+  const originalIntersectionObserver = window.IntersectionObserver;
+
+  beforeEach(() => {
+    Object.defineProperty(window, 'IntersectionObserver', {
+      configurable: true,
+      writable: true,
+      value: undefined,
+    });
+    vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => undefined);
+  });
+
   afterEach(() => {
+    Object.defineProperty(window, 'IntersectionObserver', {
+      configurable: true,
+      writable: true,
+      value: originalIntersectionObserver,
+    });
     vi.restoreAllMocks();
   });
 
-  it('only assigns image URLs and alt text to the current and nearby workflow slides', () => {
-    Object.defineProperty(HTMLElement.prototype, 'scrollTo', {
-      configurable: true,
-      value: vi.fn(),
-    });
+  it('renders the optimized process video with explicit intrinsic dimensions', async () => {
+    render(<WorkflowProcessCard reducedMotion />);
 
-    const { container } = render(<WorkflowProcessCard reducedMotion />);
+    const video = screen.getByTestId('workflow-process-video');
 
-    // Carousel slides render in step order; scope to them so unloaded slides
-    // (which intentionally drop both src and alt) can still be located.
-    const slideImages = Array.from(
-      container.querySelectorAll<HTMLImageElement>('[data-testid="workflow-slide"] img'),
-    );
+    expect(video).toHaveAttribute('width', String(PROCESS_VIDEO.width));
+    expect(video).toHaveAttribute('height', String(PROCESS_VIDEO.height));
+    expect(video).toHaveAttribute('aria-label', 'Cup coffee process video');
 
-    const [firstImage, secondImage, thirdImage, fourthImage, fifthImage] = slideImages;
+    await waitFor(() => expect(video).toHaveAttribute('poster', PROCESS_VIDEO.poster));
+    expect(video).toHaveAttribute('preload', 'metadata');
 
-    // Loaded slides expose their real src and descriptive alt...
-    expect(firstImage).toHaveAttribute('src', '/images/workflow/workflow-step-01-800.webp');
-    expect(firstImage).toHaveAttribute('alt', expect.stringMatching(/computational framework/i));
-    expect(secondImage).toHaveAttribute('src', '/images/workflow/workflow-step-02-800.webp');
-
-    // ...while far slides drop both, so AT does not announce phantom imageless nodes.
-    expect(thirdImage).not.toHaveAttribute('src');
-    expect(thirdImage).toHaveAttribute('alt', '');
-    expect(fourthImage).not.toHaveAttribute('src');
-    expect(fourthImage).toHaveAttribute('alt', '');
-
-    fireEvent.click(container.querySelector('[aria-label="Next workflow step"]')!);
-
-    expect(thirdImage).toHaveAttribute('src', '/images/workflow/workflow-step-03-800.webp');
-    expect(thirdImage).toHaveAttribute('alt', expect.stringMatching(/receptor activation/i));
-    expect(fourthImage).not.toHaveAttribute('src');
-    expect(fourthImage).toHaveAttribute('alt', '');
-
-    fireEvent.click(
-      container.querySelector(
-        '[aria-label="Go to workflow chapter 2, Perception, starting at step 4"]',
-      )!,
-    );
-
-    expect(firstImage).not.toHaveAttribute('src');
-    expect(firstImage).toHaveAttribute('alt', '');
-    expect(secondImage).not.toHaveAttribute('src');
-    expect(thirdImage).toHaveAttribute('src', '/images/workflow/workflow-step-03-800.webp');
-    expect(fourthImage).toHaveAttribute('src', '/images/workflow/workflow-step-04-800.webp');
-    expect(fifthImage).toHaveAttribute('src', '/images/workflow/workflow-step-05-800.webp');
+    const source = video.querySelector('source');
+    expect(source?.getAttribute('src')).toBe(PROCESS_VIDEO.src);
+    expect(source?.getAttribute('type')).toBe(PROCESS_VIDEO.type);
   });
 
-  it('uses five chapter controls with mobile-sized hit areas', () => {
-    const { container } = render(<WorkflowProcessCard reducedMotion />);
-    const chapterControls = Array.from(
-      container.querySelectorAll<HTMLButtonElement>('[aria-label^="Go to workflow chapter"]'),
-    );
+  it('keeps a mobile-sized playback control wired to the video element', async () => {
+    const playSpy = vi
+      .spyOn(HTMLMediaElement.prototype, 'play')
+      .mockResolvedValue(undefined);
 
-    expect(chapterControls).toHaveLength(5);
-    chapterControls.forEach((control) => {
-      expect(control).toHaveClass('h-11', 'w-11');
+    render(<WorkflowProcessCard reducedMotion />);
+
+    const playbackButton = screen.getByRole('button', {
+      name: /play cup coffee process video/i,
     });
+
+    expect(playbackButton).toHaveClass('h-12', 'w-12');
+
+    await waitFor(() => expect(playbackButton).not.toBeDisabled());
+    fireEvent.click(playbackButton);
+
+    expect(playSpy).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: /pause cup coffee process video/i }),
+      ).toBeVisible(),
+    );
   });
 });

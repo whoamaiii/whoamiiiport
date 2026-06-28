@@ -1,370 +1,182 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { ArrowLeft, ArrowRight, X } from 'lucide-react';
-import {
-  WORKFLOW_STEPS,
-  getWorkflowImageDimensions,
-  getWorkflowImageUrl,
-  getWorkflowSrcset,
-} from '../content/workflowSteps';
-import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
+import { Pause, Play } from 'lucide-react';
 
 interface WorkflowProcessCardProps {
   reducedMotion: boolean;
 }
 
-const WORKFLOW_CHAPTERS = [
-  { label: 'Framework', stepIndex: 0 },
-  { label: 'Perception', stepIndex: 3 },
-  { label: 'Geometry', stepIndex: 6 },
-  { label: 'Pattern', stepIndex: 9 },
-  { label: 'Pipeline', stepIndex: 12 },
-] as const;
+export const PROCESS_VIDEO = {
+  src: '/videos/cup-coffee-process.mp4',
+  poster: '/images/cup-coffee-process-poster.webp',
+  type: 'video/mp4',
+  width: 720,
+  height: 1160,
+  durationLabel: '15 sec',
+} as const;
 
 export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const modalRef = useRef<HTMLDivElement>(null);
-  const infoPanelRef = useRef<HTMLDivElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
-  const closeButtonRef = useRef<HTMLButtonElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [modalIndex, setModalIndex] = useState<number | null>(null);
-  const stepCount = WORKFLOW_STEPS.length;
-  const activeChapterIndex = Math.min(
-    Math.floor(activeIndex / 3),
-    WORKFLOW_CHAPTERS.length - 1,
-  );
-  const modalStep = modalIndex === null ? null : WORKFLOW_STEPS[modalIndex];
-  const currentModalIndex = modalIndex ?? 0;
-  const modalTitleId = 'workflow-step-modal-title';
-
-  const scrollToStep = useCallback(
-    (index: number) => {
-      const container = scrollRef.current;
-      if (!container) {
-        return;
-      }
-
-      const nextIndex = Math.min(Math.max(index, 0), stepCount - 1);
-      const target = container.children.item(nextIndex) as HTMLElement | null;
-      container.scrollTo({
-        left: target?.offsetLeft ?? container.clientWidth * nextIndex,
-        behavior: reducedMotion ? 'auto' : 'smooth',
-      });
-      setActiveIndex(nextIndex);
-    },
-    [reducedMotion, stepCount],
-  );
-
-  const openStepDetails = (index: number, trigger: HTMLButtonElement) => {
-    triggerRef.current = trigger;
-    setModalIndex(index);
-    scrollToStep(index);
-  };
-
-  const showModalStep = (index: number) => {
-    const nextIndex = Math.min(Math.max(index, 0), stepCount - 1);
-    setModalIndex(nextIndex);
-    scrollToStep(nextIndex);
-  };
-
-  useOverlayBehavior({
-    isOpen: modalIndex !== null,
-    containerRef: modalRef,
-    initialFocusRef: closeButtonRef,
-    restoreFocusRef: triggerRef,
-    onClose: () => setModalIndex(null),
-  });
+  const articleRef = useRef<HTMLElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
-    if (modalIndex !== null) {
-      infoPanelRef.current?.scrollTo({ top: 0, behavior: 'auto' });
-    }
-  }, [modalIndex]);
+    const article = articleRef.current;
 
-  useEffect(() => {
-    const container = scrollRef.current;
-    if (!container) {
+    if (!article || typeof window.IntersectionObserver !== 'function') {
+      setShouldLoadVideo(true);
       return;
     }
 
-    let frameId = 0;
-    const updateActiveStep = () => {
-      window.cancelAnimationFrame(frameId);
-      frameId = window.requestAnimationFrame(() => {
-        const children = Array.from(container.children) as HTMLElement[];
-        const nextIndex = children.reduce(
-          (closestIndex, child, index) => {
-            const currentDistance = Math.abs(child.offsetLeft - container.scrollLeft);
-            const closestDistance = Math.abs(
-              children[closestIndex]?.offsetLeft - container.scrollLeft,
-            );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShouldLoadVideo(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '640px 0px', threshold: 0.01 },
+    );
 
-            return currentDistance < closestDistance ? index : closestIndex;
-          },
-          0,
-        );
-        const clampedIndex = Math.min(Math.max(nextIndex, 0), stepCount - 1);
-        setActiveIndex(clampedIndex);
-      });
-    };
+    observer.observe(article);
 
-    container.addEventListener('scroll', updateActiveStep, { passive: true });
-    window.addEventListener('resize', updateActiveStep);
-    updateActiveStep();
+    return () => observer.disconnect();
+  }, []);
 
-    return () => {
-      window.cancelAnimationFrame(frameId);
-      container.removeEventListener('scroll', updateActiveStep);
-      window.removeEventListener('resize', updateActiveStep);
-    };
-  }, [stepCount]);
+  useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video || !shouldLoadVideo) {
+      return;
+    }
+
+    if (reducedMotion) {
+      video.pause();
+      setIsPlaying(false);
+      return;
+    }
+
+    void video
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch(() => setIsPlaying(false));
+  }, [reducedMotion, shouldLoadVideo]);
+
+  const togglePlayback = useCallback(() => {
+    const video = videoRef.current;
+
+    if (!video || !shouldLoadVideo) {
+      return;
+    }
+
+    if (video.paused) {
+      void video
+        .play()
+        .then(() => setIsPlaying(true))
+        .catch(() => setIsPlaying(false));
+      return;
+    }
+
+    video.pause();
+    setIsPlaying(false);
+  }, [shouldLoadVideo]);
 
   return (
     <article
-      className="relative mx-auto mt-14 max-w-5xl overflow-hidden rounded-[1.45rem] border border-white/12 bg-black/54 shadow-[0_24px_90px_-52px_rgba(217,70,239,0.72)] backdrop-blur-2xl sm:mt-[4.5rem] sm:rounded-[1.65rem]"
+      ref={articleRef}
+      data-testid="workflow-process-card"
+      className="relative mx-auto mt-14 max-w-5xl overflow-hidden rounded-[1.45rem] border border-white/12 bg-black/54 shadow-[0_24px_90px_-52px_rgba(34,211,238,0.54)] backdrop-blur-2xl sm:mt-[4.5rem] sm:rounded-[1.65rem]"
       aria-labelledby="workflow-process-heading"
     >
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-fuchsia-300/70 to-transparent" />
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
       <div className="absolute -top-24 right-[-22%] h-56 w-56 rounded-full bg-cyan-400/14 blur-3xl" />
-      <div className="absolute -bottom-28 left-[-18%] h-60 w-60 rounded-full bg-fuchsia-500/16 blur-3xl" />
+      <div className="workflow-warm-bloom absolute -bottom-28 left-[-18%] h-60 w-60 rounded-full blur-3xl" />
 
-      <div className="relative px-4 pb-5 pt-4 sm:px-6 sm:pb-7 sm:pt-6 lg:px-8">
-        <div className="mb-4 flex items-end justify-between gap-4 sm:mb-6">
-          <div className="min-w-0">
+      <div className="relative grid gap-5 px-4 pb-5 pt-4 sm:px-6 sm:pb-7 sm:pt-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(18rem,0.58fr)] lg:items-end lg:gap-8 lg:px-8">
+        <figure className="relative overflow-hidden rounded-[1.05rem] border border-white/10 bg-zinc-950/72 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] sm:rounded-[1.15rem] sm:p-3">
+          <div className="relative mx-auto aspect-[18/29] max-h-[72dvh] min-h-[26rem] overflow-hidden rounded-[0.85rem] border border-white/10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] sm:min-h-[34rem]">
+            <video
+              ref={videoRef}
+              data-testid="workflow-process-video"
+              width={PROCESS_VIDEO.width}
+              height={PROCESS_VIDEO.height}
+              poster={shouldLoadVideo ? PROCESS_VIDEO.poster : undefined}
+              muted
+              playsInline
+              autoPlay={!reducedMotion && shouldLoadVideo}
+              loop={!reducedMotion}
+              preload={shouldLoadVideo ? 'metadata' : 'none'}
+              aria-label="Cup coffee process video"
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              className="h-full w-full object-cover"
+            >
+              {shouldLoadVideo ? (
+                <source src={PROCESS_VIDEO.src} type={PROCESS_VIDEO.type} />
+              ) : null}
+            </video>
+
+            {!shouldLoadVideo ? (
+              <div
+                className="absolute inset-0 grid place-items-center bg-zinc-950/70 text-center text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-cyan-100/70"
+                aria-hidden="true"
+              >
+                Loading process film
+              </div>
+            ) : null}
+
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-zinc-950/82 via-zinc-950/24 to-transparent" />
+
+            <button
+              type="button"
+              onClick={togglePlayback}
+              disabled={!shouldLoadVideo}
+              className="absolute bottom-3 right-3 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/18 bg-zinc-950/58 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-xl transition hover:bg-white/14 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-200 disabled:pointer-events-none disabled:opacity-45"
+              aria-label={`${isPlaying ? 'Pause' : 'Play'} cup coffee process video`}
+            >
+              {isPlaying ? (
+                <Pause size={18} aria-hidden="true" />
+              ) : (
+                <Play size={18} aria-hidden="true" />
+              )}
+            </button>
+          </div>
+
+          <figcaption className="sr-only">
+            A portrait process video made by Quentin, presented as a moving study in the
+            selected works section.
+          </figcaption>
+        </figure>
+
+        <div className="grid gap-4 pb-1 lg:pb-5">
+          <div>
             <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.32em] text-cyan-200/75">
               Art process
             </p>
             <h3
               id="workflow-process-heading"
-              className="max-w-[12ch] text-3xl font-black uppercase italic leading-[0.88] text-white sm:max-w-none sm:text-5xl"
+              className="max-w-[11ch] text-3xl font-black uppercase italic leading-[0.88] text-white sm:max-w-[12ch] sm:text-5xl"
             >
-              Science into image
+              Coffee in motion
             </h3>
           </div>
 
-          <div className="shrink-0 rounded-full border border-white/12 bg-white/8 px-3 py-2 text-xs font-semibold tabular-nums text-zinc-100">
-            {String(activeIndex + 1).padStart(2, '0')} / {String(stepCount).padStart(2, '0')}
-          </div>
-        </div>
-
-        <div
-          ref={scrollRef}
-          className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain scroll-smooth rounded-[1.05rem] border border-white/10 bg-zinc-950/72 p-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:rounded-[1.15rem] sm:p-0"
-          aria-label="Science and art workflow steps"
-        >
-          {WORKFLOW_STEPS.map((step, index) => (
-            <div
-              key={step.id}
-              role="group"
-              aria-label={`Step ${index + 1}: ${step.title}`}
-              data-testid="workflow-slide"
-              className="grid min-w-[88%] snap-center grid-rows-[minmax(0,1fr)_auto] overflow-hidden rounded-[0.85rem] border border-white/8 bg-black/32 sm:min-w-full sm:rounded-none sm:border-0"
-            >
-              <button
-                type="button"
-                onClick={(event) => openStepDetails(index, event.currentTarget)}
-                className="group/workflow-image flex min-h-[14rem] items-center justify-center border-b border-white/10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] p-2 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950 sm:min-h-[34rem] sm:p-4 lg:min-h-[42rem]"
-                aria-label={`Open larger view and notes for step ${index + 1}: ${step.title}`}
-              >
-                {(() => {
-                  const shouldLoadImage = Math.abs(index - activeIndex) <= 1;
-                  const { width, height } = getWorkflowImageDimensions(index + 1);
-
-                  return (
-                    <img
-                      src={shouldLoadImage ? getWorkflowImageUrl(index + 1, 800) : undefined}
-                      srcSet={shouldLoadImage ? getWorkflowSrcset(index + 1) : undefined}
-                      sizes="(max-width: 767px) calc(100vw - 3rem), (max-width: 1200px) 70vw, 58rem"
-                      alt={shouldLoadImage ? step.alt : ''}
-                      width={width}
-                      height={height}
-                      loading={index === 0 ? 'eager' : 'lazy'}
-                      fetchPriority={index === 0 ? 'auto' : 'low'}
-                      decoding="async"
-                      className={`max-h-[13rem] w-full object-contain drop-shadow-[0_22px_38px_rgba(0,0,0,0.48)] transition duration-300 group-hover/workflow-image:scale-[1.015] group-focus-visible/workflow-image:scale-[1.015] sm:max-h-[32rem] lg:max-h-[40rem] ${
-                        shouldLoadImage ? 'opacity-100' : 'opacity-0'
-                      }`.trim()}
-                    />
-                  );
-                })()}
-              </button>
-
-              <div className="grid gap-3 px-4 py-4 sm:grid-cols-[auto_1fr] sm:items-start sm:px-5 sm:py-5">
-                <p className="w-fit rounded-full border border-fuchsia-300/20 bg-fuchsia-300/10 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.26em] text-fuchsia-100">
-                  Step {String(index + 1).padStart(2, '0')}
-                </p>
-                <div>
-                  <h4 className="text-xl font-bold leading-tight text-white sm:text-2xl">
-                    {step.title}
-                  </h4>
-                  <p className="mt-2 line-clamp-3 max-w-[56ch] text-sm leading-6 text-zinc-300/90 sm:line-clamp-none">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-3 grid gap-1.5 sm:mt-4 sm:flex sm:items-center sm:justify-between sm:gap-4">
-          <div
-            className="flex items-center justify-center gap-0.5"
-            aria-label="Workflow chapters"
-          >
-            {WORKFLOW_CHAPTERS.map((chapter, index) => (
-              <button
-                key={chapter.label}
-                type="button"
-                onClick={() => scrollToStep(chapter.stepIndex)}
-                className="group/chapter inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-white/8 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-200"
-                aria-label={`Go to workflow chapter ${index + 1}, ${chapter.label}, starting at step ${chapter.stepIndex + 1}`}
-                aria-current={activeChapterIndex === index ? 'step' : undefined}
-              >
-                <span
-                  className={`block h-2.5 rounded-full transition-all ${
-                    activeChapterIndex === index
-                      ? 'w-6 bg-cyan-200'
-                      : 'w-2.5 bg-white/28 group-hover/chapter:bg-white/50'
-                  }`}
-                  aria-hidden="true"
-                />
-              </button>
-            ))}
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="rounded-full border border-cyan-200/22 bg-cyan-200/10 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.26em] text-cyan-50">
+              Process film
+            </span>
+            <span className="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs font-semibold tabular-nums text-zinc-100">
+              {PROCESS_VIDEO.durationLabel}
+            </span>
           </div>
 
-          <div className="flex items-center justify-between sm:contents">
-            <button
-              type="button"
-              onClick={() => scrollToStep(activeIndex - 1)}
-              disabled={activeIndex === 0}
-              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35 sm:order-first"
-              aria-label="Previous workflow step"
-            >
-              <ArrowLeft size={18} aria-hidden="true" />
-            </button>
-
-            <p className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-zinc-500 sm:hidden">
-              Swipe or step through
-            </p>
-
-            <button
-              type="button"
-              onClick={() => scrollToStep(activeIndex + 1)}
-              disabled={activeIndex === stepCount - 1}
-              className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/12 bg-white/8 text-white transition hover:bg-white/14 active:scale-95 disabled:pointer-events-none disabled:opacity-35"
-              aria-label="Next workflow step"
-            >
-              <ArrowRight size={18} aria-hidden="true" />
-            </button>
-          </div>
+          <p className="max-w-[29ch] text-base leading-7 text-zinc-300/92 sm:text-lg sm:leading-8">
+            A small moving study of heat, cup, surface, and color turning into a
+            tactile image fragment. It keeps the process section visual first, closer to
+            the way the work actually feels.
+          </p>
         </div>
-
       </div>
-
-      {typeof document !== 'undefined' &&
-        createPortal(
-          modalStep ? (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 p-0 backdrop-blur-xl sm:p-5">
-              <button
-                type="button"
-                className="absolute inset-0"
-                onClick={() => setModalIndex(null)}
-                aria-hidden="true"
-                tabIndex={-1}
-              />
-              <div
-                ref={modalRef}
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby={modalTitleId}
-                tabIndex={-1}
-                className="relative grid h-[100dvh] max-h-[100dvh] w-full max-w-7xl gap-4 overflow-hidden rounded-none border-0 bg-zinc-950/92 p-3 shadow-[0_30px_120px_-50px_rgba(34,211,238,0.58)] outline-none sm:max-h-[92vh] sm:rounded-[1.4rem] sm:border sm:border-white/12 sm:p-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(22rem,0.75fr)]"
-              >
-                <button
-                  ref={closeButtonRef}
-                  type="button"
-                  onClick={() => setModalIndex(null)}
-                  className="absolute right-4 top-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/12 bg-white/10 text-zinc-100 transition hover:bg-white/16 focus:outline-none focus:ring-2 focus:ring-cyan-200"
-                  aria-label="Close workflow step details"
-                >
-                  <X size={20} aria-hidden="true" />
-                </button>
-
-                <div className="flex min-h-0 items-center justify-center rounded-[1rem] border border-white/10 bg-black/50 p-2 sm:p-4">
-                  {(() => {
-                    const { width, height } = getWorkflowImageDimensions(currentModalIndex + 1);
-
-                    return (
-                      <img
-                        src={getWorkflowImageUrl(currentModalIndex + 1, 1200)}
-                        srcSet={getWorkflowSrcset(currentModalIndex + 1)}
-                        sizes="(max-width: 1024px) calc(100vw - 3rem), 64vw"
-                        alt={modalStep.alt}
-                        width={width}
-                        height={height}
-                        decoding="async"
-                        className="max-h-[44vh] w-full object-contain lg:max-h-[84vh]"
-                      />
-                    );
-                  })()}
-                </div>
-
-                <div
-                  ref={infoPanelRef}
-                  className="min-h-0 overflow-y-auto rounded-[1rem] border border-white/10 bg-white/[0.045] p-5 custom-scrollbar sm:p-6"
-                >
-                  <p className="mb-3 w-fit rounded-full border border-fuchsia-300/20 bg-fuchsia-300/10 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.26em] text-fuchsia-100">
-                    Step {String(currentModalIndex + 1).padStart(2, '0')} of {String(stepCount).padStart(2, '0')}
-                  </p>
-                  <h3 id={modalTitleId} className="text-3xl font-black uppercase italic leading-none text-white sm:text-4xl">
-                    {modalStep.title}
-                  </h3>
-                  <p className="mt-4 text-base leading-7 text-zinc-300">
-                    {modalStep.description}
-                  </p>
-
-                  <div className="my-6 h-px w-16 bg-gradient-to-r from-cyan-300 via-fuchsia-300 to-transparent" />
-
-                  <div className="space-y-6">
-                    {modalStep.detailSections.map((section) => (
-                      <section key={section.heading}>
-                        <h4 className="mb-2 text-sm font-semibold uppercase tracking-[0.22em] text-cyan-200/80">
-                          {section.heading}
-                        </h4>
-                        <p className="text-sm leading-7 text-zinc-300/92">
-                          {section.body}
-                        </p>
-                      </section>
-                    ))}
-                  </div>
-
-                  <div className="mt-8 flex items-center justify-between gap-3">
-                    <button
-                      type="button"
-                      onClick={() => showModalStep(currentModalIndex - 1)}
-                      disabled={currentModalIndex === 0}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/14 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35"
-                    >
-                      <ArrowLeft size={16} aria-hidden="true" />
-                      Previous
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => showModalStep(currentModalIndex + 1)}
-                      disabled={currentModalIndex === stepCount - 1}
-                      className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/14 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-35"
-                    >
-                      Next
-                      <ArrowRight size={16} aria-hidden="true" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ) : null,
-          document.body,
-        )}
     </article>
   );
 }

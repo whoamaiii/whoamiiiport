@@ -8,9 +8,13 @@ import { GALLERY_COPY } from '../content/siteCopy';
 
 interface GallerySectionProps {
   reducedMotion: boolean;
+  onNavigateToSection?: (id: string) => void;
 }
 
-export function GallerySection({ reducedMotion }: GallerySectionProps) {
+export function GallerySection({
+  reducedMotion,
+  onNavigateToSection,
+}: GallerySectionProps) {
   return (
     <section
       id="work"
@@ -62,6 +66,28 @@ export function GallerySection({ reducedMotion }: GallerySectionProps) {
             </StaggerItem>
           ))}
         </StaggerContainer>
+
+        <motion.div
+          initial={reducedMotion ? false : { opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={reducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.1 }}
+          className="mx-auto mt-10 flex max-w-5xl justify-start sm:justify-center"
+        >
+          <button
+            type="button"
+            onClick={() => onNavigateToSection?.('gallery')}
+            className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-cyan-100/35 bg-white/8 px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] transition-[border-color,background-color,transform] duration-200 hover:border-cyan-100/55 hover:bg-cyan-100/12 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950"
+          >
+            Open full gallery
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-200 group-hover:translate-x-1"
+            >
+              &rarr;
+            </span>
+          </button>
+        </motion.div>
 
         <WorkflowProcessCard reducedMotion={reducedMotion} />
       </div>

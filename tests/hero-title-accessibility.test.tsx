@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { motionValue } from 'motion/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { HeroTitleHybrid } from '../src/components/HeroTitleHybrid';
@@ -47,42 +47,34 @@ function getHeroTitleVisual() {
   return visualTitle;
 }
 
+function mockAutomatedBrowser() {
+  const descriptor = Object.getOwnPropertyDescriptor(Navigator.prototype, 'webdriver');
+
+  Object.defineProperty(Navigator.prototype, 'webdriver', {
+    configurable: true,
+    get: () => true,
+  });
+
+  return () => {
+    if (descriptor) {
+      Object.defineProperty(Navigator.prototype, 'webdriver', descriptor);
+      return;
+    }
+
+    Reflect.deleteProperty(Navigator.prototype, 'webdriver');
+  };
+}
+
 describe('Hero title accessibility contract', () => {
+  let restoreWebdriver = () => {};
+
   beforeEach(() => {
     vi.mocked(reportError).mockClear();
-    vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation((type: string) => {
-      if (type !== '2d') {
-        return null;
-      }
-
-      return {
-        font: '',
-        textAlign: 'center',
-        textBaseline: 'alphabetic',
-        fillStyle: '#ffffff',
-        globalCompositeOperation: 'source-over',
-        fontKerning: 'normal',
-        letterSpacing: '0px',
-        setTransform: vi.fn(),
-        clearRect: vi.fn(),
-        save: vi.fn(),
-        restore: vi.fn(),
-        drawImage: vi.fn(),
-        fillText: vi.fn(),
-        strokeText: vi.fn(),
-        fillRect: vi.fn(),
-        measureText: vi.fn().mockReturnValue({
-          actualBoundingBoxAscent: 72,
-          actualBoundingBoxDescent: 18,
-        }),
-        createLinearGradient: vi.fn().mockReturnValue({
-          addColorStop: vi.fn(),
-        }),
-      } as unknown as CanvasRenderingContext2D;
-    });
+    restoreWebdriver = mockAutomatedBrowser();
   });
 
   afterEach(() => {
+    restoreWebdriver();
     vi.useRealTimers();
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
@@ -126,8 +118,7 @@ describe('Hero title accessibility contract', () => {
     expect(reportError).not.toHaveBeenCalled();
   });
 
-  it('keeps mobile static through the first load before upgrading to the live shader', async () => {
-    vi.useFakeTimers();
+  it('renders the mobile visual wordmark shell immediately', () => {
     installMatchMediaMock({
       '(max-width: 767px)': true,
       '(max-width: 639px)': true,
@@ -144,19 +135,8 @@ describe('Hero title accessibility contract', () => {
       </h1>,
     );
 
-    expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'fallback');
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(4400);
-    });
-
-    expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'fallback');
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(100);
-    });
-
     expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'visual');
+    expect(document.querySelectorAll('.hero-title-shader-fallback.is-visible')).toHaveLength(0);
   });
 
   it('reports a visual fallback when the requested title does not match the wordmark asset', async () => {

@@ -33,7 +33,7 @@ export default function ContactSection({ reducedMotion }: ContactSectionProps) {
           >
             {CONTACT_COPY.heading}
           </ShaderHeading>
-          <p className="liquid-support-text relative z-10 mx-auto mb-9 max-w-[24ch] text-base uppercase leading-7 tracking-[0.22em] md:mb-10 md:text-xl md:normal-case md:tracking-normal">
+          <p className="liquid-support-text relative z-10 mx-auto mb-9 max-w-[26ch] text-base leading-7 tracking-[0.01em] md:mb-10 md:text-xl">
             {CONTACT_COPY.body}
           </p>
 
@@ -42,12 +42,12 @@ export default function ContactSection({ reducedMotion }: ContactSectionProps) {
             href="mailto:hello@whoamiii.art"
             className="relative z-10 inline-flex"
           >
-            <span className="group relative inline-flex min-h-12 items-center justify-center gap-3 overflow-hidden rounded-[0.35rem] border border-purple-400/80 bg-cyan-400 px-8 py-4 font-semibold uppercase tracking-[0.2em] text-black shadow-[0_0_22px_rgba(34,211,238,0.38),0_0_32px_rgba(168,85,247,0.18)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-cyan-300 hover:shadow-[0_0_30px_rgba(34,211,238,0.52),0_0_44px_rgba(168,85,247,0.24)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100 active:scale-[0.98] pointer-events-auto cursor-pointer">
+            <span className="group relative inline-flex min-h-12 items-center justify-center gap-3 overflow-hidden rounded-[0.45rem] border border-cyan-100/55 bg-cyan-300 px-8 py-4 font-semibold uppercase tracking-[0.18em] text-zinc-950 shadow-[0_18px_44px_-24px_rgba(34,211,238,0.78),inset_0_1px_0_rgba(255,255,255,0.72)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-cyan-200 hover:shadow-[0_20px_48px_-24px_rgba(103,232,249,0.84),inset_0_1px_0_rgba(255,255,255,0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100 active:scale-[0.98] pointer-events-auto cursor-pointer">
               <span className="relative z-10 flex items-center gap-2">
                 <Mail size={20} />
                 {CONTACT_COPY.cta}
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-200 via-cyan-300 to-purple-300 opacity-0 transition-opacity group-hover:opacity-30" />
+              <div className="contact-cta-sheen" />
             </span>
           </MagneticButton>
         </motion.div>

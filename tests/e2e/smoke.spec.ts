@@ -114,42 +114,60 @@ test('skip link lands on main content and artwork modal opens and closes', async
   await expect(artworkButton).toBeFocused();
 });
 
-test('mobile workflow modal opens, advances steps, and restores focus', async ({ page }) => {
+test('mobile process video card loads and exposes playback control', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/#work');
 
-  const workflowButton = page.getByRole('button', {
-    name: /open larger view and notes for step 1: computational framework/i,
+  const processCard = page.getByTestId('workflow-process-card');
+  await processCard.scrollIntoViewIfNeeded();
+
+  await expect(processCard.getByRole('heading', { name: /coffee in motion/i })).toBeVisible();
+  await expect(processCard.getByText(/process film/i)).toBeVisible();
+
+  const processVideo = processCard.getByTestId('workflow-process-video');
+  await expect(processVideo).toBeVisible();
+  await expect(processVideo).toHaveAttribute('width', '720');
+  await expect(processVideo).toHaveAttribute('height', '1160');
+  await expect(processVideo).toHaveAttribute('poster', '/images/cup-coffee-process-poster.webp');
+  await expect(processVideo).toHaveJSProperty('muted', true);
+  await expect(processVideo).toHaveJSProperty('autoplay', true);
+  await expect(processVideo.locator('source')).toHaveAttribute(
+    'src',
+    '/videos/cup-coffee-process.mp4',
+  );
+
+  await expect
+    .poll(() =>
+      processVideo.evaluate((element) => {
+        if (!(element instanceof HTMLVideoElement)) {
+          return false;
+        }
+
+        return !element.paused;
+      }),
+    )
+    .toBe(true);
+
+  const playbackButton = processCard.getByRole('button', {
+    name: /pause cup coffee process video/i,
   });
-  await workflowButton.scrollIntoViewIfNeeded();
-  await workflowButton.click();
+  await playbackButton.click();
 
-  const dialog = page.getByRole('dialog');
-  await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('heading', { name: /computational framework/i })).toBeVisible();
+  await expect
+    .poll(() =>
+      processVideo.evaluate((element) => {
+        if (!(element instanceof HTMLVideoElement)) {
+          return false;
+        }
 
-  const dialogBounds = await dialog.boundingBox();
-  expect(dialogBounds).not.toBeNull();
-  expect(dialogBounds!.x).toBeLessThanOrEqual(1);
-  expect(dialogBounds!.y).toBeLessThanOrEqual(1);
-  expect(dialogBounds!.width).toBeGreaterThanOrEqual(389);
-  expect(dialogBounds!.height).toBeGreaterThanOrEqual(843);
+        return element.paused;
+      }),
+    )
+    .toBe(true);
 
-  await expect(
-    dialog.getByRole('img', {
-      name: /computational framework for psychedelic visual phenomena/i,
-    }),
-  ).toBeVisible();
-  await expect(dialog.getByRole('heading', { name: /what this step is doing/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /close workflow step details/i })).toBeFocused();
-
-  await dialog.getByRole('button', { name: /^next$/i }).click();
-  await expect(dialog.getByRole('heading', { name: /simulation stages/i })).toBeVisible();
-  await expect(dialog.getByText(/from receptor to visible simulation/i)).toBeVisible();
-
-  await page.keyboard.press('Escape');
-  await expect(dialog).toHaveCount(0);
-  await expect(workflowButton).toBeFocused();
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth))
+    .toBeLessThanOrEqual(0);
 });
 
 test('third gallery card opens the Hand Portal video modal', async ({ page }) => {

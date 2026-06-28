@@ -17,6 +17,7 @@ import {
 } from '../src/utils/images';
 import { handPortalVideoArtwork, skinTerrainVideoArtwork } from '../src/components/artworkData';
 import { FEATURED_ARTWORKS } from '../src/content/featuredArtworks';
+import { LIBRARY_ARTWORKS } from '../src/content/libraryArtworks';
 import { FIRST_GALLERY_PRELOAD_IMAGE_URL } from '../src/App';
 import { ABOUT_SLUG } from '../src/sections/AboutSection';
 import {
@@ -28,6 +29,7 @@ import {
   getWorkflowSrcset,
 } from '../src/content/workflowSteps';
 import { GALLERY_VIDEOS } from '../src/utils/media';
+import { PROCESS_VIDEO } from '../src/components/WorkflowProcessCard';
 
 const generatedImagePath = (urlPath: string) =>
   resolve('public', urlPath.replace(/^\/+/, ''));
@@ -109,6 +111,20 @@ describe('image contract', () => {
       'mycelial-hand',
       'hand-portal-video-poster',
       'skin-terrain-video-poster',
+      'eye-terrain',
+      'trippy-jump',
+      'snow-road',
+      'fingernail-portal',
+      'night-bus',
+      'handpose-mouth',
+      'tongue-study-poster',
+      'tattooed-mushroom-poster',
+      'street-trip-poster',
+      'feet-signal-poster',
+      'corridor-signal-poster',
+      'eye-video-poster',
+      'nasty-food-poster',
+      'april-portal-poster',
     ]);
   });
 
@@ -133,6 +149,46 @@ describe('image contract', () => {
         type: 'video/mp4',
         posterSlug: 'skin-terrain-video-poster',
       },
+      tongueStudy: {
+        src: '/videos/tongue-study.mp4',
+        type: 'video/mp4',
+        posterSlug: 'tongue-study-poster',
+      },
+      tattooedMushroom: {
+        src: '/videos/tattooed-mushroom.mp4',
+        type: 'video/mp4',
+        posterSlug: 'tattooed-mushroom-poster',
+      },
+      streetTrip: {
+        src: '/videos/street-trip.mp4',
+        type: 'video/mp4',
+        posterSlug: 'street-trip-poster',
+      },
+      feetSignal: {
+        src: '/videos/feet-signal.mp4',
+        type: 'video/mp4',
+        posterSlug: 'feet-signal-poster',
+      },
+      corridorSignal: {
+        src: '/videos/corridor-signal.mp4',
+        type: 'video/mp4',
+        posterSlug: 'corridor-signal-poster',
+      },
+      eyeVideo: {
+        src: '/videos/eye-video.mp4',
+        type: 'video/mp4',
+        posterSlug: 'eye-video-poster',
+      },
+      nastyFood: {
+        src: '/videos/nasty-food.mp4',
+        type: 'video/mp4',
+        posterSlug: 'nasty-food-poster',
+      },
+      aprilPortal: {
+        src: '/videos/april-portal.mp4',
+        type: 'video/mp4',
+        posterSlug: 'april-portal-poster',
+      },
     });
     expect(handPortalVideoArtwork.videoSrc).toBe(GALLERY_VIDEOS.handPortal.src);
     expect(skinTerrainVideoArtwork.videoSrc).toBe(GALLERY_VIDEOS.skinTerrain.src);
@@ -141,6 +197,48 @@ describe('image contract', () => {
       expect(existsSync(resolve('public', video.src.replace(/^\/+/, '')))).toBe(true);
       expect(existsSync(generatedImagePath(getModalImageUrl(video.posterSlug)))).toBe(true);
     });
+  });
+
+  it('maps the full library to generated local media assets', () => {
+    expect(LIBRARY_ARTWORKS).toHaveLength(18);
+    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(18);
+
+    for (const { artwork } of LIBRARY_ARTWORKS) {
+      const metadata = getImageMetadata(artwork.imageSlug);
+      expect(metadata.slug).toBe(artwork.imageSlug);
+      expect(metadata.alt.length).toBeGreaterThan(0);
+
+      splitSrcset(getGallerySrcset(artwork.imageSlug)).forEach((url) => {
+        expect(existsSync(generatedImagePath(url))).toBe(true);
+      });
+
+      expect(existsSync(generatedImagePath(getModalImageUrl(artwork.imageSlug)))).toBe(true);
+
+      if (artwork.videoSrc) {
+        expect(existsSync(resolve('public', artwork.videoSrc.replace(/^\/+/, '')))).toBe(true);
+      }
+    }
+  });
+
+  it('keeps the process video source and poster explicit and resolvable', async () => {
+    const processVideoPath = resolve('public', PROCESS_VIDEO.src.replace(/^\/+/, ''));
+    const processPosterPath = resolve('public', PROCESS_VIDEO.poster.replace(/^\/+/, ''));
+
+    expect(PROCESS_VIDEO).toEqual({
+      src: '/videos/cup-coffee-process.mp4',
+      poster: '/images/cup-coffee-process-poster.webp',
+      type: 'video/mp4',
+      width: 720,
+      height: 1160,
+      durationLabel: '15 sec',
+    });
+    expect(existsSync(processVideoPath)).toBe(true);
+    expect(existsSync(processPosterPath)).toBe(true);
+    expect(readFileSync(processVideoPath).byteLength).toBeGreaterThan(0);
+
+    const posterMetadata = await sharp(processPosterPath).metadata();
+    expect(posterMetadata.width).toBe(PROCESS_VIDEO.width);
+    expect(posterMetadata.height).toBe(PROCESS_VIDEO.height);
   });
 
   it('keeps workflow carousel steps mapped to manually managed runtime assets', async () => {
@@ -228,6 +326,20 @@ describe('image contract', () => {
       'mycelial-hand',
       'hand-portal-video-poster',
       'skin-terrain-video-poster',
+      'eye-terrain',
+      'trippy-jump',
+      'snow-road',
+      'fingernail-portal',
+      'night-bus',
+      'handpose-mouth',
+      'tongue-study-poster',
+      'tattooed-mushroom-poster',
+      'street-trip-poster',
+      'feet-signal-poster',
+      'corridor-signal-poster',
+      'eye-video-poster',
+      'nasty-food-poster',
+      'april-portal-poster',
     ] as const;
 
     for (const slug of modalSlugs) {

@@ -48,7 +48,7 @@ export default function AboutSection() {
     >
       <div className="max-w-7xl mx-auto">
         <div className="glass relative overflow-hidden rounded-[1.75rem] p-5 sm:p-8 md:rounded-[3rem] md:p-16">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full filter blur-[80px] -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute top-0 right-0 h-96 w-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(103,232,249,0.16),rgba(245,222,192,0.08)_38%,rgba(148,68,104,0.10)_58%,transparent_72%)] blur-[80px]" />
           <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/60 to-transparent" />
 
           <div className="relative z-10 grid gap-8 md:grid-cols-2 md:gap-16">
@@ -75,7 +75,7 @@ export default function AboutSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   ariaLabel="Instagram"
-                  className="glass flex h-12 w-12 items-center justify-center rounded-full text-zinc-300 shadow-lg transition-[color,border-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-transparent hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white cursor-pointer"
+                  className="social-orb-link"
                 >
                   <Instagram size={20} />
                 </MagneticButton>
@@ -85,7 +85,7 @@ export default function AboutSection() {
                   target="_blank"
                   rel="noopener noreferrer"
                   ariaLabel="Twitter"
-                  className="glass flex h-12 w-12 items-center justify-center rounded-full text-zinc-300 shadow-lg transition-[color,border-color,box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:border-transparent hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white cursor-pointer"
+                  className="social-orb-link"
                 >
                   <Twitter size={20} />
                 </MagneticButton>

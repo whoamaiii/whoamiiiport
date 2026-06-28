@@ -1,7 +1,59 @@
-import { useRef, useState, type RefObject } from 'react';
+import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { AnimatePresence, m } from 'motion/react';
+import { LiquidGlassCard, type LiquidGlassSettings } from '@ogtirth/liquid-glass-oss';
 import { X } from 'lucide-react';
 import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
+import { getImageUrl } from '../utils/images';
+
+const MOBILE_MENU_GLASS_BACKGROUND = getImageUrl('liquid-perception-hero', 720);
+const MOBILE_MENU_GLASS_SETTINGS = {
+  blur: 0.34, refraction: 0.34, chromaticAberration: 0.032, distortion: 0.014,
+  edgeHighlight: 0.14, specular: 0.16, fresnel: 1.02, depth: 38,
+  brightness: -0.08, saturation: -0.04, darkTint: 0.48, tintStrength: 0.12,
+  opacity: 1, liquidMotion: 0.08, liquidSpring: 0.048, liquidDamping: 0.88,
+} satisfies Partial<LiquidGlassSettings>;
+
+function supportsWebGlRendering(): boolean {
+  const canvas = document.createElement('canvas');
+  return Boolean(
+    canvas.getContext('webgl')
+    || canvas.getContext('experimental-webgl'),
+  );
+}
+
+function useWebGlSupport(): boolean | null {
+  const [isSupported, setIsSupported] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setIsSupported(supportsWebGlRendering());
+  }, []);
+
+  return isSupported;
+}
+
+function MobileMenuLiquidPanel({ children }: { readonly children: ReactNode }) {
+  const supportsWebGl = useWebGlSupport();
+
+  if (supportsWebGl) {
+    return (
+      <LiquidGlassCard
+        backgroundImage={MOBILE_MENU_GLASS_BACKGROUND}
+        className="mobile-menu-liquid-panel"
+        settings={MOBILE_MENU_GLASS_SETTINGS}
+        variant="dark"
+      >
+        {children}
+      </LiquidGlassCard>
+    );
+  }
+
+  return (
+    <section className="mobile-menu-liquid-panel mobile-menu-liquid-panel--fallback">
+      <span className="mobile-menu-liquid-fallback-sheen" aria-hidden="true" />
+      <div className="lg-card__content">{children}</div>
+    </section>
+  );
+}
 
 interface MobileMenuButtonProps {
   isOpen: boolean;
@@ -91,39 +143,41 @@ function MobileMenu({
           >
             <X size={20} strokeWidth={1.8} aria-hidden="true" />
           </button>
-          <div className="flex w-full max-w-sm flex-col gap-5 text-center">
-            <nav className="flex flex-col gap-4 text-center" aria-label="Mobilmeny">
-              <button
-                type="button"
-                onClick={() => navigateToSection('work')}
-                className="rounded-[1.1rem] border border-white/10 bg-white/7 px-4 py-3 text-xl font-medium text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-[border-color,background-color,color,transform] duration-200 hover:border-cyan-100/36 hover:bg-cyan-100/10 hover:text-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200"
-              >
-                Verk
-              </button>
-              <button
-                type="button"
-                onClick={() => navigateToSection('gallery')}
-                className="rounded-[1.1rem] border border-white/10 bg-white/7 px-4 py-3 text-xl font-medium text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-[border-color,background-color,color,transform] duration-200 hover:border-cyan-100/36 hover:bg-cyan-100/10 hover:text-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200"
-              >
-                Galleri
-              </button>
-              <button
-                type="button"
-                onClick={() => navigateToSection('about')}
-                className="rounded-[1.1rem] border border-white/10 bg-white/7 px-4 py-3 text-xl font-medium text-white/90 shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-[border-color,background-color,color,transform] duration-200 hover:border-cyan-100/36 hover:bg-cyan-100/10 hover:text-white active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200"
-              >
-                Om
-              </button>
-            </nav>
+          <MobileMenuLiquidPanel>
+            <div className="mobile-menu-liquid-content">
+              <nav className="flex flex-col gap-4 text-center" aria-label="Mobilmeny">
+                <button
+                  type="button"
+                  onClick={() => navigateToSection('work')}
+                  className="mobile-menu-liquid-link"
+                >
+                  Verk
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigateToSection('gallery')}
+                  className="mobile-menu-liquid-link"
+                >
+                  Galleri
+                </button>
+                <button
+                  type="button"
+                  onClick={() => navigateToSection('about')}
+                  className="mobile-menu-liquid-link"
+                >
+                  Om
+                </button>
+              </nav>
 
-            <button
-              type="button"
-              onClick={() => navigateToSection('contact')}
-              className="w-full rounded-full border border-cyan-100/45 bg-cyan-200 px-6 py-4 text-base font-semibold uppercase tracking-[0.18em] text-cyan-950 shadow-[0_16px_42px_-24px_rgba(34,211,238,0.62),inset_0_1px_0_rgba(255,255,255,0.6)] transition-[background-color,transform,box-shadow] duration-200 hover:bg-cyan-100 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-zinc-950"
-            >
-              Ta kontakt
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={() => navigateToSection('contact')}
+                className="mobile-menu-liquid-cta"
+              >
+                Ta kontakt
+              </button>
+            </div>
+          </MobileMenuLiquidPanel>
         </m.div>
       )}
     </AnimatePresence>

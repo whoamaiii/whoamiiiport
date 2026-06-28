@@ -480,6 +480,161 @@
   transform: translateY(calc(-100% - clamp(0.28rem, 0.75vw, 0.36rem))) rotate(-45deg);
 }
 
+.mobile-menu-liquid-panel {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  width: min(22rem, 100%);
+  min-height: auto;
+  border: 1px solid var(--border-glass);
+  border-radius: 1.7rem;
+  background:
+    radial-gradient(circle at 22% 10%, rgba(255, 255, 255, 0.2), transparent 34%),
+    radial-gradient(circle at 78% 90%, rgba(103, 232, 249, 0.14), transparent 40%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
+    rgba(9, 9, 11, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.34),
+    inset 0 -18px 40px rgba(0, 0, 0, 0.24),
+    0 24px 70px -34px rgba(0, 0, 0, 0.92),
+    0 18px 56px -42px rgba(103, 232, 249, 0.56);
+  -webkit-backdrop-filter: blur(22px) saturate(150%);
+  backdrop-filter: blur(22px) saturate(150%);
+}
+
+.mobile-menu-liquid-fallback-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 28% 12%, rgba(255, 255, 255, 0.24), transparent 30%),
+    linear-gradient(115deg, transparent 4%, rgba(255, 255, 255, 0.13) 34%, transparent 58%);
+  opacity: 0.82;
+  mix-blend-mode: screen;
+}
+
+.mobile-menu-liquid-panel .lg-card__glass {
+  opacity: 0.9;
+  mix-blend-mode: screen;
+}
+
+.mobile-menu-liquid-panel .lg-card__content {
+  min-height: auto;
+  padding: 1.25rem;
+}
+
+.mobile-menu-liquid-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  text-align: center;
+}
+
+.mobile-menu-liquid-link {
+  position: relative;
+  min-height: 3.25rem;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.1rem;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.11), rgba(255, 255, 255, 0.035)),
+    rgba(255, 255, 255, 0.07);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.25rem;
+  font-weight: 500;
+  transition:
+    border-color 200ms ease-out,
+    background 200ms ease-out,
+    color 200ms ease-out,
+    transform 200ms ease-out;
+}
+
+.mobile-menu-liquid-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent, rgba(255, 255, 255, 0.16), transparent);
+  opacity: 0;
+  transform: translateX(-38%);
+  transition:
+    opacity 180ms ease-out,
+    transform 280ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-menu-liquid-link:hover,
+.mobile-menu-liquid-link:focus-visible {
+  border-color: rgba(103, 232, 249, 0.36);
+  background:
+    linear-gradient(180deg, rgba(103, 232, 249, 0.12), rgba(255, 255, 255, 0.04)),
+    rgba(255, 255, 255, 0.09);
+  color: white;
+}
+
+.mobile-menu-liquid-link:hover::before,
+.mobile-menu-liquid-link:focus-visible::before {
+  opacity: 1;
+  transform: translateX(38%);
+}
+
+.mobile-menu-liquid-link:active {
+  transform: scale(0.98);
+}
+
+.mobile-menu-liquid-link:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+.mobile-menu-liquid-cta {
+  min-height: 3.5rem;
+  border: 1px solid rgba(207, 250, 254, 0.58);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 36% 18%, rgba(255, 255, 255, 0.58), transparent 32%),
+    linear-gradient(135deg, var(--accent-primary), var(--accent-warm));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.68),
+    0 18px 44px -26px rgba(34, 211, 238, 0.72);
+  color: var(--surface-primary);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition:
+    background 200ms ease-out,
+    box-shadow 200ms ease-out,
+    transform 200ms ease-out;
+}
+
+.mobile-menu-liquid-cta:hover {
+  background:
+    radial-gradient(circle at 36% 18%, rgba(255, 255, 255, 0.68), transparent 32%),
+    linear-gradient(135deg, var(--accent-secondary), var(--accent-warm));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.74),
+    0 20px 50px -26px rgba(103, 232, 249, 0.8);
+}
+
+.mobile-menu-liquid-cta:active {
+  transform: scale(0.98);
+}
+
+.mobile-menu-liquid-cta:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu-liquid-link,
+  .mobile-menu-liquid-link::before,
+  .mobile-menu-liquid-cta {
+    transition: none;
+  }
+}
+
 @media (max-width: 480px) {
   .site-header-bar {
     grid-template-columns: minmax(0, 1fr) auto;

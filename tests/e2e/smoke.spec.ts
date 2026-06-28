@@ -250,6 +250,15 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('button', { name: /^lukk meny$/i })).toBeVisible();
   await expect(dialog.getByRole('button', { name: /ta kontakt/i })).toBeVisible();
+  const liquidPanel = dialog.locator('.mobile-menu-liquid-panel');
+  await expect(liquidPanel).toBeVisible();
+  await expect(
+    liquidPanel.locator('.lg-card__glass, .mobile-menu-liquid-fallback-sheen'),
+  ).toBeVisible();
+  const liquidPanelBounds = await liquidPanel.boundingBox();
+  expect(liquidPanelBounds).not.toBeNull();
+  expect(liquidPanelBounds!.x).toBeGreaterThanOrEqual(0);
+  expect(liquidPanelBounds!.x + liquidPanelBounds!.width).toBeLessThanOrEqual(320);
   await expect
     .poll(() =>
       page.locator('[aria-controls]').evaluateAll((nodes) =>

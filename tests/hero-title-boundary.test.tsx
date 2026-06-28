@@ -43,7 +43,7 @@ describe('hero title render boundary', () => {
     expect(screen.getByText(HERO_COPY.eyebrow)).toBeInTheDocument();
     expect(screen.getByText(HERO_COPY.subtitle)).toBeInTheDocument();
     expect(screen.getByTestId('hero-title-visual')).toHaveAttribute('data-mode', 'fallback');
-    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Altered');
-    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Perceptions');
+    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Endrede');
+    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Sanseflater');
   });
 });

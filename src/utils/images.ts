@@ -15,6 +15,9 @@ type ImageSlug =
   | 'trippy-jump'
   | 'snow-road'
   | 'fingernail-portal'
+  | 'leg-prism'
+  | 'drain-bloom'
+  | 'open-hand-mouth'
   | 'night-bus'
   | 'handpose-mouth'
   | 'tongue-study-poster'
@@ -39,101 +42,116 @@ type ImageFormat = 'avif' | 'webp';
 export const IMAGE_MANIFEST: Record<ImageSlug, ArtworkImage> = {
   'liquid-perception-hero': {
     slug: 'liquid-perception-hero',
-    alt: 'Chrome-masked psychedelic forest portrait beneath an electric blue cellular sky',
+    alt: 'Krommaskert psykedelisk skogsportrett under en elektrisk blå cellestruktur',
   },
   'mushroom-offering': {
     slug: 'mushroom-offering',
-    alt: 'Hand holding a mushroom over soft psychedelic skin patterns and rainbow light',
+    alt: 'Hånd som holder en sopp over myke psykedeliske hudmønstre og regnbuelys',
     galleryObjectPosition: '50% 48%',
   },
   'liquid-perception': {
     slug: 'liquid-perception',
-    alt: 'Modified selfie portrait of the artist with chrome face fragments and refracted psychedelic forest light',
+    alt: 'Modifisert selvportrett av kunstneren med kromfragmenter i ansiktet og refraktert skogslys',
     galleryObjectPosition: '50% 44%',
   },
   'mycelial-hand': {
     slug: 'mycelial-hand',
-    alt: 'Hand with mushrooms and chrome resin growing from the fingers under a psychedelic forest sky',
+    alt: 'Hånd med sopp og kromresin som vokser fra fingrene under en psykedelisk skogshimmel',
     galleryObjectPosition: '50% 48%',
   },
   'hand-portal-video-poster': {
     slug: 'hand-portal-video-poster',
-    alt: 'Poster frame of a hand opening into a nested organic portal in a dark forest',
+    alt: 'Posterbilde av en hånd som åpner seg til en organisk portal i en mørk skog',
     galleryObjectPosition: '50% 52%',
   },
   'skin-terrain-video-poster': {
     slug: 'skin-terrain-video-poster',
-    alt: 'Macro video poster of skin-like ridges forming a soft topographic terrain',
+    alt: 'Makroposter av hudlignende riller som danner et mykt topografisk terreng',
     galleryObjectPosition: '50% 50%',
   },
   'eye-terrain': {
     slug: 'eye-terrain',
-    alt: 'Close eye portrait with raised psychedelic skin patterns and prism light',
+    alt: 'Nært øyeportrett med opphøyde psykedeliske hudmønstre og prismelys',
     galleryObjectPosition: '50% 44%',
   },
   'trippy-jump': {
     slug: 'trippy-jump',
-    alt: 'Figure falling forward through a saturated psychedelic tunnel of color',
+    alt: 'Kropp som faller fremover gjennom en mettet psykedelisk fargetunnel',
     galleryObjectPosition: '50% 48%',
   },
   'snow-road': {
     slug: 'snow-road',
-    alt: 'Night road snowbank transformed into bright rippling psychedelic texture',
+    alt: 'Snøkant ved nattvei forvandlet til lysende psykedelisk tekstur',
     galleryObjectPosition: '50% 52%',
   },
   'fingernail-portal': {
     slug: 'fingernail-portal',
-    alt: 'Fingernail curling inward into a glittering spiral portal of skin and pattern',
+    alt: 'Fingernegl som krøller seg innover til en glitrende spiralportal av hud og mønster',
     galleryObjectPosition: '50% 46%',
+  },
+  'leg-prism': {
+    slug: 'leg-prism',
+    alt: 'Bare bein dekket av refrakterte regnbuemønstre på et mørkt gulv',
+    galleryObjectPosition: '50% 50%',
+  },
+  'drain-bloom': {
+    slug: 'drain-bloom',
+    alt: 'Våt baderomssluk og fliser overtatt av moseaktig psykedelisk væskemønster',
+    galleryObjectPosition: '50% 52%',
+  },
+  'open-hand-mouth': {
+    slug: 'open-hand-mouth',
+    alt: 'Åpen hånd forvandlet til små munner, tenner, mose og mettet regnbuelys',
+    galleryObjectPosition: '50% 48%',
   },
   'night-bus': {
     slug: 'night-bus',
-    alt: 'Rainy night bus interior with psychedelic patterns spreading across the seats',
+    alt: 'Regnvått nattbussinteriør med psykedeliske mønstre som sprer seg over setene',
     galleryObjectPosition: '50% 48%',
   },
   'handpose-mouth': {
     slug: 'handpose-mouth',
-    alt: 'Hand-shaped mouth form on a plate with teeth, translucent strands, and rainbow refraction',
+    alt: 'Håndformet munnobjekt på en tallerken med tenner, tråder og regnbuerefraksjon',
     galleryObjectPosition: '50% 46%',
   },
   'tongue-study-poster': {
     slug: 'tongue-study-poster',
-    alt: 'Poster frame for a tongue study video with wet organic psychedelic texture',
+    alt: 'Posterbilde for tungestudie med våt organisk psykedelisk tekstur',
     galleryObjectPosition: '50% 50%',
   },
   'tattooed-mushroom-poster': {
     slug: 'tattooed-mushroom-poster',
-    alt: 'Poster frame for a tattooed hand holding a mushroom in shifting psychedelic light',
+    alt: 'Posterbilde av en tatovert hånd som holder en sopp i skiftende psykedelisk lys',
     galleryObjectPosition: '50% 48%',
   },
   'street-trip-poster': {
     slug: 'street-trip-poster',
-    alt: 'Poster frame for a street trip video with a figure moving through warped color',
+    alt: 'Posterbilde av en person som beveger seg gjennom vrengt gatefarge',
     galleryObjectPosition: '50% 48%',
   },
   'feet-signal-poster': {
     slug: 'feet-signal-poster',
-    alt: 'Poster frame for a feet study video with refracted texture and altered pavement',
+    alt: 'Posterbilde for fotstudie med refraktert tekstur og forandret asfalt',
     galleryObjectPosition: '50% 50%',
   },
   'corridor-signal-poster': {
     slug: 'corridor-signal-poster',
-    alt: 'Poster frame for a corridor video with stretched architectural psychedelic light',
+    alt: 'Posterbilde for korridorvideo med strukket arkitektonisk psykedelisk lys',
     galleryObjectPosition: '50% 50%',
   },
   'eye-video-poster': {
     slug: 'eye-video-poster',
-    alt: 'Poster frame for an eye video with close skin texture and chromatic distortion',
+    alt: 'Posterbilde for øyevideo med nær hudtekstur og kromatisk forvrengning',
     galleryObjectPosition: '50% 44%',
   },
   'nasty-food-poster': {
     slug: 'nasty-food-poster',
-    alt: 'Poster frame for a visceral food study video with organic psychedelic surfaces',
+    alt: 'Posterbilde for visceral matstudie med organiske psykedeliske overflater',
     galleryObjectPosition: '50% 48%',
   },
   'april-portal-poster': {
     slug: 'april-portal-poster',
-    alt: 'Poster frame for a vertical portal video with dense altered-state texture',
+    alt: 'Posterbilde for vertikal portalvideo med tett endret-sansning-tekstur',
     galleryObjectPosition: '50% 48%',
   },
 };

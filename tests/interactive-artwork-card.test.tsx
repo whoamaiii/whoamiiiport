@@ -31,12 +31,12 @@ describe('InteractiveArtworkCard image contracts', () => {
       <InteractiveArtworkCard
         imageSlug="hand-portal-video-poster"
         videoSrc="/videos/hand-portal-study.mp4"
-        title={{ primary: 'Hand Portal' }}
+        title={{ primary: 'Håndportal' }}
         sections={[{ body: 'Video notes.' }]}
       />,
     );
 
-    expect(screen.getByRole('button', { name: /view hand portal video details and notes/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /se håndportal video med notater/i })).toBeInTheDocument();
     expect(getModalSrcset).not.toHaveBeenCalled();
   });
 
@@ -51,14 +51,14 @@ describe('InteractiveArtworkCard image contracts', () => {
     render(
       <InteractiveArtworkCard
         imageSlug="mushroom-offering"
-        title={{ primary: 'Mushroom Offering' }}
+        title={{ primary: 'Soppoffer' }}
         sections={[{ heading: 'Mening', body: 'Norsk beskrivelse av verket.' }]}
         sectionsLang="no"
       />,
     );
 
     fireEvent.click(
-      screen.getByRole('button', { name: /view mushroom offering artwork details and notes/i }),
+      screen.getByRole('button', { name: /se soppoffer verk med notater/i }),
     );
 
     const noteBody = await screen.findByText('Norsk beskrivelse av verket.');
@@ -80,26 +80,26 @@ describe('InteractiveArtworkCard image contracts', () => {
       <MotionFeatureProvider>
         <InteractiveArtworkCard
           imageSlug="mushroom-offering"
-          title={{ primary: 'Mushroom Offering' }}
+          title={{ primary: 'Soppoffer' }}
           sections={[{ body: 'Image notes.' }]}
         />
       </MotionFeatureProvider>,
     );
 
     fireEvent.click(
-      screen.getByRole('button', { name: /view mushroom offering artwork details and notes/i }),
+      screen.getByRole('button', { name: /se soppoffer verk med notater/i }),
     );
 
     const dialog = await screen.findByRole('dialog', {
-      name: /mushroom offering artwork details/i,
+      name: /soppoffer verkdetaljer/i,
     });
     expect(dialog).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /close modal/i }));
+    fireEvent.click(screen.getByRole('button', { name: /lukk modal/i }));
 
     await waitFor(() => {
       expect(
-        screen.queryByRole('dialog', { name: /mushroom offering artwork details/i }),
+        screen.queryByRole('dialog', { name: /soppoffer verkdetaljer/i }),
       ).not.toBeInTheDocument();
     });
   });
@@ -120,7 +120,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     const image = screen.getByRole('img', {
-      name: /modified selfie portrait/i,
+      name: /modifisert selvportrett/i,
     });
     expect(image).toHaveAttribute('loading', 'lazy');
     expect(image).toHaveAttribute('fetchpriority', 'auto');
@@ -144,7 +144,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     const image = screen.getByRole('img', {
-      name: /modified selfie portrait/i,
+      name: /modifisert selvportrett/i,
     });
     expect(image).toHaveAttribute('loading', 'eager');
     expect(image).toHaveAttribute('fetchpriority', 'auto');
@@ -171,7 +171,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     const image = screen.getByRole('img', {
-      name: /modified selfie portrait/i,
+      name: /modifisert selvportrett/i,
     });
     expect(image).toHaveAttribute('src', '/images/liquid-perception-560.webp');
     expect(image).not.toHaveAttribute('srcset');
@@ -220,7 +220,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     const { container } = render(
       <InteractiveArtworkCard
         imageSlug="mycelial-hand"
-        title={{ primary: 'Mycelial Hand' }}
+        title={{ primary: 'Mycelhånd' }}
         sections={[{ body: 'Image notes.' }]}
         deferImageUntilVisible
       />,
@@ -244,7 +244,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     await waitFor(() => {
       expect(image).toHaveAttribute('src', '/images/mycelial-hand-800.webp');
       expect(image).toHaveAttribute('srcset');
-      expect(image).toHaveAttribute('alt', expect.stringMatching(/hand with mushrooms/i));
+      expect(image).toHaveAttribute('alt', expect.stringMatching(/hånd med sopp/i));
     });
   });
 });

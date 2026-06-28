@@ -11,7 +11,7 @@ export const PROCESS_VIDEO = {
   type: 'video/mp4',
   width: 720,
   height: 1160,
-  durationLabel: '15 sec',
+  durationLabel: '15 sek',
 } as const;
 
 interface WorkflowVideoState {
@@ -149,7 +149,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
               autoPlay={!reducedMotion && shouldLoadVideo}
               loop={!reducedMotion}
               preload={shouldLoadVideo ? 'metadata' : 'none'}
-              aria-label="Cup coffee process video"
+              aria-label="Prosessvideo med kopp og kaffe"
               onPlay={() => dispatch({ type: 'playing' })}
               onPause={() => dispatch({ type: 'paused' })}
               className="h-full w-full object-cover"
@@ -164,7 +164,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
                 className="absolute inset-0 grid place-items-center bg-zinc-950/70 text-center text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-cyan-100/70"
                 aria-hidden="true"
               >
-                Loading film
+                Laster film
               </div>
             ) : null}
 
@@ -175,7 +175,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
               onClick={togglePlayback}
               disabled={!shouldLoadVideo}
               className="absolute bottom-3 right-3 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/18 bg-zinc-950/58 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-xl transition hover:bg-white/14 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-200 disabled:pointer-events-none disabled:opacity-45"
-              aria-label={`${isPlaying ? 'Pause' : 'Play'} cup coffee process video`}
+              aria-label={`${isPlaying ? 'Pause' : 'Spill av'} prosessvideo med kopp og kaffe`}
             >
               {isPlaying ? (
                 <Pause size={18} aria-hidden="true" />
@@ -186,27 +186,27 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
           </div>
 
           <figcaption className="sr-only">
-            A portrait process video made by Quentin, presented as a moving study in the
-            selected works section.
+            En prosessvideo laget av Quentin, vist som en bevegelig studie i
+            utvalgte verk-seksjonen.
           </figcaption>
         </figure>
 
         <div className="grid gap-4 pb-1 lg:pb-5">
           <div>
             <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.32em] text-cyan-200/75">
-              Art process
+              Kunstprosess
             </p>
             <h3
               id="workflow-process-heading"
               className="max-w-[11ch] text-3xl font-black uppercase italic leading-[0.88] text-white sm:max-w-[12ch] sm:text-5xl"
             >
-              Coffee in motion
+              Kaffe i bevegelse
             </h3>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
             <span className="rounded-full border border-cyan-200/22 bg-cyan-200/10 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.26em] text-cyan-50">
-              Process film
+              Prosessfilm
             </span>
             <span className="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs font-semibold tabular-nums text-zinc-100">
               {PROCESS_VIDEO.durationLabel}
@@ -214,9 +214,9 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
           </div>
 
           <p className="max-w-[29ch] text-base leading-7 text-zinc-300/92 sm:text-lg sm:leading-8">
-            A small moving study of heat, cup, surface, and color turning into a
-            tactile image fragment. It keeps the process section visual first, closer to
-            the way the work actually feels.
+            En liten bevegelig studie av varme, kopp, overflate og farge som blir
+            til et taktilt bildefragment. Prosessdelen får være visuell først,
+            nærmere måten arbeidet faktisk kjennes på.
           </p>
         </div>
       </div>

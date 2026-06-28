@@ -46,34 +46,34 @@ describe('section semantics', () => {
   it('allows named regions to reference the default shader heading by id', () => {
     render(
       <section aria-labelledby="selected-works-heading">
-        <ShaderHeading id="selected-works-heading">Selected Works.</ShaderHeading>
+        <ShaderHeading id="selected-works-heading">Utvalgte verk.</ShaderHeading>
       </section>,
     );
 
-    const heading = screen.getByRole('heading', { name: /selected works\./i });
+    const heading = screen.getByRole('heading', { name: /utvalgte verk\./i });
     expect(heading).toHaveAttribute('id', 'selected-works-heading');
     expect(heading).toHaveAttribute('data-heading-variant', 'default');
-    expect(screen.getByRole('region', { name: /selected works\./i })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /utvalgte verk\./i })).toBeInTheDocument();
   });
 
   it('uses ShaderHeading ariaLabel as semantic text without naming from decorative lines', () => {
     render(
-      <ShaderHeading ariaLabel="Selected Works." visualLines={['Archive', 'Signals']}>
+      <ShaderHeading ariaLabel="Utvalgte verk." visualLines={['Arkiv', 'Signaler']}>
         Gallery overview
       </ShaderHeading>,
     );
 
-    expect(screen.getByRole('heading', { name: /selected works\./i })).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: /archive signals/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /utvalgte verk\./i })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: /arkiv signaler/i })).not.toBeInTheDocument();
   });
 
   it('keeps the gallery region named from the gallery heading while the supporting copy stays visible', () => {
     render(<GallerySection reducedMotion={false} />);
 
-    const heading = screen.getByRole('heading', { name: /selected works\./i });
+    const heading = screen.getByRole('heading', { name: /utvalgte verk\./i });
     expect(heading).toHaveAttribute('id', 'selected-works-heading');
     expect(heading).toHaveAttribute('data-heading-variant', 'gallery');
-    expect(screen.getByRole('region', { name: /selected works\./i })).toBeInTheDocument();
+    expect(screen.getByRole('region', { name: /utvalgte verk\./i })).toBeInTheDocument();
     expect(screen.getByText(GALLERY_COPY.eyebrow)).toBeInTheDocument();
     expect(screen.getByText(GALLERY_COPY.subtitle)).toBeInTheDocument();
   });
@@ -81,11 +81,11 @@ describe('section semantics', () => {
   it('keeps the full gallery region named as a separate library surface', () => {
     render(<LibrarySection reducedMotion={false} />);
 
-    const heading = screen.getByRole('heading', { name: /gallery\./i });
+    const heading = screen.getByRole('heading', { name: /galleri\./i });
     expect(heading).toHaveAttribute('id', 'gallery-library-heading');
     expect(heading).toHaveAttribute('data-heading-variant', 'gallery');
-    expect(screen.getByRole('region', { name: /gallery\./i })).toBeInTheDocument();
-    expect(screen.getByText(/full artwork library/i)).toBeInTheDocument();
-    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(18);
+    expect(screen.getByRole('region', { name: /galleri\./i })).toBeInTheDocument();
+    expect(screen.getByText(/fullt kunstarkiv/i)).toBeInTheDocument();
+    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(20);
   });
 });

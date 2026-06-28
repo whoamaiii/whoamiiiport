@@ -16,6 +16,8 @@ const THRESHOLDS = {
   heroRequestStartMs: 500,
   firstGalleryReadyAfterScrollMs: 750,
 };
+const NOTABLE_RESOURCE_PATTERN =
+  /assets\/|liquid-perception|mushroom-offering|mycelial-hand|hand-portal-video-poster|fingernail-portal|typekit/;
 
 function round(value) {
   return Number.isFinite(value) ? Math.round(value) : null;
@@ -68,7 +70,7 @@ async function main() {
         .map((entry) => entry.startTime);
       const lowerGalleryResourcesBeforeScroll = resources
         .filter((entry) =>
-          /\/images\/(?:psychedelic-bathroom|ferdigcop-video-poster)-/.test(entry.name),
+          /\/images\/(?:mycelial-hand|hand-portal-video-poster|fingernail-portal)-/.test(entry.name),
         )
         .map((entry) => entry.name);
 
@@ -189,7 +191,7 @@ async function main() {
         shaderCanvasCount: afterGalleryMetrics.shaderCanvasCount,
       },
       notableResources: afterGalleryMetrics.resourceSummary
-        .filter((entry) => /assets\/|liquid-perception|psychedelic-bathroom|ferdigcop|typekit/.test(entry.name))
+        .filter((entry) => NOTABLE_RESOURCE_PATTERN.test(entry.name))
         .sort((a, b) => a.startTime - b.startTime),
       consoleMessages,
       thresholds: THRESHOLDS,

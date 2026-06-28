@@ -5,20 +5,20 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
 
   await expect(page).toHaveTitle(/Whoamiii/i);
   await expect(page.getByTestId('scroll-progress')).toHaveCount(1);
-  await expect(page.getByRole('heading', { name: /Altered Perceptions\./i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Endrede sanseflater\./i })).toBeVisible();
   await expect(page.getByTestId('hero-title-visual')).toHaveCount(1);
-  await expect(page.getByText(/Psychedelic Art Portfolio/i)).toBeVisible();
+  await expect(page.getByText(/Psykedelisk kunstportefølje/i)).toBeVisible();
   await expect(
-    page.getByText(/Paintings from the other side of the glass\./i),
+    page.getByText(/Bilder fra den andre siden av glasset\./i),
   ).toBeVisible();
   await page.evaluate(() => document.querySelector('#work')?.scrollIntoView({ block: 'start' }));
   await page.waitForFunction(() => Boolean(document.querySelector('#work')));
 
-  await expect(page.getByText(/PORTFOLIO HIGHLIGHTS/i)).toBeVisible();
-  await expect(page.getByRole('heading', { name: /Selected Works\./i })).toBeVisible();
-  await expect(page.getByRole('region', { name: /Selected Works\./i })).toBeVisible();
+  await expect(page.getByText(/PORTFØLJEUTVALG/i)).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Utvalgte verk\./i })).toBeVisible();
+  await expect(page.getByRole('region', { name: /Utvalgte verk\./i })).toBeVisible();
   await expect(
-    page.getByText(/Dream-burned paintings and digital artifacts pulled from the archive\./i),
+    page.getByText(/Drømmebrente bilder og digitale artefakter hentet fra arkivet\./i),
   ).toBeVisible();
   await expect(page.getByRole('main')).toHaveCount(1);
   await expect(page.getByTestId('site-header').getByRole('link', { name: /whoamiii/i })).toBeVisible();
@@ -27,14 +27,14 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.5));
 
   await expect(
-    page.getByRole('heading', { name: /Let's Create Something Trippy\./i }),
+    page.getByRole('heading', { name: /La oss lage noe trippy\./i }),
   ).toBeVisible();
   await expect(page.getByRole('contentinfo').getByRole('link', { name: /whoamiii/i })).toBeVisible();
   await expect(
-    page.getByText(/Psychedelic paintings, altered-state studies, and commission inquiries from the archive\./i),
+    page.getByText(/Åpen for oppdrag, samarbeid og utstillinger\./i),
   ).toBeVisible();
   await expect(
-    page.getByText(new RegExp(`© ${new Date().getFullYear()} Whoamiii\\. All rights reserved\\.`, 'i')),
+    page.getByText(new RegExp(`© ${new Date().getFullYear()} Whoamiii\\. Alle rettigheter reservert\\.`, 'i')),
   ).toBeVisible();
 
   const heroImage = page.locator('section').first().locator('img').first();
@@ -66,7 +66,7 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   );
 
   const aboutImage = page.getByRole('img', {
-    name: /modified selfie portrait of the artist/i,
+    name: /modifisert selvportrett av kunstneren/i,
   });
   await expect(aboutImage).toHaveAttribute('src', /\/images\/liquid-perception-800\.webp$/);
   await expect(aboutImage).toHaveAttribute('srcset', /liquid-perception-1200\.webp 1200w/);
@@ -77,22 +77,22 @@ test('skip link lands on main content and artwork modal opens and closes', async
   await page.goto('/');
 
   await page.keyboard.press('Tab');
-  const skipLink = page.getByRole('link', { name: /skip to content/i });
+  const skipLink = page.getByRole('link', { name: /hopp til innhold/i });
   await expect(skipLink).toBeVisible();
   await skipLink.press('Enter');
   await expect(page).toHaveURL(/#main-content$/);
   await expect(page.locator('#main-content')).toBeFocused();
 
   const artworkButton = page.getByRole('button', {
-    name: /view mushroom offering.*artwork/i,
+    name: /se soppoffer.*verk/i,
   });
   await artworkButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /mushroom offering/i,
+    name: /soppoffer/i,
   });
   await expect(dialog).toBeVisible();
-  await expect(page.getByRole('button', { name: /close modal/i })).toBeFocused();
+  await expect(page.getByRole('button', { name: /lukk modal/i })).toBeFocused();
   await expect
     .poll(() =>
       page.locator('[aria-controls]').evaluateAll((nodes) =>
@@ -105,7 +105,7 @@ test('skip link lands on main content and artwork modal opens and closes', async
 
   await expect(
     dialog.getByRole('img', {
-      name: /hand holding a mushroom/i,
+      name: /hånd som holder en sopp/i,
     }),
   ).toBeVisible();
 
@@ -121,8 +121,8 @@ test('mobile process video card loads and exposes playback control', async ({ pa
   const processCard = page.getByTestId('workflow-process-card');
   await processCard.scrollIntoViewIfNeeded();
 
-  await expect(processCard.getByRole('heading', { name: /coffee in motion/i })).toBeVisible();
-  await expect(processCard.getByText(/process film/i)).toBeVisible();
+  await expect(processCard.getByRole('heading', { name: /kaffe i bevegelse/i })).toBeVisible();
+  await expect(processCard.getByText(/prosessfilm/i)).toBeVisible();
 
   const processVideo = processCard.getByTestId('workflow-process-video');
   await expect(processVideo).toBeVisible();
@@ -149,7 +149,7 @@ test('mobile process video card loads and exposes playback control', async ({ pa
     .toBe(true);
 
   const playbackButton = processCard.getByRole('button', {
-    name: /pause cup coffee process video/i,
+    name: /pause prosessvideo med kopp og kaffe/i,
   });
   await playbackButton.click();
 
@@ -170,17 +170,17 @@ test('mobile process video card loads and exposes playback control', async ({ pa
     .toBeLessThanOrEqual(0);
 });
 
-test('third gallery card opens the Hand Portal video modal', async ({ page }) => {
+test('third gallery card opens the Håndportal video modal', async ({ page }) => {
   await page.goto('/#work');
 
   const videoButton = page.getByRole('button', {
-    name: /view hand portal.*video/i,
+    name: /se håndportal.*video/i,
   });
   await videoButton.scrollIntoViewIfNeeded();
   await videoButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /hand portal/i,
+    name: /håndportal/i,
   });
   await expect(dialog).toBeVisible();
 
@@ -204,20 +204,21 @@ test('mobile menu traps focus and restores it to the trigger', async ({ page }) 
   await page.goto('/');
 
   const menuButton = page.locator('.site-header-menu-trigger');
-  await expect(menuButton).toHaveAccessibleName(/open menu/i);
+  await expect(menuButton).toHaveAccessibleName(/åpne meny/i);
   await menuButton.click();
 
-  const dialog = page.getByRole('dialog', { name: /navigation menu/i });
-  const mobileContactCta = dialog.getByRole('button', { name: /get in touch/i });
+  const dialog = page.getByRole('dialog', { name: /navigasjonsmeny/i });
+  const closeButton = dialog.getByRole('button', { name: /^lukk meny$/i });
+  const mobileContactCta = dialog.getByRole('button', { name: /ta kontakt/i });
   await expect(dialog).toBeVisible();
-  await expect(menuButton).toBeFocused();
+  await expect(closeButton).toBeFocused();
   await expect(mobileContactCta).toBeVisible();
 
   await page.keyboard.press('Shift+Tab');
   await expect(mobileContactCta).toBeFocused();
 
   await page.keyboard.press('Tab');
-  await expect(menuButton).toBeFocused();
+  await expect(closeButton).toBeFocused();
 
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
@@ -232,7 +233,7 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
 
   const menuButton = page.locator('.site-header-menu-trigger');
   await expect(menuButton).toBeVisible();
-  await expect(menuButton).toHaveAccessibleName(/open menu/i);
+  await expect(menuButton).toHaveAccessibleName(/åpne meny/i);
   await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
   await expect(menuButton).toHaveAttribute('aria-haspopup', 'dialog');
   await expect(menuButton).not.toHaveAttribute('aria-controls');
@@ -242,12 +243,13 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
   expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(320);
 
   await menuButton.click();
-  await expect(menuButton).toHaveAccessibleName(/close navigation menu/i);
+  await expect(menuButton).toHaveAccessibleName(/lukk navigasjonsmeny/i);
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
   await expect(menuButton).toHaveAttribute('aria-controls', 'mobile-menu');
-  await expect(page.getByRole('dialog', { name: /navigation menu/i })).toBeVisible();
-  await expect(page.getByRole('button', { name: /^close menu$/i })).toHaveCount(0);
-  await expect(page.getByRole('button', { name: /get in touch/i })).toBeVisible();
+  const dialog = page.getByRole('dialog', { name: /navigasjonsmeny/i });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByRole('button', { name: /^lukk meny$/i })).toBeVisible();
+  await expect(dialog.getByRole('button', { name: /ta kontakt/i })).toBeVisible();
   await expect
     .poll(() =>
       page.locator('[aria-controls]').evaluateAll((nodes) =>
@@ -301,7 +303,7 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
 test('absolute site header scrolls away with the hero instead of staying fixed', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: /Selected Works\./i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Utvalgte verk\./i })).toBeVisible();
   await page.waitForFunction(() => document.documentElement.scrollHeight > window.innerHeight + 200);
 
   const scrollState = await page.evaluate(async () => {
@@ -355,14 +357,14 @@ test('menu section buttons scroll to and focus target sections with breathing ro
   await page.goto('/');
 
   const sections = [
-    { label: 'Work', id: 'work', menuLabel: /work/i },
-    { label: 'About', id: 'about', menuLabel: /about/i },
-    { label: 'Contact', id: 'contact', menuLabel: /get in touch/i },
+    { label: 'Verk', id: 'work', menuLabel: /verk/i },
+    { label: 'Om', id: 'about', menuLabel: /om/i },
+    { label: 'Kontakt', id: 'contact', menuLabel: /ta kontakt/i },
   ] as const;
 
   for (const section of sections) {
-    await page.getByRole('button', { name: /open menu/i }).click();
-    const menu = page.getByRole('dialog', { name: /navigation menu/i });
+    await page.getByRole('button', { name: /åpne meny/i }).click();
+    const menu = page.getByRole('dialog', { name: /navigasjonsmeny/i });
     await expect(menu).toBeVisible();
     await menu.getByRole('button', { name: section.menuLabel }).click();
     await expect(menu).toHaveCount(0);

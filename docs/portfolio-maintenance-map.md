@@ -83,6 +83,11 @@ The hero title and section headings now use sophisticated canvas/WebGL rendering
 with fallback paths. This is part of the visual identity, but it is also one of
 the easiest areas to regress.
 
+`ShaderHeading` keeps its render lifecycle separate from its preset/shadow
+configuration. `ShaderTextWord` and `shaderRenderer` remain larger active
+rendering contracts; treat their size as a deliberate future refactor target,
+not as dead code.
+
 Recommended guardrails:
 
 - Treat unsupported WebGL as a normal fallback path.
@@ -92,17 +97,16 @@ Recommended guardrails:
 
 ### 6. Motion At The App Root
 
-**Status:** Current, partly controlled
+**Status:** Split and controlled
 **Risk:** Mobile devices paying for desktop-only effects
 
-`src/App.tsx` owns multiple scroll and pointer-driven motion values. Current
-gates help, but the logic should stay carefully bounded.
+`src/App.tsx` now stays close to page composition. Root hero motion lives in
+`src/hooks/useHeroMotion.ts`, and section loading/hash navigation lives in
+`src/hooks/usePortfolioSectionLoading.ts`.
 
 Recommended cleanup:
 
 - Keep pointer effects gated by device capability and viewport.
-- Consider moving background interaction logic into a dedicated hook or closer
-  to `PsychedelicBackground`.
 - Add regression coverage if the root animation model expands.
 
 ### 7. Media Contract Drift
@@ -130,7 +134,41 @@ Any future image or video change should update all related pieces together:
 - contract test
 - docs when behavior changes
 
-### 8. Documentation Overlap
+### 8. Content Module Size
+
+**Status:** Split
+**Risk:** Copy/data tables becoming hard to review
+
+Library artwork and workflow copy are intentionally data-heavy, but the live
+manifest modules now compose smaller still/video and workflow-stage data files
+instead of carrying every entry in one file.
+
+Recommended cleanup:
+
+- Keep future artwork copy additions in the matching data file.
+- Keep `LIBRARY_ARTWORKS` and `WORKFLOW_STEPS` as the public composition points.
+- Expand `tests/image-contract.test.ts` when order, count, file widths, or
+  generated asset expectations change.
+
+### 9. Artwork Card Structure
+
+**Status:** Split
+**Risk:** Modal, image-loading, and hover-motion concerns merging again
+
+`InteractiveArtworkCard` now stays under the local size threshold by
+coordinating smaller modules: card state/reducer, image URL derivation, hover
+motion, the visible card preview, and the modal portal. Keep the default
+component import stable for gallery/library sections, but add future behavior to
+the matching smaller module.
+
+Recommended cleanup:
+
+- Keep mobile image-loading behavior covered by
+  `tests/interactive-artwork-card.test.tsx`.
+- Keep modal focus behavior covered by the mobile Playwright specs.
+- Avoid folding preview/modal JSX back into the coordinator.
+
+### 10. Documentation Overlap
 
 **Status:** Cleaned
 **Risk:** Conflicting guidance and slower onboarding

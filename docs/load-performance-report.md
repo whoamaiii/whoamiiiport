@@ -164,11 +164,9 @@ Evidence:
 - Mobile viewport was `390px` wide with DPR 3.
 - Gallery `sizes` says mobile images are `100vw`.
 - Browser chose `1200w` variants.
-- Four gallery images loaded together:
+- Four gallery images loaded together in the older report snapshot:
   - `liquid-perception-1200.webp`: about `346KB`
-  - `psychedelic-bathroom-scream-1200.webp`: about `175KB`
-  - `ferdigcop-video-poster-1200.webp`: about `118KB`
-  - `psychedelic-bathroom-portrait-1200.webp`: about `62KB`
+  - legacy gallery assets were still present in this measurement and have since been replaced by the current slug-based featured artwork set.
 
 Relevant files:
 

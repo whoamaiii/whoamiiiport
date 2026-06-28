@@ -29,13 +29,25 @@ describe('document head contract', () => {
 
     expect(figcaptions).toEqual(FEATURED_ARTWORKS.map(({ artwork }) => artwork.title.primary));
 
+    const [firstFeaturedArtwork, ...lowerPriorityArtworks] = FEATURED_ARTWORKS.map(
+      ({ artwork }) => artwork,
+    );
+    const firstThumbnailUrl = getImageUrl(firstFeaturedArtwork.imageSlug, 480);
+    const firstThumbnailAvifUrl = getAvifImageUrl(firstFeaturedArtwork.imageSlug, 480);
+
+    expect(indexHtml).toContain(`src="${firstThumbnailUrl}"`);
+    expect(indexHtml).toContain(`srcset="${firstThumbnailAvifUrl}"`);
+
     for (const { artwork } of FEATURED_ARTWORKS) {
       const thumbnailUrl = getImageUrl(artwork.imageSlug, 480);
       const thumbnailAvifUrl = getAvifImageUrl(artwork.imageSlug, 480);
-      expect(indexHtml).toContain(`src="${thumbnailUrl}"`);
-      expect(indexHtml).toContain(`srcset="${thumbnailAvifUrl}"`);
       expect(existsSync(resolve('public', thumbnailUrl.replace(/^\/+/, '')))).toBe(true);
       expect(existsSync(resolve('public', thumbnailAvifUrl.replace(/^\/+/, '')))).toBe(true);
+    }
+
+    for (const artwork of lowerPriorityArtworks) {
+      expect(indexHtml).not.toContain(`src="${getImageUrl(artwork.imageSlug, 480)}"`);
+      expect(indexHtml).not.toContain(`srcset="${getAvifImageUrl(artwork.imageSlug, 480)}"`);
     }
   });
 

@@ -1,17 +1,15 @@
 import {
   lazy,
   Suspense,
-  useCallback,
-  useEffect,
   useRef,
-  useState,
   type MouseEvent as ReactMouseEvent,
 } from 'react';
-import { useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
 import { ScrollProgress } from './components/ScrollProgress';
 import RenderErrorBoundary from './components/fallback/RenderErrorBoundary';
 import { MotionFeatureProvider } from './components/motion/MotionFeatureProvider';
+import { useHeroMotion } from './hooks/useHeroMotion';
 import { useMediaQuery } from './hooks/useMediaQuery';
+import { usePortfolioSectionLoading } from './hooks/usePortfolioSectionLoading';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { HeroSection } from './sections/HeroSection';
 import { PsychedelicBackground } from './sections/PsychedelicBackground';
@@ -27,382 +25,34 @@ const AboutSection = lazy(() => import('./sections/AboutSection'));
 const ContactSection = lazy(() => import('./sections/ContactSection'));
 const SiteFooter = lazy(() => import('./sections/SiteFooter'));
 
-const FIRST_GALLERY_PRELOAD_ID = 'first-gallery-image-preload';
-const GALLERY_IDLE_LOAD_TIMEOUT_MS = 900;
-
-// Hardcoded (instead of derived from FEATURED_ARTWORKS) so the gallery content
-// modules stay out of the main bundle. tests/image-contract.test.ts asserts it
-// matches the first featured artwork's mobile gallery asset.
-export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/mushroom-offering-560.avif';
-
-const HERO_REVEAL_REDUCED_CONFIG = {
-  initial: false as const,
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0 },
-};
-
-function getInitialGallerySectionLoad() {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  return /^#(work|about|contact)$/.test(window.location.hash);
-}
-
-function getInitialLibrarySectionLoad() {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  return window.location.hash === '#gallery';
-}
-
-function getSectionIdFromHash() {
-  if (typeof window === 'undefined') {
-    return null;
-  }
-
-  const match = window.location.hash.match(/^#(work|gallery|about|contact)$/);
-  return match ? match[1] : null;
-}
-
-function isDeferredSection(id: string) {
-  return id === 'about' || id === 'contact';
-}
-
-function preloadFirstGalleryImage() {
-  if (typeof document === 'undefined') {
-    return;
-  }
-
-  if (document.getElementById(FIRST_GALLERY_PRELOAD_ID)) {
-    return;
-  }
-
-  const link = document.createElement('link');
-  link.id = FIRST_GALLERY_PRELOAD_ID;
-  link.rel = 'preload';
-  link.as = 'image';
-  link.href = FIRST_GALLERY_PRELOAD_IMAGE_URL;
-  link.media = '(max-width: 767px)';
-  link.fetchPriority = 'auto';
-  document.head.append(link);
-}
+export { FIRST_GALLERY_PRELOAD_IMAGE_URL } from './utils/sectionLoading';
 
 export default function App() {
   const mainRef = useRef<HTMLElement>(null);
-  const [loadGallerySection, setLoadGallerySection] = useState(getInitialGallerySectionLoad);
-  const [loadLibrarySection, setLoadLibrarySection] = useState(getInitialLibrarySectionLoad);
-  const [loadDeferredSections, setLoadDeferredSections] = useState(
-    () => {
-      const sectionId = getSectionIdFromHash();
-      return sectionId !== null && isDeferredSection(sectionId);
-    },
-  );
-  const pendingSectionNavigationRef = useRef<string | null>(null);
-  const pendingSectionNavigationInitializedRef = useRef(false);
-  const pendingNavigationTimerRef = useRef<number | null>(null);
-  const pendingNavigationAttemptsRef = useRef(0);
-
-  if (!pendingSectionNavigationInitializedRef.current) {
-    pendingSectionNavigationRef.current = getSectionIdFromHash();
-    pendingSectionNavigationInitializedRef.current = true;
-  }
   const prefersReducedMotion = useReducedMotion();
   const prefersFinePointer = useMediaQuery('(pointer: fine)', false);
   const prefersLargeViewport = useMediaQuery('(min-width: 1024px)', false);
   const enableReactivePointerEffects =
     !prefersReducedMotion && prefersFinePointer && prefersLargeViewport;
-  const { scrollY } = useScroll();
-
-  const prefersReducedMotionRef = useRef(prefersReducedMotion);
-  prefersReducedMotionRef.current = prefersReducedMotion;
-  const enableReactivePointerEffectsRef = useRef(enableReactivePointerEffects);
-  enableReactivePointerEffectsRef.current = enableReactivePointerEffects;
-
-  const headerY = useTransform(scrollY, (value) => {
-    if (prefersReducedMotionRef.current) {
-      return 0;
-    }
-    const progress = Math.min(Math.max(value / 1000, 0), 1);
-    return progress * 300;
-  });
-  const headerOpacity = useTransform(scrollY, (value) => {
-    if (prefersReducedMotionRef.current) {
-      return 1;
-    }
-    const progress = Math.min(Math.max(value / 500, 0), 1);
-    return 1 - progress;
-  });
-
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-  const smoothX = useSpring(mouseX, { damping: 50, stiffness: 400 });
-  const smoothY = useSpring(mouseY, { damping: 50, stiffness: 400 });
-
-  const parallaxX = useTransform(smoothX, (value) =>
-    enableReactivePointerEffectsRef.current
-      ? (value - window.innerWidth / 2) * -0.03
-      : 0,
-  );
-  const parallaxY = useTransform(smoothY, (value) =>
-    enableReactivePointerEffectsRef.current
-      ? (value - window.innerHeight / 2) * -0.03
-      : 0,
-  );
-
-  const blobX1 = useTransform(smoothX, (value) =>
-    enableReactivePointerEffectsRef.current ? value * 0.05 : 0,
-  );
-  const blobY1 = useTransform(smoothY, (value) =>
-    enableReactivePointerEffectsRef.current ? value * 0.05 : 0,
-  );
-  const blobX2 = useTransform(smoothX, (value) =>
-    enableReactivePointerEffectsRef.current ? value * -0.05 : 0,
-  );
-  const blobY2 = useTransform(smoothY, (value) =>
-    enableReactivePointerEffectsRef.current ? value * -0.05 : 0,
-  );
-  const blobX3 = useTransform(smoothX, (value) =>
-    enableReactivePointerEffectsRef.current ? value * 0.03 : 0,
-  );
-  const blobY3 = useTransform(smoothY, (value) =>
-    enableReactivePointerEffectsRef.current ? value * -0.03 : 0,
-  );
-
-  const heroReveal = (delay = 0) =>
-    prefersReducedMotion
-      ? HERO_REVEAL_REDUCED_CONFIG
-      : {
-          initial: { opacity: 0, y: 30 },
-          animate: { opacity: 1, y: 0 },
-          transition: { duration: 1, delay },
-        };
-
-  useEffect(() => {
-    if (!enableReactivePointerEffects) {
-      return;
-    }
-
-    const handleMouseMove = (event: globalThis.MouseEvent) => {
-      mouseX.set(event.clientX);
-      mouseY.set(event.clientY);
-    };
-
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [enableReactivePointerEffects, mouseX, mouseY]);
-
-  const enableDeferredSections = useCallback(() => {
-    setLoadDeferredSections(true);
-  }, []);
-
-  const enableGallerySection = useCallback(() => {
-    setLoadGallerySection(true);
-    preloadFirstGalleryImage();
-  }, []);
-
-  const enableLibrarySection = useCallback(() => {
-    setLoadLibrarySection(true);
-  }, []);
-
-  const enableDeferredSectionsRef = useRef(enableDeferredSections);
-  enableDeferredSectionsRef.current = enableDeferredSections;
-  const enableGallerySectionRef = useRef(enableGallerySection);
-  enableGallerySectionRef.current = enableGallerySection;
-  const enableLibrarySectionRef = useRef(enableLibrarySection);
-  enableLibrarySectionRef.current = enableLibrarySection;
-
-  const scrollToSection = useCallback(
-    (id: string) => {
-      if (typeof document === 'undefined') {
-        return false;
-      }
-
-      const target = document.getElementById(id);
-      if (!target) {
-        return false;
-      }
-
-      target.scrollIntoView({
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-        block: 'start',
-      });
-      target.focus({ preventScroll: true });
-      window.setTimeout(() => {
-        target.scrollIntoView({
-          behavior: 'auto',
-          block: 'start',
-        });
-      }, prefersReducedMotion ? 0 : 240);
-      return true;
-    },
-    [prefersReducedMotion],
-  );
-
-  const clearPendingNavigationTimer = useCallback(() => {
-    if (pendingNavigationTimerRef.current === null) {
-      return;
-    }
-
-    window.clearTimeout(pendingNavigationTimerRef.current);
-    pendingNavigationTimerRef.current = null;
-  }, []);
-
-  const tryPendingSectionNavigation = useCallback(() => {
-    const pendingSectionNavigation = pendingSectionNavigationRef.current;
-
-    if (!pendingSectionNavigation) {
-      clearPendingNavigationTimer();
-      return;
-    }
-
-    if (scrollToSection(pendingSectionNavigation)) {
-      pendingSectionNavigationRef.current = null;
-      pendingNavigationAttemptsRef.current = 0;
-      clearPendingNavigationTimer();
-      return;
-    }
-
-    pendingNavigationAttemptsRef.current += 1;
-
-    if (pendingNavigationAttemptsRef.current >= 80) {
-      pendingSectionNavigationRef.current = null;
-      pendingNavigationAttemptsRef.current = 0;
-      clearPendingNavigationTimer();
-      return;
-    }
-
-    clearPendingNavigationTimer();
-    pendingNavigationTimerRef.current = window.setTimeout(() => {
-      tryPendingSectionNavigation();
-    }, 50);
-  }, [clearPendingNavigationTimer, scrollToSection]);
-
-  const handleSectionNavigation = useCallback(
-    (id: string) => {
-      if (id === 'work' || isDeferredSection(id)) {
-        enableGallerySection();
-      }
-
-      if (id === 'gallery') {
-        enableLibrarySection();
-      }
-
-      if (isDeferredSection(id)) {
-        enableDeferredSections();
-      }
-
-      if (!scrollToSection(id)) {
-        pendingSectionNavigationRef.current = id;
-        pendingNavigationAttemptsRef.current = 0;
-        tryPendingSectionNavigation();
-      }
-    },
-    [
-      enableDeferredSections,
-      enableGallerySection,
-      enableLibrarySection,
-      scrollToSection,
-      tryPendingSectionNavigation,
-    ],
-  );
-
-  useEffect(() => {
-    if (loadGallerySection) {
-      preloadFirstGalleryImage();
-      return;
-    }
-
-    const enableAfterHeroScroll = () => {
-      if (window.scrollY > window.innerHeight * 0.35) {
-        enableGallerySectionRef.current();
-      }
-    };
-    const enableGallery = () => enableGallerySectionRef.current();
-    const requestIdle = window.requestIdleCallback?.bind(window);
-    let idleCallbackId: number | null = null;
-    let timeoutId: number | null = null;
-
-    if (requestIdle) {
-      idleCallbackId = requestIdle(enableGallery, { timeout: GALLERY_IDLE_LOAD_TIMEOUT_MS });
-    } else {
-      timeoutId = window.setTimeout(enableGallery, GALLERY_IDLE_LOAD_TIMEOUT_MS);
-    }
-
-    window.addEventListener('scroll', enableAfterHeroScroll, { passive: true });
-    window.addEventListener('hashchange', enableGallery, { once: true });
-    enableAfterHeroScroll();
-
-    return () => {
-      if (idleCallbackId !== null) {
-        window.cancelIdleCallback?.(idleCallbackId);
-      }
-
-      if (timeoutId !== null) {
-        window.clearTimeout(timeoutId);
-      }
-
-      window.removeEventListener('scroll', enableAfterHeroScroll);
-      window.removeEventListener('hashchange', enableGallery);
-    };
-  }, [loadGallerySection]);
-
-  useEffect(() => {
-    if (loadLibrarySection) {
-      return;
-    }
-
-    const enableFromGalleryHash = () => {
-      if (window.location.hash === '#gallery') {
-        enableLibrarySectionRef.current();
-      }
-    };
-
-    window.addEventListener('hashchange', enableFromGalleryHash);
-    enableFromGalleryHash();
-
-    return () => window.removeEventListener('hashchange', enableFromGalleryHash);
-  }, [loadLibrarySection]);
-
-  useEffect(() => {
-    if (loadDeferredSections) {
-      return;
-    }
-
-    const enableAfterHeroScroll = () => {
-      if (window.scrollY > window.innerHeight * 0.45) {
-        enableDeferredSectionsRef.current();
-      }
-    };
-    const enableDeferred = () => enableDeferredSectionsRef.current();
-    const timeoutId = window.setTimeout(enableDeferred, 9000);
-
-    window.addEventListener('scroll', enableAfterHeroScroll, { passive: true });
-    window.addEventListener('hashchange', enableDeferred, { once: true });
-    window.addEventListener('pointerdown', enableDeferred, { once: true, passive: true });
-    window.addEventListener('keydown', enableDeferred, { once: true });
-    enableAfterHeroScroll();
-
-    return () => {
-      window.clearTimeout(timeoutId);
-      window.removeEventListener('scroll', enableAfterHeroScroll);
-      window.removeEventListener('hashchange', enableDeferred);
-      window.removeEventListener('pointerdown', enableDeferred);
-      window.removeEventListener('keydown', enableDeferred);
-    };
-  }, [loadDeferredSections]);
-
-  useEffect(() => {
-    tryPendingSectionNavigation();
-  }, [
-    loadDeferredSections,
+  const {
+    headerY,
+    headerOpacity,
+    parallaxX,
+    parallaxY,
+    blobX1,
+    blobY1,
+    blobX2,
+    blobY2,
+    blobX3,
+    blobY3,
+    heroReveal,
+  } = useHeroMotion({ prefersReducedMotion, enableReactivePointerEffects });
+  const {
     loadGallerySection,
     loadLibrarySection,
-    tryPendingSectionNavigation,
-  ]);
-
-  useEffect(() => clearPendingNavigationTimer, [clearPendingNavigationTimer]);
+    loadDeferredSections,
+    handleSectionNavigation,
+  } = usePortfolioSectionLoading({ prefersReducedMotion });
 
   const handleSkipLinkClick = (event: ReactMouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -440,7 +90,7 @@ export default function App() {
           onClick={handleSkipLinkClick}
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded-lg"
         >
-          Skip to content
+          Hopp til innhold
         </a>
 
         <PsychedelicBackground

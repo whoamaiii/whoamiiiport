@@ -25,25 +25,24 @@ export interface SpecialArtwork {
 export const mushroomOfferingArtwork: SpecialArtwork = {
   imageSlug: 'mushroom-offering',
   title: {
-    primary: 'Mushroom Offering',
-    secondary: 'soft signal study',
+    primary: 'Soppoffer',
+    secondary: 'myk signalstudie',
   },
-  sectionsLang: 'no',
   sections: [
     {
-      body: `Dette bildet er mer stille enn de elektriske skogverkene, men det har samme indre språk. En hånd holder en sopp som et lite fysisk objekt, mens huden og bakgrunnen glir over i mønstre, riller og regnbueaktig lys. Det føles nært, taktilt og litt drømmeaktig.`,
+      body: `Dette bildet er stille, men det snakker samme språk som de mer intense verkene. En hånd holder en sopp som et lite offer, mens hud, stoff og lys begynner å gli inn i det samme myke mønsterfeltet.`,
     },
     {
-      heading: 'Mening',
-      body: `For meg handler det om den lille gesten: å holde noe i hånden og la hele synsfeltet rundt handlingen begynne å endre seg. Soppen er sentrum, men bildet handler like mye om hvordan hud, tekstil, lys og psykedelisk mønster begynner å høre sammen.`,
+      heading: 'Lesning',
+      body: `For meg handler det om den lille gesten: å holde noe i hånden og se hele synsfeltet rundt handlingen begynne å forandre seg. Soppen er ankeret, men motivet handler like mye om hvordan alt rundt den plutselig hører sammen.`,
     },
     {
       heading: 'Byggelogikk',
-      body: `Komposisjonen fungerer fordi den er enkel i fronten og kompleks i overflaten. Hånden gir realisme og skala. Soppen gir et tydelig punkt å lande på. De myke mønstrene i huden og det prismatiske lyset bygger den endrede tilstanden uten å overdøve motivet.`,
+      body: `Komposisjonen er enkel i fronten og mer kompleks i overflaten. Hånden gir skala, soppen gir blikket et sted å lande, og prismedetaljene lar den endrede tilstanden vokse uten å sluke objektet.`,
     },
     {
       heading: 'Overflate',
-      body: `Jeg liker at bildet ikke er høyt og neon-aggressivt. Det er mer porøst: lilla hudtoner, matte skygger, små detaljer i soppen og regnbuebånd som ligger som optiske spor over kroppen. Det gir serien en roligere første inngang før de mer intense verkene kommer.`,
+      body: `Jeg liker at bildet ikke trenger å rope. Det føles porøst: hudtone, myk skygge, små detaljer i soppen og regnbuespor som ligger på kroppen som noe lyset husket.`,
     },
   ],
 };
@@ -51,25 +50,24 @@ export const mushroomOfferingArtwork: SpecialArtwork = {
 export const mycelialHandArtwork: SpecialArtwork = {
   imageSlug: 'mycelial-hand',
   title: {
-    primary: 'Mycelial Hand',
-    secondary: 'forest signal study',
+    primary: 'Mycelhånd',
+    secondary: 'skoglig signalstudie',
   },
-  sectionsLang: 'no',
   sections: [
     {
-      body: `Dette verket flytter identiteten fra ansiktet til hånden. Fingrene blir et lite økosystem: sopp, våt hud, chrome-resin og skoglys vokser inn i samme form. Det er fortsatt en kropp, men kroppen virker som om den har begynt å samarbeide med skogen rundt seg.`,
+      body: `Dette verket flytter identiteten bort fra ansiktet og inn i hånden. Fingrene blir et lite økosystem: sopp, våt hud, kromresin og skogslys som prøver å vokse gjennom samme kropp.`,
     },
     {
-      heading: 'Mening',
-      body: `For meg handler bildet om kontakt. Ikke kontakt som noe romantisk eller mykt, men som en fysisk kobling mellom hånd, jord, lys og psykedelisk signal. Soppene gjør hånden levende på en ny måte, mens den blå himmelen over trekker alt inn i et større, nesten kosmisk system.`,
+      heading: 'Lesning',
+      body: `Det handler om kontakt, men ikke på en romantisk måte. Mer som en fysisk kobling mellom hånd, jord, lys og signal. Soppene gjør kroppen levende i et annet register.`,
     },
     {
       heading: 'Byggelogikk',
-      body: `Komposisjonen er enkel og sterk: hånden fyller fronten, skogen holder dybden, og himmelen åpner bildet opp. De organiske detaljene får være intense, men de følger fortsatt fingrene og håndflaten. Derfor føles mutasjonen festet til kroppen i stedet for limt oppå den.`,
+      body: `Hånden fyller forgrunnen, skogen holder dybden, og himmelen åpner trykket oppover. Mutasjonen fungerer fordi den følger fingrene og håndflaten i stedet for å ligge oppå som pynt.`,
     },
     {
       heading: 'Overflate',
-      body: `Jeg ville at materialene skulle være litt ubehagelig taktile. Soppene er myke og jordlige, chrome-resinet er blankt og kunstig, huden er våt og nær, og skogen er skarp nok til at bildet ikke mister sin fotografiske kropp. Det er et bilde av vekst, men også av kontrolltap.`,
+      body: `Jeg vil at materialene skal føles nesten for taktile. Soppene er myke og jordlige, resinen blank og kunstig, huden nær, og skogen holder bildet fast i virkeligheten.`,
     },
   ],
 };
@@ -78,21 +76,45 @@ export const handPortalVideoArtwork: SpecialArtwork = {
   imageSlug: 'hand-portal-video-poster',
   videoSrc: GALLERY_VIDEOS.handPortal.src,
   title: {
-    primary: 'Hand Portal',
-    secondary: 'moving organic study',
+    primary: 'Håndportal',
+    secondary: 'bevegelig organisk studie',
   },
-  sectionsLang: 'no',
   sections: [
     {
-      body: `Dette er et bevegelig håndverk der håndflaten åpner seg som et organisk rom. Videoen starter nært og nesten rolig, men innsiden begynner å folde seg ut i lag av fingre, hud, mønster og mørke. Det er mer kroppslig enn dekorativt.`,
+      body: `Dette er hånden som blir til et rom. Videoen starter nært og nesten rolig, før håndflaten begynner å folde seg ut i hud, fingre, mønster og mørkt indre rom.`,
     },
     {
-      heading: 'Mening',
-      body: `Jeg leser den som en portal uten fantasy-språk. Åpningen i hånden er ikke en magisk dør, men et indre trykkpunkt som blir synlig. Den menneskelige kroppen blir et sted, nesten en arkitektur, og bevegelsen gjør at bildet føles som en prosess i stedet for en ferdig pose.`,
+      heading: 'Lesning',
+      body: `Jeg leser den som en portal uten fantasy-språk. Åpningen er ikke magi; den er et indre trykkpunkt som blir synlig. Kroppen blir et sted, nesten en arkitektur.`,
     },
     {
       heading: 'Byggelogikk',
-      body: `Posterbildet er valgt sent i videoen fordi det viser hele ideen: håndformen, den revne kanten, det mørke sentrumet og de små gjentatte hendene inni. Selve videoen er komprimert til en lett webversjon, så modalvisningen kan være levende uten at galleriet blir tungt på mobil.`,
+      body: `Posterbildet fanger hele ideen: håndformen, den revne kanten, det mørke sentrumet og de små gjentatte formene inni. Bevegelsen er viktig fordi verket føles mer som en prosess enn en ferdig positur.`,
+    },
+  ],
+};
+
+export const fingernailPortalArtwork: SpecialArtwork = {
+  imageSlug: 'fingernail-portal',
+  title: {
+    primary: 'Negleportal',
+    secondary: 'spiral detaljstudie',
+  },
+  sections: [
+    {
+      body: `En liten kroppslig detalj blir til et helt rom. Neglen krøller seg innover som et spiralskall, mens hud, glans, revne kanter og prismemønster lager en portal av noe man vanligvis overser.`,
+    },
+    {
+      heading: 'Lesning',
+      body: `For meg handler det om hvor mye som kan åpne seg i noe nært og vanlig. Fingeren forblir fysisk og gjenkjennelig, men neglen blir et sted å gå inn i.`,
+    },
+    {
+      heading: 'Byggelogikk',
+      body: `Spiralen holder blikket fast. Den store neglen bygger portalen, den mindre gjentakelsen gir rytme, og det iriserende feltet gjør skalaen både makro og kosmisk.`,
+    },
+    {
+      heading: 'Overflate',
+      body: `Overflaten er blank, våt og nesten skjør. Huden holder det intimt, mens den holografiske detaljen gir det en mer elektrisk kropp. Det skal kjennes taktilt før det kjennes digitalt.`,
     },
   ],
 };
@@ -101,21 +123,20 @@ export const skinTerrainVideoArtwork: SpecialArtwork = {
   imageSlug: 'skin-terrain-video-poster',
   videoSrc: GALLERY_VIDEOS.skinTerrain.src,
   title: {
-    primary: 'Skin Terrain',
-    secondary: 'macro texture motion',
+    primary: 'Hudterreng',
+    secondary: 'makrotekstur i bevegelse',
   },
-  sectionsLang: 'no',
   sections: [
     {
-      body: `Dette videoverket er mer abstrakt og stille enn de andre. Det ser ut som en overflate mellom hud, tekstil og landskap, filmet så nært at skalaen blir usikker. Rillene beveger seg som en myk topografi, med små hår og kromatiske kanter som gjør materialet levende.`,
+      body: `Denne videoen er roligere og mer abstrakt enn kroppsportalene. Den føles som en overflate mellom hud, tekstil og landskap, filmet så nært at skalaen slutter å oppføre seg.`,
     },
     {
-      heading: 'Mening',
-      body: `Jeg liker at det ikke forklarer seg med et tydelig objekt. Det fungerer mer som en pustende detalj fra samme univers: en overflate som kunne vært kropp, teppe, hud, terreng eller et mikroskopisk landskap. Det gir galleriet et roligere, mer taktilt punkt mellom de mer intense bildene.`,
+      heading: 'Lesning',
+      body: `Jeg liker at den ikke forklarer seg gjennom et tydelig objekt. Den fungerer som en pustende detalj fra samme univers: kropp, stoff, terreng og mikroskopisk landskap samlet i én tekstur.`,
     },
     {
       heading: 'Byggelogikk',
-      body: `Videoen er lagt inn som et teksturstudie med eget posterbilde, ikke som en bakgrunnseffekt. Den trenger bare å vise bevegelse, dybde og materialfølelse. Derfor er den holdt lett, uten lyd, og åpnes først når noen velger verket.`,
+      body: `Den er behandlet som en teksturstudie, ikke en bakgrunnseffekt. Bevegelsen trenger bare å vise dybde og materialfølelse, slik at verket kan være lett i galleriet og bli levende når det åpnes.`,
     },
   ],
 };

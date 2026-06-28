@@ -5,7 +5,7 @@
 1. Add or update the source asset in [`src/assets/`](../src/assets).
    - Use a stable lowercase slug for new assets, for example `liquid-perception.jpg`.
    - Do not reference files from Downloads or another local-only folder in app code.
-2. Regenerate responsive runtime assets with:
+2. Regenerate responsive runtime WebP and AVIF assets with:
 
 ```bash
 npm run optimize-images
@@ -26,7 +26,7 @@ npm run typecheck
 npm run build
 ```
 
-The image contract test suite will catch missing generated files or mismatched slugs.
+The image contract test suite will catch missing generated files or mismatched slugs. Use `npm run optimize-avif` only when refreshing AVIF files from already-current WebP outputs.
 
 ## Maintaining Workflow Step Images
 
@@ -61,7 +61,7 @@ Until then, do not describe the workflow images as optimizer-generated assets.
 
 ## Adding Video Artwork
 
-- Keep gallery cards poster-first: store a poster source in [`src/assets/`](../src/assets), generate responsive poster variants with `npm run optimize-images`, and reference the poster through the normal image manifest.
+- Keep gallery cards poster-first: store a poster source in [`src/assets/`](../src/assets), generate responsive poster WebP and AVIF variants with `npm run optimize-images`, and reference the poster through the normal image manifest.
 - Store compressed runtime videos in [`public/videos/`](../public/videos). Do not point app data at a file in Downloads or another local-only folder.
 - Add the runtime video path to [`src/utils/media.ts`](../src/utils/media.ts), then reference that manifest entry from the artwork entry in [`src/components/artworkData.ts`](../src/components/artworkData.ts). The shared gallery card will then show `View video` on the card and render the existing autoplaying, muted, controlled `<video>` modal.
 - Keep video files web-sized. As a practical target, prefer an optimized MP4 with `-movflags +faststart`, H.264 video, AAC audio, and dimensions no larger than the modal needs.

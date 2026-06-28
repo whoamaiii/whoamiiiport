@@ -60,7 +60,7 @@ This project is intentionally a static frontend. There is no backend, CMS, auth 
 ### Glass Subsystem
 
 - [`src/glass-effect/`](../src/glass-effect) contains the preserved glassmorphism engine.
-- This subsystem is not the core page architecture, but it is retained for future use and now shares motion-preference behavior with the rest of the app.
+- This subsystem is not the core page architecture. It is an intentional dormant/reference exception, kept out of live navigation and hygiene cleanup until a dedicated reactivation or archive change handles it.
 
 ## Content and Asset Contracts
 

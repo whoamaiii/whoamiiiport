@@ -79,7 +79,7 @@ export function GallerySection({
             onClick={() => onNavigateToSection?.('gallery')}
             className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-cyan-100/35 bg-white/8 px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] transition-[border-color,background-color,transform] duration-200 hover:border-cyan-100/55 hover:bg-cyan-100/12 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950"
           >
-            Open full gallery
+            Åpne hele galleriet
             <span
               aria-hidden="true"
               className="transition-transform duration-200 group-hover:translate-x-1"

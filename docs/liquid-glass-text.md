@@ -8,6 +8,6 @@ Do not import or recreate the old component for routine hero or heading work. Th
 - section shader headings: [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx)
 - shared shader text lifecycle: [`src/components/shared/ShaderTextWord.tsx`](../src/components/shared/ShaderTextWord.tsx)
 
-The separate [`src/glass-effect/`](../src/glass-effect) subsystem is intentionally preserved as future/reference infrastructure. It is not a replacement for the removed text component and is not live in navigation for this release.
+The separate [`src/glass-effect/`](../src/glass-effect) subsystem is intentionally preserved as dormant future/reference infrastructure. It is not accidental dead code, it is excluded from the hygiene pass on purpose, and it is not live in navigation for this release.
 
-If glass-text work returns later, treat it as a new feature: create a new active component, document the current API, add accessibility/fallback tests, and keep it separate from the hero semantic heading contract.
+If glass-text work returns later, treat it as a dedicated feature: either reactivate the subsystem with a stability gate, documented API, accessibility/fallback tests, and mobile visual QA, or remove/archive it in a separate cleanup change.

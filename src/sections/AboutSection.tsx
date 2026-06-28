@@ -70,7 +70,7 @@ export default function AboutSection() {
                 id="about-heading"
                 delay={0}
                 className="mb-6 text-[2.45rem] font-display tracking-tight md:mb-8 md:text-5xl"
-                visualLines={['The Mind', 'Behind the', 'Canvas']}
+                visualLines={['Sinnet', 'bak', 'bildet']}
               >
                 {ABOUT_COPY.heading}
               </ShaderHeading>

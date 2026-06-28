@@ -22,34 +22,34 @@ interface ContactCopy {
 }
 
 export const HERO_COPY: HeroCopy = {
-  eyebrow: 'Psychedelic Art Portfolio',
-  titleSemantic: 'Altered Perceptions.',
-  titleLines: ['Altered', 'Perceptions'],
-  subtitle: 'Paintings from the other side of the glass.',
+  eyebrow: 'Psykedelisk kunstportefølje',
+  titleSemantic: 'Endrede sanseflater.',
+  titleLines: ['Endrede', 'Sanseflater'],
+  subtitle: 'Bilder fra den andre siden av glasset.',
 } as const;
 
 export const GALLERY_COPY: GalleryCopy = {
-  eyebrow: 'PORTFOLIO HIGHLIGHTS',
-  heading: 'Selected Works.',
-  subtitle: 'Dream-burned paintings and digital artifacts pulled from the archive.',
+  eyebrow: 'PORTFØLJEUTVALG',
+  heading: 'Utvalgte verk.',
+  subtitle: 'Drømmebrente bilder og digitale artefakter hentet fra arkivet.',
 } as const;
 
 export const ABOUT_COPY = {
-  heading: 'The Mind Behind the Canvas',
+  heading: 'Sinnet bak bildet',
   intro:
-    'This is me inside the work: a modified selfie pushed through the same chrome, forest light, and altered-perception language that shapes the rest of the portfolio.',
+    'Dette er meg inne i arbeidet: et modifisert selvportrett presset gjennom det samme kromet, skogslyset og altered-perception-språket som former resten av porteføljen.',
   body:
-    'I use digital manipulation, painting logic, and psychedelic image-making to turn personal photographs into pieces that feel organic, synthetic, intimate, and slightly unstable at the same time.',
+    'Jeg bruker digital manipulasjon, malerisk logikk og psykedelisk bildearbeid til å gjøre personlige fotografier om til verk som føles organiske, syntetiske, intime og litt ustabile samtidig.',
 } as const;
 
 const CONTACT_HEADING_PARTS = {
-  lead: "Let's Create Something",
-  accent: 'Trippy.',
+  lead: 'La oss lage noe',
+  accent: 'trippy.',
 } as const;
 
 export const CONTACT_COPY: ContactCopy = {
   heading: `${CONTACT_HEADING_PARTS.lead} ${CONTACT_HEADING_PARTS.accent}`,
   headingParts: CONTACT_HEADING_PARTS,
-  body: 'Open for commissions, collaborations, and exhibitions.',
-  cta: 'Send a Message',
+  body: 'Åpen for oppdrag, samarbeid og utstillinger.',
+  cta: 'Send melding',
 } as const;

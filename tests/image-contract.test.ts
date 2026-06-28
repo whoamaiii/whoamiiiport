@@ -39,6 +39,7 @@ import { PROCESS_VIDEO } from '../src/components/WorkflowProcessCard';
 const generatedImagePath = (urlPath: string) =>
   resolve('public', urlPath.replace(/^\/+/, ''));
 
+const performanceScriptPath = resolve('scripts/measure-load-performance.mjs');
 const workflowImagesDir = resolve('public/images/workflow');
 
 const workflowImageFilename = (stepNumber: number, width: number) =>
@@ -92,13 +93,13 @@ describe('image contract', () => {
       'mushroom-offering',
       'mycelial-hand',
       'hand-portal-video',
-      'skin-terrain-video',
+      'fingernail-portal',
     ]);
     expect(artworks.map((artwork) => artwork.imageSlug)).toEqual([
       'mushroom-offering',
       'mycelial-hand',
       'hand-portal-video-poster',
-      'skin-terrain-video-poster',
+      'fingernail-portal',
     ]);
 
     for (const artwork of artworks) {
@@ -118,7 +119,7 @@ describe('image contract', () => {
     expect(getImageMetadata('mushroom-offering').galleryObjectPosition).toBe('50% 48%');
     expect(getImageMetadata('mycelial-hand').galleryObjectPosition).toBe('50% 48%');
     expect(getImageMetadata('hand-portal-video-poster').galleryObjectPosition).toBe('50% 52%');
-    expect(getImageMetadata('skin-terrain-video-poster').galleryObjectPosition).toBe('50% 50%');
+    expect(getImageMetadata('fingernail-portal').galleryObjectPosition).toBe('50% 46%');
   });
 
   it('keeps the active image manifest free of retired gallery slugs', () => {
@@ -133,6 +134,9 @@ describe('image contract', () => {
       'trippy-jump',
       'snow-road',
       'fingernail-portal',
+      'leg-prism',
+      'drain-bloom',
+      'open-hand-mouth',
       'night-bus',
       'handpose-mouth',
       'tongue-study-poster',
@@ -153,6 +157,18 @@ describe('image contract', () => {
       getAvifImageUrl(firstFeatured.artwork.imageSlug, 560),
     );
     expect(existsSync(generatedImagePath(FIRST_GALLERY_PRELOAD_IMAGE_URL))).toBe(true);
+  });
+
+  it('keeps the mobile performance guardrail pointed at current featured artwork slugs', () => {
+    const script = readFileSync(performanceScriptPath, 'utf8');
+    const lowerPriorityFeaturedSlugs = FEATURED_ARTWORKS
+      .slice(1)
+      .map(({ artwork }) => artwork.imageSlug);
+
+    expect(script).not.toMatch(/psychedelic-bathroom|ferdigcop-video-poster/);
+    lowerPriorityFeaturedSlugs.forEach((slug) => {
+      expect(script).toContain(slug);
+    });
   });
 
   it('keeps gallery video sources explicit and resolvable', () => {
@@ -218,8 +234,8 @@ describe('image contract', () => {
   });
 
   it('maps the full library to generated local media assets', () => {
-    expect(LIBRARY_ARTWORKS).toHaveLength(18);
-    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(18);
+    expect(LIBRARY_ARTWORKS).toHaveLength(20);
+    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(20);
 
     for (const { artwork } of LIBRARY_ARTWORKS) {
       const metadata = getImageMetadata(artwork.imageSlug);
@@ -252,7 +268,7 @@ describe('image contract', () => {
       type: 'video/mp4',
       width: 720,
       height: 1160,
-      durationLabel: '15 sec',
+      durationLabel: '15 sek',
     });
     expect(existsSync(processVideoPath)).toBe(true);
     expect(existsSync(processPosterPath)).toBe(true);
@@ -321,7 +337,7 @@ describe('image contract', () => {
     expect(ABOUT_SLUG).toBe('liquid-perception');
 
     const metadata = getImageMetadata(ABOUT_SLUG);
-    expect(metadata.alt).toMatch(/portrait of the artist/i);
+    expect(metadata.alt).toMatch(/modifisert selvportrett av kunstneren/i);
 
     const srcset = getGallerySrcset(ABOUT_SLUG);
     const urls = splitSrcset(srcset);
@@ -355,6 +371,9 @@ describe('image contract', () => {
       'trippy-jump',
       'snow-road',
       'fingernail-portal',
+      'leg-prism',
+      'drain-bloom',
+      'open-hand-mouth',
       'night-bus',
       'handpose-mouth',
       'tongue-study-poster',

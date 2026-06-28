@@ -10,7 +10,7 @@ export default function SiteFooter() {
             Whoamiii<span>.</span>
           </a>
           <p className="mx-auto max-w-md text-sm leading-relaxed text-zinc-400 sm:text-[0.95rem]">
-            Psychedelic paintings, altered-state studies, and commission inquiries from the archive.
+            Psykedeliske bilder, endrede sansestudier og oppdragshenvendelser fra arkivet.
           </p>
         </div>
 
@@ -38,7 +38,7 @@ export default function SiteFooter() {
           <MagneticButton
             strength={0.5}
             href="mailto:hello@whoamiii.art"
-            ariaLabel="Email"
+            ariaLabel="E-post"
             className="social-orb-link"
           >
             <Mail size={22} />
@@ -46,7 +46,7 @@ export default function SiteFooter() {
         </div>
 
         <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">
-          © {new Date().getFullYear()} Whoamiii. All rights reserved.
+          © {new Date().getFullYear()} Whoamiii. Alle rettigheter reservert.
         </p>
       </div>
     </footer>

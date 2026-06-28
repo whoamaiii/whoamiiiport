@@ -29,7 +29,7 @@ export function LibrarySection({ reducedMotion }: LibrarySectionProps) {
           className="mb-12 max-w-[39rem] sm:mb-16"
         >
           <p className="liquid-kicker mb-3 text-[0.68rem] font-semibold uppercase tracking-[0.32em] sm:mb-4">
-            Full artwork library
+            Fullt kunstarkiv
           </p>
           <ShaderHeading
             id="gallery-library-heading"
@@ -37,10 +37,10 @@ export function LibrarySection({ reducedMotion }: LibrarySectionProps) {
             as="h2"
             variant="gallery"
           >
-            Gallery.
+            Galleri.
           </ShaderHeading>
           <p className="liquid-support-text mt-5 max-w-[30ch] text-[1.02rem] leading-[1.6] sm:mt-6 sm:max-w-[36ch]">
-            The broader archive: stills, moving studies, texture experiments, and altered-state fragments.
+            Det bredere arkivet: stillbilder, bevegelige studier, tekstureksperimenter og fragmenter fra endret sansning.
           </p>
         </m.div>
 
@@ -60,7 +60,7 @@ export function LibrarySection({ reducedMotion }: LibrarySectionProps) {
                 imageLoading={index < 2 ? 'eager' : 'lazy'}
                 imageFetchPriority={index < 2 ? 'auto' : 'low'}
                 deferImageUntilVisible={index > 1}
-                eyebrowLabel="Archive piece"
+                eyebrowLabel="Arkivverk"
               />
             </StaggerItem>
           ))}

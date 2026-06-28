@@ -15,6 +15,7 @@ hero-desktop-after.png
 selected-works-shader.png
 
 # Local QA screenshots
+/output/
 /portfolio-*.png
 /qa-*.png
 /screenshot-*.png

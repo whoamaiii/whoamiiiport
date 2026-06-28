@@ -1,8 +1,8 @@
 import {
+  fingernailPortalArtwork,
   handPortalVideoArtwork,
   mushroomOfferingArtwork,
   mycelialHandArtwork,
-  skinTerrainVideoArtwork,
   type SpecialArtwork,
 } from '../components/artworkData';
 
@@ -25,7 +25,7 @@ export const FEATURED_ARTWORKS: FeaturedArtworkEntry[] = [
     artwork: handPortalVideoArtwork,
   },
   {
-    id: 'skin-terrain-video',
-    artwork: skinTerrainVideoArtwork,
+    id: 'fingernail-portal',
+    artwork: fingernailPortalArtwork,
   },
 ];

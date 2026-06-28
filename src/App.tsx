@@ -10,6 +10,7 @@ import {
 import { useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
 import { ScrollProgress } from './components/ScrollProgress';
 import RenderErrorBoundary from './components/fallback/RenderErrorBoundary';
+import { MotionFeatureProvider } from './components/motion/MotionFeatureProvider';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { HeroSection } from './sections/HeroSection';
@@ -205,6 +206,13 @@ export default function App() {
     setLoadLibrarySection(true);
   }, []);
 
+  const enableDeferredSectionsRef = useRef(enableDeferredSections);
+  enableDeferredSectionsRef.current = enableDeferredSections;
+  const enableGallerySectionRef = useRef(enableGallerySection);
+  enableGallerySectionRef.current = enableGallerySection;
+  const enableLibrarySectionRef = useRef(enableLibrarySection);
+  enableLibrarySectionRef.current = enableLibrarySection;
+
   const scrollToSection = useCallback(
     (id: string) => {
       if (typeof document === 'undefined') {
@@ -308,21 +316,22 @@ export default function App() {
 
     const enableAfterHeroScroll = () => {
       if (window.scrollY > window.innerHeight * 0.35) {
-        enableGallerySection();
+        enableGallerySectionRef.current();
       }
     };
+    const enableGallery = () => enableGallerySectionRef.current();
     const requestIdle = window.requestIdleCallback?.bind(window);
     let idleCallbackId: number | null = null;
     let timeoutId: number | null = null;
 
     if (requestIdle) {
-      idleCallbackId = requestIdle(enableGallerySection, { timeout: GALLERY_IDLE_LOAD_TIMEOUT_MS });
+      idleCallbackId = requestIdle(enableGallery, { timeout: GALLERY_IDLE_LOAD_TIMEOUT_MS });
     } else {
-      timeoutId = window.setTimeout(enableGallerySection, GALLERY_IDLE_LOAD_TIMEOUT_MS);
+      timeoutId = window.setTimeout(enableGallery, GALLERY_IDLE_LOAD_TIMEOUT_MS);
     }
 
     window.addEventListener('scroll', enableAfterHeroScroll, { passive: true });
-    window.addEventListener('hashchange', enableGallerySection, { once: true });
+    window.addEventListener('hashchange', enableGallery, { once: true });
     enableAfterHeroScroll();
 
     return () => {
@@ -335,9 +344,9 @@ export default function App() {
       }
 
       window.removeEventListener('scroll', enableAfterHeroScroll);
-      window.removeEventListener('hashchange', enableGallerySection);
+      window.removeEventListener('hashchange', enableGallery);
     };
-  }, [enableGallerySection, loadGallerySection]);
+  }, [loadGallerySection]);
 
   useEffect(() => {
     if (loadLibrarySection) {
@@ -346,7 +355,7 @@ export default function App() {
 
     const enableFromGalleryHash = () => {
       if (window.location.hash === '#gallery') {
-        enableLibrarySection();
+        enableLibrarySectionRef.current();
       }
     };
 
@@ -354,7 +363,7 @@ export default function App() {
     enableFromGalleryHash();
 
     return () => window.removeEventListener('hashchange', enableFromGalleryHash);
-  }, [enableLibrarySection, loadLibrarySection]);
+  }, [loadLibrarySection]);
 
   useEffect(() => {
     if (loadDeferredSections) {
@@ -363,25 +372,26 @@ export default function App() {
 
     const enableAfterHeroScroll = () => {
       if (window.scrollY > window.innerHeight * 0.45) {
-        enableDeferredSections();
+        enableDeferredSectionsRef.current();
       }
     };
-    const timeoutId = window.setTimeout(enableDeferredSections, 9000);
+    const enableDeferred = () => enableDeferredSectionsRef.current();
+    const timeoutId = window.setTimeout(enableDeferred, 9000);
 
     window.addEventListener('scroll', enableAfterHeroScroll, { passive: true });
-    window.addEventListener('hashchange', enableDeferredSections, { once: true });
-    window.addEventListener('pointerdown', enableDeferredSections, { once: true, passive: true });
-    window.addEventListener('keydown', enableDeferredSections, { once: true });
+    window.addEventListener('hashchange', enableDeferred, { once: true });
+    window.addEventListener('pointerdown', enableDeferred, { once: true, passive: true });
+    window.addEventListener('keydown', enableDeferred, { once: true });
     enableAfterHeroScroll();
 
     return () => {
       window.clearTimeout(timeoutId);
       window.removeEventListener('scroll', enableAfterHeroScroll);
-      window.removeEventListener('hashchange', enableDeferredSections);
-      window.removeEventListener('pointerdown', enableDeferredSections);
-      window.removeEventListener('keydown', enableDeferredSections);
+      window.removeEventListener('hashchange', enableDeferred);
+      window.removeEventListener('pointerdown', enableDeferred);
+      window.removeEventListener('keydown', enableDeferred);
     };
-  }, [enableDeferredSections, loadDeferredSections]);
+  }, [loadDeferredSections]);
 
   useEffect(() => {
     tryPendingSectionNavigation();
@@ -419,74 +429,76 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen bg-zinc-950 font-sans selection:bg-cyan-300/25">
-      <RenderErrorBoundary context="scroll-progress" fallback={null}>
-        <ScrollProgress />
-      </RenderErrorBoundary>
+    <MotionFeatureProvider>
+      <div className="relative min-h-screen bg-zinc-950 font-sans selection:bg-cyan-300/25">
+        <RenderErrorBoundary context="scroll-progress" fallback={null}>
+          <ScrollProgress />
+        </RenderErrorBoundary>
 
-      <a
-        href="#main-content"
-        onClick={handleSkipLinkClick}
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded-lg"
-      >
-        Skip to content
-      </a>
+        <a
+          href="#main-content"
+          onClick={handleSkipLinkClick}
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded-lg"
+        >
+          Skip to content
+        </a>
 
-      <PsychedelicBackground
-        blobX1={blobX1}
-        blobY1={blobY1}
-        blobX2={blobX2}
-        blobY2={blobY2}
-        blobX3={blobX3}
-        blobY3={blobY3}
-        interactive={enableReactivePointerEffects}
-      />
-
-      <SiteHeader
-        reducedMotion={prefersReducedMotion}
-        onNavigateToSection={handleSectionNavigation}
-      />
-
-      <main
-        id="main-content"
-        ref={mainRef}
-        tabIndex={-1}
-        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
-      >
-        <HeroSection
-          headerY={headerY}
-          headerOpacity={headerOpacity}
-          parallaxX={parallaxX}
-          parallaxY={parallaxY}
-          reducedMotion={prefersReducedMotion}
-          heroReveal={heroReveal}
+        <PsychedelicBackground
+          blobX1={blobX1}
+          blobY1={blobY1}
+          blobX2={blobX2}
+          blobY2={blobY2}
+          blobX3={blobX3}
+          blobY3={blobY3}
+          interactive={enableReactivePointerEffects}
         />
-        {loadGallerySection ? (
-          <Suspense fallback={null}>
-            <GallerySection
-              reducedMotion={prefersReducedMotion}
-              onNavigateToSection={handleSectionNavigation}
-            />
-          </Suspense>
-        ) : null}
-        {loadLibrarySection ? (
-          <Suspense fallback={null}>
-            <LibrarySection reducedMotion={prefersReducedMotion} />
-          </Suspense>
-        ) : null}
+
+        <SiteHeader
+          reducedMotion={prefersReducedMotion}
+          onNavigateToSection={handleSectionNavigation}
+        />
+
+        <main
+          id="main-content"
+          ref={mainRef}
+          tabIndex={-1}
+          className="focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950"
+        >
+          <HeroSection
+            headerY={headerY}
+            headerOpacity={headerOpacity}
+            parallaxX={parallaxX}
+            parallaxY={parallaxY}
+            reducedMotion={prefersReducedMotion}
+            heroReveal={heroReveal}
+          />
+          {loadGallerySection ? (
+            <Suspense fallback={null}>
+              <GallerySection
+                reducedMotion={prefersReducedMotion}
+                onNavigateToSection={handleSectionNavigation}
+              />
+            </Suspense>
+          ) : null}
+          {loadLibrarySection ? (
+            <Suspense fallback={null}>
+              <LibrarySection reducedMotion={prefersReducedMotion} />
+            </Suspense>
+          ) : null}
+          {loadDeferredSections ? (
+            <Suspense fallback={null}>
+              <AboutSection />
+              <ContactSection reducedMotion={prefersReducedMotion} />
+            </Suspense>
+          ) : null}
+        </main>
+
         {loadDeferredSections ? (
           <Suspense fallback={null}>
-            <AboutSection />
-            <ContactSection reducedMotion={prefersReducedMotion} />
+            <SiteFooter />
           </Suspense>
         ) : null}
-      </main>
-
-      {loadDeferredSections ? (
-        <Suspense fallback={null}>
-          <SiteFooter />
-        </Suspense>
-      ) : null}
-    </div>
+      </div>
+    </MotionFeatureProvider>
   );
 }

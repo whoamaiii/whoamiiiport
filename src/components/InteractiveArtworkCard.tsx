@@ -1,8 +1,8 @@
-import { useEffect, useState, useRef, type MouseEvent } from 'react';
+import { useEffect, useReducer, useRef, type MouseEvent } from 'react';
 import { createPortal } from 'react-dom';
 import {
-  motion,
   AnimatePresence,
+  m,
   useMotionTemplate,
   useMotionValue,
   useSpring,
@@ -39,6 +39,95 @@ interface InteractiveArtworkCardProps {
   eyebrowLabel?: string;
 }
 
+interface ArtworkCardState {
+  readonly imageCanLoad: boolean;
+  readonly isHovered: boolean;
+  readonly isModalOpen: boolean;
+  readonly showInfo: boolean;
+  readonly useMobilePriorityPreview: boolean;
+}
+
+type ArtworkCardAction =
+  | { readonly type: 'setHovered'; readonly isHovered: boolean }
+  | { readonly type: 'openModal'; readonly showInfo: boolean }
+  | { readonly type: 'closeModal' }
+  | { readonly type: 'setInfo'; readonly showInfo: boolean }
+  | {
+      readonly type: 'resetImageLoad';
+      readonly imageCanLoad: boolean;
+      readonly useMobilePriorityPreview: boolean;
+    }
+  | {
+      readonly type: 'imageCanLoad';
+      readonly useMobilePriorityPreview: boolean;
+    }
+  | { readonly type: 'completeMobilePriorityPreview' };
+
+const CARD_SPRING_CONFIG = { damping: 25, stiffness: 200 } as const;
+
+function artworkCardReducer(
+  state: ArtworkCardState,
+  action: ArtworkCardAction,
+): ArtworkCardState {
+  switch (action.type) {
+    case 'setHovered':
+      return state.isHovered === action.isHovered
+        ? state
+        : { ...state, isHovered: action.isHovered };
+    case 'openModal':
+      return {
+        ...state,
+        isModalOpen: true,
+        showInfo: action.showInfo,
+      };
+    case 'closeModal':
+      return state.isModalOpen || state.showInfo
+        ? { ...state, isModalOpen: false, showInfo: false }
+        : state;
+    case 'setInfo':
+      return state.showInfo === action.showInfo
+        ? state
+        : { ...state, showInfo: action.showInfo };
+    case 'resetImageLoad':
+      return state.imageCanLoad === action.imageCanLoad
+        && state.useMobilePriorityPreview === action.useMobilePriorityPreview
+        ? state
+        : {
+            ...state,
+            imageCanLoad: action.imageCanLoad,
+            useMobilePriorityPreview: action.useMobilePriorityPreview,
+          };
+    case 'imageCanLoad':
+      return state.imageCanLoad && state.useMobilePriorityPreview === action.useMobilePriorityPreview
+        ? state
+        : {
+            ...state,
+            imageCanLoad: true,
+            useMobilePriorityPreview: action.useMobilePriorityPreview,
+          };
+    case 'completeMobilePriorityPreview':
+      return state.useMobilePriorityPreview
+        ? { ...state, useMobilePriorityPreview: false }
+        : state;
+    default: {
+      const unreachable: never = action;
+      return unreachable;
+    }
+  }
+}
+
+function shouldUseMobilePriorityPreview({
+  imageCanLoad,
+  imageLoading,
+  isMobileLayout,
+}: {
+  readonly imageCanLoad: boolean;
+  readonly imageLoading: 'eager' | 'lazy';
+  readonly isMobileLayout: boolean;
+}) {
+  return imageCanLoad && isMobileLayout && imageLoading === 'eager';
+}
+
 export default function InteractiveArtworkCard({
   imageSlug,
   videoSrc,
@@ -50,29 +139,42 @@ export default function InteractiveArtworkCard({
   deferImageUntilVisible = false,
   eyebrowLabel = 'Selected work',
 }: InteractiveArtworkCardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [showInfo, setShowInfo] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const mobileUpgradeTimerRef = useRef<number | null>(null);
-  const [imageCanLoad, setImageCanLoad] = useState(!deferImageUntilVisible);
   const prefersReducedMotion = useReducedMotion();
   const supportsCardMotion = useMediaQuery('(hover: hover) and (pointer: fine)', false);
   const isDesktopLayout = useMediaQuery('(min-width: 1024px)', false);
   const isMobileLayout = useMediaQuery('(max-width: 767px)', false);
+  const [state, dispatch] = useReducer(artworkCardReducer, {
+    imageCanLoad: !deferImageUntilVisible,
+    isHovered: false,
+    isModalOpen: false,
+    showInfo: false,
+    useMobilePriorityPreview: shouldUseMobilePriorityPreview({
+      imageCanLoad: !deferImageUntilVisible,
+      imageLoading,
+      isMobileLayout,
+    }),
+  });
+  const {
+    imageCanLoad,
+    isHovered,
+    isModalOpen,
+    showInfo,
+    useMobilePriorityPreview,
+  } = state;
   const enableCardMotion = !prefersReducedMotion && supportsCardMotion;
 
   // Mouse tracking for glare effect
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
 
-  const springConfig = { damping: 25, stiffness: 200 };
-  const glareX = useSpring(mouseX, springConfig);
-  const glareY = useSpring(mouseY, springConfig);
+  const glareX = useSpring(mouseX, CARD_SPRING_CONFIG);
+  const glareY = useSpring(mouseY, CARD_SPRING_CONFIG);
 
   const rotateX = useTransform(glareY, [0, 1], [8, -8]);
   const rotateY = useTransform(glareX, [0, 1], [-8, 8]);
@@ -96,7 +198,7 @@ export default function InteractiveArtworkCard({
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
+    dispatch({ type: 'setHovered', isHovered: false });
     mouseX.set(0.5);
     mouseY.set(0.5);
   };
@@ -106,10 +208,7 @@ export default function InteractiveArtworkCard({
     containerRef: modalRef,
     initialFocusRef: closeButtonRef,
     restoreFocusRef: triggerRef,
-    onClose: () => {
-      setIsModalOpen(false);
-      setShowInfo(false);
-    },
+    onClose: () => dispatch({ type: 'closeModal' }),
   });
 
   useEffect(() => {
@@ -137,8 +236,6 @@ export default function InteractiveArtworkCard({
   const modalImageUrl = getModalImageUrl(imageSlug);
   const mobilePriorityAvifUrl = getAvifImageUrl(imageSlug, 560);
   const mobilePriorityUrl = getImageUrl(imageSlug, 560);
-  const useMobilePriorityImage = imageCanLoad && isMobileLayout && imageLoading === 'eager';
-  const [useMobilePriorityPreview, setUseMobilePriorityPreview] = useState(useMobilePriorityImage);
   const displayedAvifImageSrcset =
     imageCanLoad
       ? useMobilePriorityPreview
@@ -160,34 +257,45 @@ export default function InteractiveArtworkCard({
       mobileUpgradeTimerRef.current = null;
     }
 
-    setUseMobilePriorityPreview(useMobilePriorityImage);
-
-    return () => {
-      if (mobileUpgradeTimerRef.current !== null) {
-        window.clearTimeout(mobileUpgradeTimerRef.current);
-        mobileUpgradeTimerRef.current = null;
-      }
-    };
-  }, [imageSlug, useMobilePriorityImage]);
+    const imageCanLoadImmediately = !deferImageUntilVisible;
+    dispatch({
+      type: 'resetImageLoad',
+      imageCanLoad: imageCanLoadImmediately,
+      useMobilePriorityPreview: shouldUseMobilePriorityPreview({
+        imageCanLoad: imageCanLoadImmediately,
+        imageLoading,
+        isMobileLayout,
+      }),
+    });
+  }, [deferImageUntilVisible, imageLoading, imageSlug, isMobileLayout]);
 
   useEffect(() => {
     if (!deferImageUntilVisible) {
-      setImageCanLoad(true);
       return;
     }
 
-    setImageCanLoad(false);
+    const usePriorityPreview = shouldUseMobilePriorityPreview({
+      imageCanLoad: true,
+      imageLoading,
+      isMobileLayout,
+    });
 
     const card = cardRef.current;
     if (!card || typeof IntersectionObserver === 'undefined') {
-      setImageCanLoad(true);
+      dispatch({
+        type: 'imageCanLoad',
+        useMobilePriorityPreview: usePriorityPreview,
+      });
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting || entry.intersectionRatio > 0)) {
-          setImageCanLoad(true);
+          dispatch({
+            type: 'imageCanLoad',
+            useMobilePriorityPreview: usePriorityPreview,
+          });
           observer.disconnect();
         }
       },
@@ -197,7 +305,7 @@ export default function InteractiveArtworkCard({
     observer.observe(card);
 
     return () => observer.disconnect();
-  }, [deferImageUntilVisible, imageSlug]);
+  }, [deferImageUntilVisible, imageLoading, imageSlug, isMobileLayout]);
 
   const displayTitle = title.secondary
     ? `${title.primary} — ${title.secondary}`
@@ -213,17 +321,17 @@ export default function InteractiveArtworkCard({
 
     mobileUpgradeTimerRef.current = window.setTimeout(() => {
       mobileUpgradeTimerRef.current = null;
-      setUseMobilePriorityPreview(false);
+      dispatch({ type: 'completeMobilePriorityPreview' });
     }, 120);
   };
 
   return (
     <>
-      <motion.div
+      <m.div
         ref={cardRef}
         className="group relative aspect-[4/5] w-full rounded-3xl overflow-hidden glass p-2 cursor-pointer"
         onMouseMove={enableCardMotion ? handleMouseMove : undefined}
-        onMouseEnter={enableCardMotion ? () => setIsHovered(true) : undefined}
+        onMouseEnter={enableCardMotion ? () => dispatch({ type: 'setHovered', isHovered: true }) : undefined}
         onMouseLeave={enableCardMotion ? handleMouseLeave : undefined}
         style={{
           transformPerspective: enableCardMotion ? 1200 : undefined,
@@ -241,12 +349,11 @@ export default function InteractiveArtworkCard({
         }
         transition={{ type: 'spring', stiffness: 280, damping: 24 }}
       >
-        <motion.button
+        <m.button
           ref={triggerRef}
           type="button"
           onClick={() => {
-            setShowInfo(isDesktopLayout);
-            setIsModalOpen(true);
+            dispatch({ type: 'openModal', showInfo: isDesktopLayout });
           }}
           className="group w-full h-full text-left rounded-2xl overflow-hidden relative focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950"
           aria-label={`View ${displayTitle} ${isVideoArtwork ? 'video' : 'artwork'} details and notes`}
@@ -286,7 +393,7 @@ export default function InteractiveArtworkCard({
             </picture>
 
             {enableCardMotion && (
-              <motion.div
+              <m.div
                 className="absolute inset-0 pointer-events-none z-10 mix-blend-screen"
                 style={{ background: glowBackground }}
                 initial={false}
@@ -296,7 +403,7 @@ export default function InteractiveArtworkCard({
             )}
 
             {enableCardMotion && (
-              <motion.div
+              <m.div
                 className="absolute inset-0 pointer-events-none z-20"
                 style={{ background: glareBackground }}
                 initial={{ opacity: 0 }}
@@ -323,13 +430,13 @@ export default function InteractiveArtworkCard({
               </div>
             </div>
           </div>
-        </motion.button>
-      </motion.div>
+        </m.button>
+      </m.div>
 
       {createPortal(
         <AnimatePresence>
           {isModalOpen && (
-          <motion.div
+          <m.div
             ref={modalRef}
             role="dialog"
             aria-modal="true"
@@ -344,8 +451,7 @@ export default function InteractiveArtworkCard({
                 return;
               }
 
-              setIsModalOpen(false);
-              setShowInfo(false);
+              dispatch({ type: 'closeModal' });
             }}
           >
             <h2 id={modalTitleId} className="sr-only">
@@ -354,9 +460,9 @@ export default function InteractiveArtworkCard({
 
             <button
               ref={closeButtonRef}
+              type="button"
               onClick={() => {
-                setIsModalOpen(false);
-                setShowInfo(false);
+                dispatch({ type: 'closeModal' });
               }}
               className="absolute top-6 right-6 z-20 p-3 text-zinc-400 hover:text-white transition-colors rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
               aria-label="Close modal"
@@ -368,7 +474,7 @@ export default function InteractiveArtworkCard({
               <div className="relative w-full h-full max-w-7xl max-h-[90vh] flex flex-col lg:flex-row gap-6 lg:gap-8 items-stretch justify-center">
                 <div className="relative flex-1 min-h-0 flex items-center justify-center">
                   {isVideoArtwork ? (
-                    <motion.video
+                    <m.video
                       ref={videoRef}
                       initial={prefersReducedMotion ? false : { scale: 0.96, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
@@ -383,7 +489,7 @@ export default function InteractiveArtworkCard({
                       className="max-w-full max-h-[68vh] lg:max-h-full object-contain rounded-lg bg-black"
                     >
                       <source src={videoSrc} type="video/mp4" />
-                    </motion.video>
+                    </m.video>
                   ) : (
                     <picture className="flex max-h-[68vh] max-w-full items-center justify-center lg:max-h-full">
                       {modalAvifSrcset ? (
@@ -393,7 +499,7 @@ export default function InteractiveArtworkCard({
                           sizes="(max-width: 1024px) 100vw, 70vw"
                         />
                       ) : null}
-                      <motion.img
+                      <m.img
                         initial={prefersReducedMotion ? false : { scale: 0.96, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
@@ -410,7 +516,7 @@ export default function InteractiveArtworkCard({
                     <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4">
                       <button
                         type="button"
-                        onClick={() => setShowInfo(true)}
+                        onClick={() => dispatch({ type: 'setInfo', showInfo: true })}
                         className="glass-dark w-full max-w-md rounded-full px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                         aria-expanded={showInfo}
                       >
@@ -422,7 +528,7 @@ export default function InteractiveArtworkCard({
 
                 <AnimatePresence initial={false}>
                   {showInfo && (
-                    <motion.div
+                    <m.div
                       id={infoPanelId}
                       initial={
                         prefersReducedMotion
@@ -453,7 +559,8 @@ export default function InteractiveArtworkCard({
                           )}
                         </div>
                         <button
-                          onClick={() => setShowInfo(false)}
+                          type="button"
+                          onClick={() => dispatch({ type: 'setInfo', showInfo: false })}
                           className="shrink-0 rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-zinc-100 transition-colors hover:text-white"
                         >
                           Hide notes
@@ -463,34 +570,41 @@ export default function InteractiveArtworkCard({
                       <div className="mb-4 h-px w-14 bg-gradient-to-r from-cyan-300 to-emerald-300 rounded-full" />
 
                       <div className="space-y-6" lang={sectionsLang}>
-                        {sections.map((sec, i) => (
-                          <div key={i}>
-                            {sec.heading && (
-                              <h4 className="text-sm uppercase tracking-[0.2em] text-cyan-50 font-semibold mb-3">
-                                {sec.heading}
-                              </h4>
-                            )}
-                            {sec.body.split('\n\n').map((p, j) => (
-                              <p key={j} className="text-sm leading-[1.7] text-zinc-100 mb-3 font-light">
-                                {p}
-                              </p>
-                            ))}
-                            {sec.formula && (
-                              <div className="my-4 p-3 rounded-xl bg-black/40 border border-cyan-300/20">
-                                <pre className="text-xs text-cyan-100/90 font-mono whitespace-pre-wrap leading-relaxed">
-                                  {sec.formula}
-                                </pre>
-                                {sec.formulaCaption && (
-                                  <p className="text-[10px] uppercase tracking-widest text-zinc-500 mt-2">
-                                    {sec.formulaCaption}
-                                  </p>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        ))}
+                        {sections.map((sec) => {
+                          const sectionKey = `${sec.heading ?? 'note'}-${sec.body.slice(0, 48)}`;
+
+                          return (
+                            <div key={sectionKey}>
+                              {sec.heading && (
+                                <h4 className="text-sm uppercase tracking-[0.2em] text-cyan-50 font-semibold mb-3">
+                                  {sec.heading}
+                                </h4>
+                              )}
+                              {sec.body.split('\n\n').map((p) => (
+                                <p
+                                  key={`${sectionKey}-${p.slice(0, 48)}`}
+                                  className="text-sm leading-[1.7] text-zinc-100 mb-3 font-light"
+                                >
+                                  {p}
+                                </p>
+                              ))}
+                              {sec.formula && (
+                                <div className="my-4 p-3 rounded-xl bg-black/40 border border-cyan-300/20">
+                                  <pre className="text-xs text-cyan-100/90 font-mono whitespace-pre-wrap leading-relaxed">
+                                    {sec.formula}
+                                  </pre>
+                                  {sec.formulaCaption && (
+                                    <p className="text-[10px] uppercase tracking-widest text-zinc-500 mt-2">
+                                      {sec.formulaCaption}
+                                    </p>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    </motion.div>
+                    </m.div>
                   )}
                 </AnimatePresence>
 
@@ -498,7 +612,7 @@ export default function InteractiveArtworkCard({
                   <div className="lg:w-[26rem] hidden lg:flex items-end">
                     <button
                       type="button"
-                      onClick={() => setShowInfo(true)}
+                      onClick={() => dispatch({ type: 'setInfo', showInfo: true })}
                       aria-expanded={showInfo}
                       className="glass-dark w-full rounded-3xl px-6 py-5 text-left transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
                     >
@@ -516,7 +630,7 @@ export default function InteractiveArtworkCard({
                 )}
               </div>
             </div>
-          </motion.div>
+          </m.div>
           )}
         </AnimatePresence>,
         document.body,

@@ -16,8 +16,18 @@ interface HeroTitleHybridProps {
   forceFallback?: boolean;
 }
 
+interface HeroTitleReadyState {
+  readonly key: string;
+  readonly first: boolean;
+  readonly second: boolean;
+}
+
 const HERO_LIQUID_BACKGROUND = getAvifImageUrl('liquid-perception-hero', 720);
 const HERO_WORDMARK_VISUAL_SECOND_LINE = `${HERO_WORDMARK_SUPPORTED_LINES[1]}.`;
+
+function getEmptyReadyState(key: string): HeroTitleReadyState {
+  return { key, first: false, second: false };
+}
 
 const HERO_LIQUID_SHARED_UV = {
   first: {
@@ -151,18 +161,39 @@ export function HeroTitleHybrid({
   forceFallback = false,
 }: HeroTitleHybridProps) {
   const reportedRef = useRef(false);
-  const [readyLines, setReadyLines] = useState({ first: false, second: false });
   const titleMatchesWordmark = matchesHeroWordmark(titleLines);
   const visualSupported = !forceFallback && titleMatchesWordmark;
-  const revealShader = readyLines.first && readyLines.second;
+  const titleReadyKey = `${semanticTitle}|${titleLines[0]}|${titleLines[1]}|${visualSupported}`;
+  const [readyLines, setReadyLines] = useState<HeroTitleReadyState>(() =>
+    getEmptyReadyState(titleReadyKey),
+  );
+  const visibleReadyLines =
+    readyLines.key === titleReadyKey
+      ? readyLines
+      : getEmptyReadyState(titleReadyKey);
+  const revealShader = visibleReadyLines.first && visibleReadyLines.second;
 
   const markFirstReady = useCallback(() => {
-    setReadyLines((current) => (current.first ? current : { ...current, first: true }));
-  }, []);
+    setReadyLines((current) => {
+      const readyState = current.key === titleReadyKey ? current : getEmptyReadyState(titleReadyKey);
+      if (readyState.first) {
+        return current;
+      }
+
+      return { ...readyState, first: true };
+    });
+  }, [titleReadyKey]);
 
   const markSecondReady = useCallback(() => {
-    setReadyLines((current) => (current.second ? current : { ...current, second: true }));
-  }, []);
+    setReadyLines((current) => {
+      const readyState = current.key === titleReadyKey ? current : getEmptyReadyState(titleReadyKey);
+      if (readyState.second) {
+        return current;
+      }
+
+      return { ...readyState, second: true };
+    });
+  }, [titleReadyKey]);
 
   useEffect(() => {
     if (titleMatchesWordmark || reportedRef.current) {
@@ -175,10 +206,6 @@ export function HeroTitleHybrid({
       titleLines,
     });
   }, [semanticTitle, titleLines, titleMatchesWordmark]);
-
-  useEffect(() => {
-    setReadyLines({ first: false, second: false });
-  }, [semanticTitle, titleLines, visualSupported]);
 
   if (!visualSupported) {
     return <HeroTitleStaticFallback titleLines={titleLines} />;

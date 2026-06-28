@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import InteractiveArtworkCard from '../components/InteractiveArtworkCard';
 import { StaggerContainer, StaggerItem } from '../components/StaggerContainer';
 import { ShaderHeading } from '../components/ShaderHeading';
@@ -24,7 +24,7 @@ export function GallerySection({
     >
       <div className="max-w-7xl mx-auto">
         <div className="mx-auto mb-16 max-w-5xl">
-          <motion.div
+          <m.div
             initial={reducedMotion ? false : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -43,7 +43,7 @@ export function GallerySection({
             <p className="gallery-subtitle liquid-support-text mt-5 max-w-[27ch] sm:mt-6 sm:max-w-[29ch]">
               {GALLERY_COPY.subtitle}
             </p>
-          </motion.div>
+          </m.div>
         </div>
 
         <StaggerContainer
@@ -67,7 +67,7 @@ export function GallerySection({
           ))}
         </StaggerContainer>
 
-        <motion.div
+        <m.div
           initial={reducedMotion ? false : { opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -87,7 +87,7 @@ export function GallerySection({
               &rarr;
             </span>
           </button>
-        </motion.div>
+        </m.div>
 
         <WorkflowProcessCard reducedMotion={reducedMotion} />
       </div>

@@ -1,5 +1,5 @@
 import { useRef, type Key, type ReactNode } from 'react';
-import { motion, useInView, type Variants } from 'motion/react';
+import { m, useInView, type Variants } from 'motion/react';
 import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
@@ -38,7 +38,7 @@ export function StaggerContainer({
   };
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       className={className}
       variants={containerVariants}
@@ -46,7 +46,7 @@ export function StaggerContainer({
       animate={isInView ? 'visible' : 'hidden'}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
 
@@ -104,8 +104,8 @@ export function StaggerItem({
   };
 
   return (
-    <motion.div className={className} variants={itemVariants}>
+    <m.div className={className} variants={itemVariants}>
       {children}
-    </motion.div>
+    </m.div>
   );
 }

@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import InteractiveArtworkCard from '../components/InteractiveArtworkCard';
 import { ShaderHeading } from '../components/ShaderHeading';
 import { StaggerContainer, StaggerItem } from '../components/StaggerContainer';
@@ -17,7 +17,7 @@ export function LibrarySection({ reducedMotion }: LibrarySectionProps) {
       aria-labelledby="gallery-library-heading"
     >
       <div className="mx-auto max-w-7xl">
-        <motion.div
+        <m.div
           initial={reducedMotion ? false : { opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
@@ -42,7 +42,7 @@ export function LibrarySection({ reducedMotion }: LibrarySectionProps) {
           <p className="liquid-support-text mt-5 max-w-[30ch] text-[1.02rem] leading-[1.6] sm:mt-6 sm:max-w-[36ch]">
             The broader archive: stills, moving studies, texture experiments, and altered-state fragments.
           </p>
-        </motion.div>
+        </m.div>
 
         <StaggerContainer
           className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:gap-8"

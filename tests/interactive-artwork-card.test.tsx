@@ -65,6 +65,45 @@ describe('InteractiveArtworkCard image contracts', () => {
     expect(noteBody.closest('[lang]')).toHaveAttribute('lang', 'no');
   });
 
+  it('opens and closes an artwork modal inside the shared motion feature provider', async () => {
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': true,
+      '(min-width: 1024px)': false,
+      '(max-width: 767px)': true,
+    });
+    const [{ default: InteractiveArtworkCard }, { MotionFeatureProvider }] = await Promise.all([
+      import('../src/components/InteractiveArtworkCard'),
+      import('../src/components/motion/MotionFeatureProvider'),
+    ]);
+
+    render(
+      <MotionFeatureProvider>
+        <InteractiveArtworkCard
+          imageSlug="mushroom-offering"
+          title={{ primary: 'Mushroom Offering' }}
+          sections={[{ body: 'Image notes.' }]}
+        />
+      </MotionFeatureProvider>,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /view mushroom offering artwork details and notes/i }),
+    );
+
+    const dialog = await screen.findByRole('dialog', {
+      name: /mushroom offering artwork details/i,
+    });
+    expect(dialog).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /close modal/i }));
+
+    await waitFor(() => {
+      expect(
+        screen.queryByRole('dialog', { name: /mushroom offering artwork details/i }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('keeps gallery card images lazy by default', async () => {
     installMatchMediaMock({
       '(prefers-reduced-motion: reduce)': false,

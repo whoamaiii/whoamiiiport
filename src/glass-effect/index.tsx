@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useReducer, useRef, useState, type CSSProperties } from "react"
 import FrostedSurface from "./glass-surface"
 import {
   computeElasticDeformation,
@@ -9,6 +9,41 @@ import type { GlassLayerConfig, Point2D, DisplacementMode } from "./types"
 import { useReducedMotion } from "../hooks/useReducedMotion"
 
 export type { GlassLayerConfig, Point2D, DisplacementMode }
+
+const EMPTY_STYLE: CSSProperties = {}
+const ZERO_POINT: Point2D = { x: 0, y: 0 }
+
+interface PointerState {
+  readonly localCursor: Point2D
+  readonly localOffset: Point2D
+}
+
+interface GlassDimensions {
+  readonly width: number
+  readonly height: number
+}
+
+const INITIAL_DIMENSIONS: GlassDimensions = { width: 270, height: 69 }
+const INITIAL_POINTER_STATE: PointerState = {
+  localCursor: ZERO_POINT,
+  localOffset: ZERO_POINT,
+}
+
+function pointerReducer(
+  state: PointerState,
+  nextState: PointerState,
+): PointerState {
+  if (
+    state.localCursor.x === nextState.localCursor.x
+    && state.localCursor.y === nextState.localCursor.y
+    && state.localOffset.x === nextState.localOffset.x
+    && state.localOffset.y === nextState.localOffset.y
+  ) {
+    return state
+  }
+
+  return nextState
+}
 
 export default function GlassLayer({
   children,
@@ -24,42 +59,48 @@ export default function GlassLayer({
   className = "",
   padding = "24px 32px",
   overLight = false,
-  style = {},
+  style = EMPTY_STYLE,
   mode = "standard",
   onClick,
 }: GlassLayerConfig) {
   const surfaceRef = useRef<HTMLDivElement>(null)
+  const pointerContextRef = useRef({ mouseContainer, prefersReducedMotion: false })
   const [hovered, setHovered] = useState(false)
   const [pressed, setPressed] = useState(false)
-  const [dimensions, setDimensions] = useState({ width: 270, height: 69 })
-  const [localCursor, setLocalCursor] = useState<Point2D>({ x: 0, y: 0 })
-  const [localOffset, setLocalOffset] = useState<Point2D>({ x: 0, y: 0 })
+  const [dimensions, setDimensions] = useState(INITIAL_DIMENSIONS)
+  const [{ localCursor, localOffset }, dispatchPointer] = useReducer(
+    pointerReducer,
+    INITIAL_POINTER_STATE,
+  )
   const prefersReducedMotion = useReducedMotion()
+  pointerContextRef.current = { mouseContainer, prefersReducedMotion }
 
   // Decide source of cursor data
-  const cursor = prefersReducedMotion ? { x: 0, y: 0 } : externalCursor || localCursor
-  const offset = prefersReducedMotion ? { x: 0, y: 0 } : externalOffset || localOffset
+  const cursor = prefersReducedMotion ? ZERO_POINT : externalCursor || localCursor
+  const offset = prefersReducedMotion ? ZERO_POINT : externalOffset || localOffset
 
   // Internal pointer tracking
   const onPointerMove = useCallback(
     (e: MouseEvent) => {
-      if (prefersReducedMotion) return
+      const { mouseContainer: containerRef, prefersReducedMotion: motionDisabled } = pointerContextRef.current
+      if (motionDisabled) return
 
-      const target = mouseContainer?.current || surfaceRef.current
+      const target = containerRef?.current || surfaceRef.current
       if (!target) return
 
       const rect = target.getBoundingClientRect()
       const mx = rect.left + rect.width / 2
       const my = rect.top + rect.height / 2
 
-      setLocalOffset({
-        x: ((e.clientX - mx) / rect.width) * 100,
-        y: ((e.clientY - my) / rect.height) * 100,
+      dispatchPointer({
+        localOffset: {
+          x: ((e.clientX - mx) / rect.width) * 100,
+          y: ((e.clientY - my) / rect.height) * 100,
+        },
+        localCursor: { x: e.clientX, y: e.clientY },
       })
-
-      setLocalCursor({ x: e.clientX, y: e.clientY })
     },
-    [mouseContainer, prefersReducedMotion],
+    [],
   )
 
   // Wire up internal tracking when no external source is provided

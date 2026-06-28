@@ -1,5 +1,5 @@
 import { useRef, useState, type RefObject } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
 
 interface MobileMenuButtonProps {
@@ -18,6 +18,7 @@ function MobileMenuButton({
   return (
     <button
       ref={buttonRef}
+      type="button"
       className="site-header-menu-trigger focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
       onClick={onClick}
       aria-label={triggerLabel}
@@ -62,7 +63,7 @@ function MobileMenu({
   return (
     <AnimatePresence initial={false}>
       {isOpen && (
-        <motion.div
+        <m.div
           ref={containerRef}
           id="mobile-menu"
           role="dialog"
@@ -106,12 +107,12 @@ function MobileMenu({
             <button
               type="button"
               onClick={() => navigateToSection('contact')}
-              className="w-full rounded-full border border-cyan-100/45 bg-cyan-200 px-6 py-4 text-base font-semibold uppercase tracking-[0.18em] text-zinc-950 shadow-[0_16px_42px_-24px_rgba(34,211,238,0.62),inset_0_1px_0_rgba(255,255,255,0.6)] transition-[background-color,transform,box-shadow] duration-200 hover:bg-cyan-100 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-zinc-950"
+              className="w-full rounded-full border border-cyan-100/45 bg-cyan-200 px-6 py-4 text-base font-semibold uppercase tracking-[0.18em] text-cyan-950 shadow-[0_16px_42px_-24px_rgba(34,211,238,0.62),inset_0_1px_0_rgba(255,255,255,0.6)] transition-[background-color,transform,box-shadow] duration-200 hover:bg-cyan-100 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-100 focus:ring-offset-2 focus:ring-offset-zinc-950"
             >
               Get in touch
             </button>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );
@@ -145,7 +146,7 @@ export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderPro
         }`}
       >
         <div className="site-header-bar">
-          <motion.a
+          <m.a
             href="#main-content"
             aria-label="Whoamiii — jump to main content"
             className="site-header-wordmark cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-zinc-950 rounded-lg"
@@ -155,7 +156,7 @@ export function SiteHeader({ reducedMotion, onNavigateToSection }: SiteHeaderPro
             transition={{ type: 'spring', stiffness: 400, damping: 17 }}
           >
             <span className="site-header-wordmark-text">WHOAMIII</span>
-          </motion.a>
+          </m.a>
 
           <div className="site-header-actions">
             <button

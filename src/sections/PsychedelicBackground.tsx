@@ -1,4 +1,4 @@
-import { motion, type MotionValue } from 'motion/react';
+import { m, type MotionValue } from 'motion/react';
 
 interface PsychedelicBackgroundProps {
   blobX1: MotionValue<number>;
@@ -27,15 +27,15 @@ export function PsychedelicBackground({
     <div className={containerClassName}>
       {interactive ? (
         <>
-          <motion.div
+          <m.div
             className="absolute top-[-10%] left-[-10%] h-[40vw] w-[40vw] rounded-full bg-indigo-500/70 mix-blend-normal blur-[110px] animate-blob"
             style={{ x: blobX1, y: blobY1 }}
           />
-          <motion.div
+          <m.div
             className="absolute top-[20%] right-[-10%] h-[35vw] w-[35vw] rounded-full bg-emerald-400/60 mix-blend-normal blur-[112px] animate-blob animation-delay-2000"
             style={{ x: blobX2, y: blobY2 }}
           />
-          <motion.div
+          <m.div
             className="absolute bottom-[-20%] left-[20%] h-[45vw] w-[45vw] rounded-full bg-cyan-500/40 mix-blend-normal blur-[120px] animate-blob animation-delay-4000"
             style={{ x: blobX3, y: blobY3 }}
           />

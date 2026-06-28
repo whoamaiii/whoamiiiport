@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 import { Pause, Play } from 'lucide-react';
 
 interface WorkflowProcessCardProps {
@@ -14,24 +14,67 @@ export const PROCESS_VIDEO = {
   durationLabel: '15 sec',
 } as const;
 
+interface WorkflowVideoState {
+  readonly shouldLoadVideo: boolean;
+  readonly isPlaying: boolean;
+}
+
+type WorkflowVideoAction =
+  | { readonly type: 'loadVideo' }
+  | { readonly type: 'playing' }
+  | { readonly type: 'paused' };
+
+function getInitialVideoState(): WorkflowVideoState {
+  return {
+    shouldLoadVideo:
+      typeof window !== 'undefined' && typeof window.IntersectionObserver !== 'function',
+    isPlaying: false,
+  };
+}
+
+function workflowVideoReducer(
+  state: WorkflowVideoState,
+  action: WorkflowVideoAction,
+): WorkflowVideoState {
+  switch (action.type) {
+    case 'loadVideo':
+      return state.shouldLoadVideo ? state : { ...state, shouldLoadVideo: true };
+    case 'playing':
+      return state.isPlaying ? state : { ...state, isPlaying: true };
+    case 'paused':
+      return state.isPlaying ? { ...state, isPlaying: false } : state;
+    default: {
+      const unreachable: never = action;
+      return unreachable;
+    }
+  }
+}
+
 export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps) {
   const articleRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [{ shouldLoadVideo, isPlaying }, dispatch] = useReducer(
+    workflowVideoReducer,
+    undefined,
+    getInitialVideoState,
+  );
 
   useEffect(() => {
+    if (shouldLoadVideo) {
+      return;
+    }
+
     const article = articleRef.current;
 
     if (!article || typeof window.IntersectionObserver !== 'function') {
-      setShouldLoadVideo(true);
+      dispatch({ type: 'loadVideo' });
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          setShouldLoadVideo(true);
+          dispatch({ type: 'loadVideo' });
           observer.disconnect();
         }
       },
@@ -41,7 +84,7 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
     observer.observe(article);
 
     return () => observer.disconnect();
-  }, []);
+  }, [shouldLoadVideo]);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -52,14 +95,14 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
 
     if (reducedMotion) {
       video.pause();
-      setIsPlaying(false);
+      dispatch({ type: 'paused' });
       return;
     }
 
     void video
       .play()
-      .then(() => setIsPlaying(true))
-      .catch(() => setIsPlaying(false));
+      .then(() => dispatch({ type: 'playing' }))
+      .catch(() => dispatch({ type: 'paused' }));
   }, [reducedMotion, shouldLoadVideo]);
 
   const togglePlayback = useCallback(() => {
@@ -72,13 +115,13 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
     if (video.paused) {
       void video
         .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false));
+        .then(() => dispatch({ type: 'playing' }))
+        .catch(() => dispatch({ type: 'paused' }));
       return;
     }
 
     video.pause();
-    setIsPlaying(false);
+    dispatch({ type: 'paused' });
   }, [shouldLoadVideo]);
 
   return (
@@ -107,8 +150,8 @@ export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps)
               loop={!reducedMotion}
               preload={shouldLoadVideo ? 'metadata' : 'none'}
               aria-label="Cup coffee process video"
-              onPlay={() => setIsPlaying(true)}
-              onPause={() => setIsPlaying(false)}
+              onPlay={() => dispatch({ type: 'playing' })}
+              onPause={() => dispatch({ type: 'paused' })}
               className="h-full w-full object-cover"
             >
               {shouldLoadVideo ? (

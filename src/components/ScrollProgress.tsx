@@ -1,4 +1,4 @@
-import { motion, useScroll, useSpring } from 'motion/react';
+import { m, useScroll, useSpring } from 'motion/react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 function ScrollProgressBar() {
@@ -10,7 +10,7 @@ function ScrollProgressBar() {
   });
 
   return (
-    <motion.div
+    <m.div
       data-testid="scroll-progress"
       aria-hidden="true"
       className="pointer-events-none fixed top-0 left-0 right-0 h-[2px] origin-left bg-gradient-to-r from-cyan-300 via-[var(--accent-secondary)] to-[var(--accent-warm)] z-[90]"

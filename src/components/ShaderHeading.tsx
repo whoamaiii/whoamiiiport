@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type HTMLAttributes } from 'react';
+import { useCallback, useEffect, useRef, type HTMLAttributes } from 'react';
 import RenderErrorBoundary from './fallback/RenderErrorBoundary';
 import { ShaderTextWord } from './shared/ShaderTextWord';
 import type { TextShadowConfig } from './shared/shaderTextShared';
@@ -191,40 +191,60 @@ export function ShaderHeading({
   visualLines,
   ...headingProps
 }: ShaderHeadingProps) {
-  const [isReady, setIsReady] = useState(false);
-  const readyLinesRef = useRef<Set<number>>(new Set());
+  const readyLinesRef = useRef<Set<number> | null>(null);
+  const readyCompleteRef = useRef(false);
+  const readyTimerRef = useRef<number | null>(null);
+  const onReadyRef = useRef(onReady);
+  onReadyRef.current = onReady;
+  if (readyLinesRef.current === null) {
+    readyLinesRef.current = new Set<number>();
+  }
   const preset = SHADER_HEADING_PRESETS[variant];
   const lines = visualLines?.length ? visualLines : [children];
   const linesKey = lines.map((line) => String(line)).join('|');
   const { 'aria-label': htmlAriaLabel, ...semanticHeadingProps } = headingProps;
   const semanticText = ariaLabel ?? htmlAriaLabel ?? children;
 
-  useEffect(() => {
-    if (!isReady) {
+  const clearReadyTimer = useCallback(() => {
+    if (readyTimerRef.current === null) {
       return;
     }
 
-    const timer = window.setTimeout(() => {
-      onReady?.();
-    }, delay);
+    window.clearTimeout(readyTimerRef.current);
+    readyTimerRef.current = null;
+  }, []);
 
-    return () => window.clearTimeout(timer);
-  }, [delay, isReady, onReady]);
+  const scheduleReady = useCallback(() => {
+    clearReadyTimer();
+    readyTimerRef.current = window.setTimeout(() => {
+      readyTimerRef.current = null;
+      onReadyRef.current?.();
+    }, delay);
+  }, [clearReadyTimer, delay]);
 
   const handleLineReady = useCallback(
     (index: number) => {
-      readyLinesRef.current.add(index);
-      if (readyLinesRef.current.size >= lines.length) {
-        setIsReady(true);
+      const readyLines = readyLinesRef.current;
+      if (!readyLines || readyCompleteRef.current) {
+        return;
+      }
+
+      readyLines.add(index);
+      if (readyLines.size >= lines.length) {
+        readyCompleteRef.current = true;
+        scheduleReady();
       }
     },
-    [lines.length],
+    [lines.length, scheduleReady],
   );
 
   useEffect(() => {
-    readyLinesRef.current.clear();
-    setIsReady(false);
-  }, [linesKey]);
+    clearReadyTimer();
+    readyLinesRef.current?.clear();
+    readyCompleteRef.current = false;
+  }, [clearReadyTimer, linesKey]);
+
+  useEffect(() => clearReadyTimer, [clearReadyTimer]);
 
   return (
     <Component

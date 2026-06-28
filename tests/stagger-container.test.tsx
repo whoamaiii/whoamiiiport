@@ -6,7 +6,7 @@ import { installMatchMediaMock } from './helpers/matchMedia';
 const useInViewMock = vi.hoisted(() => vi.fn(() => true));
 
 vi.mock('motion/react', () => ({
-  motion: {
+  m: {
     div: ({ animate, children, initial, variants, ...props }: Record<string, unknown>) => (
       <div
         {...props}

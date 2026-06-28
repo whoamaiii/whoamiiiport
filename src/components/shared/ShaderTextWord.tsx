@@ -887,7 +887,6 @@ export function ShaderTextWord({
       </span>
       <canvas
         ref={canvasRef}
-        aria-hidden="true"
         className={`${canvasClassName} ${isCanvasVisible ? 'is-ready' : ''}`.trim()}
       />
       <span

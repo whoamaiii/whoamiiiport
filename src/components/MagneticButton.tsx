@@ -5,7 +5,7 @@ import {
   type MouseEvent as ReactMouseEvent,
   type HTMLAttributeAnchorTarget,
 } from 'react';
-import { motion, useMotionValue, useSpring } from 'motion/react';
+import { m, useMotionValue, useSpring } from 'motion/react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 interface MagneticButtonProps {
@@ -64,7 +64,7 @@ export function MagneticButton({
   };
 
   const glow = !prefersReducedMotion && (
-    <motion.span
+    <m.span
       className="absolute inset-0 -z-10 rounded-full bg-cyan-300/18 blur-xl"
       initial={{ opacity: 0, scale: 0.5 }}
       animate={{
@@ -77,7 +77,7 @@ export function MagneticButton({
 
   if (href) {
     return (
-      <motion.a
+      <m.a
         ref={anchorRef}
         href={href}
         className={`relative ${className}`.trim()}
@@ -93,12 +93,12 @@ export function MagneticButton({
       >
         {children}
         {glow}
-      </motion.a>
+      </m.a>
     );
   }
 
   return (
-    <motion.button
+    <m.button
       ref={buttonRef}
       type="button"
       className={`relative inline-block ${className}`.trim()}
@@ -112,6 +112,6 @@ export function MagneticButton({
     >
       {children}
       {glow}
-    </motion.button>
+    </m.button>
   );
 }

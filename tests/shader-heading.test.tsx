@@ -56,4 +56,36 @@ describe('ShaderHeading', () => {
       expect(onReady).toHaveBeenCalledTimes(1);
     });
   });
+
+  it('resets readiness when the visual line set changes', async () => {
+    installMatchMediaMock({ '(max-width: 767px)': false });
+
+    const onReady = vi.fn();
+    const { rerender } = render(
+      <ShaderHeading onReady={onReady} visualLines={['One', 'Two']}>
+        One Two
+      </ShaderHeading>,
+    );
+
+    fireEvent.click(screen.getByTestId('ready-One'));
+    fireEvent.click(screen.getByTestId('ready-Two'));
+
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalledTimes(1);
+    });
+
+    rerender(
+      <ShaderHeading onReady={onReady} visualLines={['One', 'Three']}>
+        One Three
+      </ShaderHeading>,
+    );
+
+    fireEvent.click(screen.getByTestId('ready-One'));
+    expect(onReady).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByTestId('ready-Three'));
+    await waitFor(() => {
+      expect(onReady).toHaveBeenCalledTimes(2);
+    });
+  });
 });

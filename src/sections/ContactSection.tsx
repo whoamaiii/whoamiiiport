@@ -1,4 +1,4 @@
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 import { Mail } from 'lucide-react';
 import { MagneticButton } from '../components/MagneticButton';
 import { ShaderHeading } from '../components/ShaderHeading';
@@ -17,7 +17,7 @@ export default function ContactSection({ reducedMotion }: ContactSectionProps) {
       className="section-anchor-target deferred-section relative z-20 bg-zinc-950 px-4 py-16 focus:outline-none sm:px-6 md:py-32"
     >
       <div className="max-w-3xl mx-auto text-center">
-        <motion.div
+        <m.div
           initial={reducedMotion ? false : { opacity: 0, scale: 0.9 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -42,7 +42,7 @@ export default function ContactSection({ reducedMotion }: ContactSectionProps) {
             href="mailto:hello@whoamiii.art"
             className="relative z-10 inline-flex"
           >
-            <span className="group relative inline-flex min-h-12 items-center justify-center gap-3 overflow-hidden rounded-[0.45rem] border border-cyan-100/55 bg-cyan-300 px-8 py-4 font-semibold uppercase tracking-[0.18em] text-zinc-950 shadow-[0_18px_44px_-24px_rgba(34,211,238,0.78),inset_0_1px_0_rgba(255,255,255,0.72)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-cyan-200 hover:shadow-[0_20px_48px_-24px_rgba(103,232,249,0.84),inset_0_1px_0_rgba(255,255,255,0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100 active:scale-[0.98] pointer-events-auto cursor-pointer">
+            <span className="group relative inline-flex min-h-12 items-center justify-center gap-3 overflow-hidden rounded-[0.45rem] border border-cyan-100/55 bg-cyan-300 px-8 py-4 font-semibold uppercase tracking-[0.18em] text-cyan-950 shadow-[0_18px_44px_-24px_rgba(34,211,238,0.78),inset_0_1px_0_rgba(255,255,255,0.72)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-cyan-200 hover:shadow-[0_20px_48px_-24px_rgba(103,232,249,0.84),inset_0_1px_0_rgba(255,255,255,0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100 active:scale-[0.98] pointer-events-auto cursor-pointer">
               <span className="relative z-10 flex items-center gap-2">
                 <Mail size={20} />
                 {CONTACT_COPY.cta}
@@ -50,7 +50,7 @@ export default function ContactSection({ reducedMotion }: ContactSectionProps) {
               <div className="contact-cta-sheen" />
             </span>
           </MagneticButton>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

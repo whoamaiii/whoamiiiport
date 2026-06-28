@@ -1,10 +1,17 @@
-import { type CSSProperties, type KeyboardEvent, type PropsWithChildren, forwardRef, useEffect, useId, useState } from "react"
+import { type CSSProperties, type KeyboardEvent, type PropsWithChildren, forwardRef, useId, useMemo } from "react"
 import { RefractionFilter, buildComputedDisplacement } from "./svg-filter"
 import { supportsBackdropSvgFilter } from "./browser-detect"
 import ShimmerOverlay from "./shimmer-overlay"
 import type { DisplacementMode } from "./types"
 
 /* ---------- Frosted glass surface ---------- */
+interface GlassDimensions {
+  readonly width: number
+  readonly height: number
+}
+
+const DEFAULT_DIMENSIONS: GlassDimensions = { width: 270, height: 69 }
+
 const FrostedSurface = forwardRef<
   HTMLDivElement,
   PropsWithChildren<{
@@ -23,7 +30,7 @@ const FrostedSurface = forwardRef<
     brightOverlay?: boolean
     radius?: number
     innerPadding?: string
-    dimensions?: { width: number; height: number }
+    dimensions?: GlassDimensions
     onClick?: () => void
     variant?: DisplacementMode
   }>
@@ -45,7 +52,7 @@ const FrostedSurface = forwardRef<
       brightOverlay = false,
       radius = 999,
       innerPadding = "24px 32px",
-      dimensions = { width: 270, height: 69 },
+      dimensions = DEFAULT_DIMENSIONS,
       onClick,
       variant = "standard",
       mouseOffset,
@@ -53,18 +60,13 @@ const FrostedSurface = forwardRef<
     ref,
   ) => {
     const filterTag = useId()
-    const [computedUri, setComputedUri] = useState<string>("")
     const isClickable = typeof onClick === "function"
 
     const canUseSvgBackdrop = supportsBackdropSvgFilter()
-
-    // Build shader-based map on demand
-    useEffect(() => {
-      if (variant === "shader") {
-        const uri = buildComputedDisplacement(dimensions.width, dimensions.height)
-        setComputedUri(uri)
-      }
-    }, [variant, dimensions.width, dimensions.height])
+    const computedUri = useMemo(
+      () => (variant === "shader" ? buildComputedDisplacement(dimensions.width, dimensions.height) : ""),
+      [variant, dimensions.height, dimensions.width],
+    )
 
     const backdropCSS = {
       // Apply SVG displacement filter only on Chromium (Safari/Firefox can't do backdrop-filter + SVG)
@@ -89,8 +91,12 @@ const FrostedSurface = forwardRef<
         ref={ref}
         className={`relative ${className} ${pressed ? "active" : ""} ${isClickable ? "cursor-pointer" : ""}`}
         style={style}
-        onClick={onClick}
-        onKeyDown={handleKeyDown}
+        onClick={isClickable ? onClick : undefined}
+        onKeyDown={isClickable ? handleKeyDown : undefined}
+        onMouseEnter={isClickable ? onMouseEnter : undefined}
+        onMouseLeave={isClickable ? onMouseLeave : undefined}
+        onMouseDown={isClickable ? onMouseDown : undefined}
+        onMouseUp={isClickable ? onMouseUp : undefined}
         role={isClickable ? "button" : undefined}
         tabIndex={isClickable ? 0 : undefined}
       >
@@ -123,10 +129,6 @@ const FrostedSurface = forwardRef<
             transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, backdrop-filter 0.2s ease-in-out, -webkit-backdrop-filter 0.2s ease-in-out",
             boxShadow: brightOverlay ? "0px 16px 70px rgba(0, 0, 0, 0.75)" : "0px 12px 40px rgba(0, 0, 0, 0.25)",
           }}
-          onMouseEnter={onMouseEnter}
-          onMouseLeave={onMouseLeave}
-          onMouseDown={onMouseDown}
-          onMouseUp={onMouseUp}
         >
           {/* Backdrop warp layer */}
           <span

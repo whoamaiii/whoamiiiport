@@ -1,5 +1,5 @@
 import { useRef, type ReactNode } from 'react';
-import { motion, useInView, type Transition } from 'motion/react';
+import { m, useInView, type Transition } from 'motion/react';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 
 interface ImageRevealBaseProps {
@@ -133,7 +133,7 @@ function AnimatedImageReveal(props: ImageRevealProps) {
 
   return (
     <div ref={ref} className={`relative overflow-hidden ${className}`}>
-      <motion.div
+      <m.div
         className="absolute inset-0 z-10 bg-zinc-950"
         data-testid="image-reveal-mask"
         initial={overlayInitial}
@@ -149,13 +149,13 @@ function AnimatedImageReveal(props: ImageRevealProps) {
         }}
       />
 
-      <motion.div
+      <m.div
         className="w-full h-full"
         data-testid="image-reveal-content"
         {...imageMotionProps}
       >
         <ImageRevealContent props={props} imageClassName={imageClassName} />
-      </motion.div>
+      </m.div>
     </div>
   );
 }

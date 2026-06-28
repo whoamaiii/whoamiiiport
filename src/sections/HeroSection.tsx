@@ -1,4 +1,4 @@
-import { motion, type MotionValue } from 'motion/react';
+import { m, type MotionValue } from 'motion/react';
 import {
   HERO_FALLBACK_WIDTH,
   getAvifImageUrl,
@@ -42,7 +42,7 @@ export function HeroSection({
 }: HeroSectionProps) {
   return (
     <section className="relative min-h-[100dvh] overflow-hidden z-10 bg-zinc-950">
-      <motion.div
+      <m.div
         className="absolute inset-0 z-0 origin-center"
         style={{ y: headerY, opacity: headerOpacity }}
       >
@@ -76,7 +76,7 @@ export function HeroSection({
             srcSet={getHeroSrcset(HERO_SLUG)}
             sizes={getHeroSizes()}
           />
-          <motion.img
+          <m.img
             src={getImageUrl(HERO_SLUG, HERO_FALLBACK_WIDTH)}
             alt={heroMetadata.alt}
             width={HERO_IMAGE_WIDTH}
@@ -87,7 +87,7 @@ export function HeroSection({
             style={{ y: parallaxY, x: parallaxX }}
           />
         </picture>
-      </motion.div>
+      </m.div>
 
       <div className="relative z-20 min-h-[100dvh] w-full">
         <div className="mx-auto flex min-h-[100dvh] w-full max-w-7xl items-end px-4 pt-[calc(var(--nav-offset)+1.1rem)] pb-[3.25rem] sm:px-6 sm:pt-[calc(var(--nav-offset)+1.45rem)] sm:pb-16 md:items-start md:px-10 md:pt-[calc(var(--nav-offset)+0.85rem)] md:pb-12">
@@ -97,14 +97,14 @@ export function HeroSection({
               aria-hidden="true"
             />
 
-            <motion.p
+            <m.p
               {...heroReveal(0.16)}
               className="liquid-kicker mb-4 text-[0.72rem] uppercase tracking-[0.28em] sm:text-[0.76rem]"
             >
               {HERO_COPY.eyebrow}
-            </motion.p>
+            </m.p>
 
-            <motion.h1
+            <m.h1
               {...heroReveal(0.28)}
               className="mb-4 sm:mb-5 md:mb-6"
             >
@@ -119,14 +119,14 @@ export function HeroSection({
                   reducedMotion={reducedMotion}
                 />
               </RenderErrorBoundary>
-            </motion.h1>
+            </m.h1>
 
-            <motion.p
+            <m.p
               {...heroReveal(0.46)}
               className="hero-subtitle max-w-[25ch] text-[0.98rem] font-medium leading-[1.45] sm:text-[1.05rem] md:max-w-[27ch] md:text-[1.14rem]"
             >
               {HERO_COPY.subtitle}
-            </motion.p>
+            </m.p>
           </div>
         </div>
       </div>

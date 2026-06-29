@@ -29,7 +29,7 @@ export default function ContactSection({ reducedMotion }: ContactSectionProps) {
           <ShaderHeading
             id="contact-heading"
             className="relative z-10 mb-6 text-center text-[2.35rem] font-display tracking-tight md:text-6xl"
-            visualLines={["Let's", 'Create', 'Something', 'Trippy.']}
+            visualLines={[CONTACT_COPY.headingParts.lead]}
           >
             {CONTACT_COPY.heading}
           </ShaderHeading>

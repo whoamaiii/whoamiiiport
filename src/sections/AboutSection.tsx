@@ -65,23 +65,23 @@ export default function AboutSection() {
           <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/60 to-transparent" />
 
           <div className="relative z-10 grid gap-8 md:grid-cols-2 md:gap-16">
-            <div>
+            <div className="about-copy-stack">
               <ShaderHeading
                 id="about-heading"
                 delay={0}
-                className="mb-6 text-[2.45rem] font-display tracking-tight md:mb-8 md:text-5xl"
-                visualLines={['Sinnet', 'bak', 'bildet']}
+                className="about-heading mb-8 text-center text-[2.62rem] font-display tracking-tight md:text-left md:text-5xl"
+                visualLines={[ABOUT_COPY.heading]}
               >
                 {ABOUT_COPY.heading}
               </ShaderHeading>
               <AboutPortrait className="mb-7 md:hidden" />
-              <p className="mb-5 text-[1.02rem] leading-7 text-zinc-200/88 md:text-lg md:leading-relaxed">
+              <p className="about-body-copy mb-5 text-[1.02rem] leading-[1.68] text-zinc-200/88 md:text-lg md:leading-relaxed">
                 {ABOUT_COPY.intro}
               </p>
-              <p className="mb-7 text-[1.02rem] leading-7 text-zinc-400 md:mb-8 md:text-lg md:leading-relaxed">
+              <p className="about-body-copy mb-7 text-[1.02rem] leading-[1.68] text-zinc-400 md:mb-8 md:text-lg md:leading-relaxed">
                 {ABOUT_COPY.body}
               </p>
-              <div className="flex gap-4">
+              <div className="about-social-row flex gap-4">
                 <MagneticButton
                   strength={0.4}
                   href="https://instagram.com/whoamiii"

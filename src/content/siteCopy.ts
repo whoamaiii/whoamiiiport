@@ -15,17 +15,16 @@ interface ContactCopy {
   heading: string;
   headingParts: {
     lead: string;
-    accent: string;
   };
   body: string;
   cta: string;
 }
 
 export const HERO_COPY: HeroCopy = {
-  eyebrow: 'Psykedelisk kunstportefølje',
-  titleSemantic: 'Endrede sanseflater.',
-  titleLines: ['Endrede', 'Sanseflater'],
-  subtitle: 'Bilder fra den andre siden av glasset.',
+  eyebrow: 'Psychedelic art portfolio',
+  titleSemantic: 'Altered perception.',
+  titleLines: ['Altered', 'Perception'],
+  subtitle: '',
 } as const;
 
 export const GALLERY_COPY: GalleryCopy = {
@@ -44,11 +43,10 @@ export const ABOUT_COPY = {
 
 const CONTACT_HEADING_PARTS = {
   lead: 'La oss lage noe',
-  accent: 'trippy.',
 } as const;
 
 export const CONTACT_COPY: ContactCopy = {
-  heading: `${CONTACT_HEADING_PARTS.lead} ${CONTACT_HEADING_PARTS.accent}`,
+  heading: CONTACT_HEADING_PARTS.lead,
   headingParts: CONTACT_HEADING_PARTS,
   body: 'Åpen for oppdrag, samarbeid og utstillinger.',
   cta: 'Send melding',

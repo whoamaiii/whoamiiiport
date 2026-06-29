@@ -5,12 +5,10 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
 
   await expect(page).toHaveTitle(/Whoamiii/i);
   await expect(page.getByTestId('scroll-progress')).toHaveCount(1);
-  await expect(page.getByRole('heading', { name: /Endrede sanseflater\./i })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Altered perception\./i })).toBeVisible();
   await expect(page.getByTestId('hero-title-visual')).toHaveCount(1);
-  await expect(page.getByText(/Psykedelisk kunstportefølje/i)).toBeVisible();
-  await expect(
-    page.getByText(/Bilder fra den andre siden av glasset\./i),
-  ).toBeVisible();
+  await expect(page.getByText(/Psychedelic art portfolio/i)).toBeVisible();
+  await expect(page.getByText(/Images from the other side of the glass\./i)).toHaveCount(0);
   await page.evaluate(() => document.querySelector('#work')?.scrollIntoView({ block: 'start' }));
   await page.waitForFunction(() => Boolean(document.querySelector('#work')));
 
@@ -27,7 +25,7 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.5));
 
   await expect(
-    page.getByRole('heading', { name: /La oss lage noe trippy\./i }),
+    page.getByRole('heading', { name: /^La oss lage noe$/i }),
   ).toBeVisible();
   await expect(page.getByRole('contentinfo').getByRole('link', { name: /whoamiii/i })).toBeVisible();
   await expect(
@@ -240,7 +238,10 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
 
   const menuBounds = await menuButton.boundingBox();
   expect(menuBounds).not.toBeNull();
-  expect(menuBounds!.x + menuBounds!.width).toBeLessThanOrEqual(320);
+  if (menuBounds === null) {
+    throw new Error('Menu trigger bounds should be available');
+  }
+  expect(menuBounds.x + menuBounds.width).toBeLessThanOrEqual(320);
 
   await menuButton.click();
   await expect(menuButton).toHaveAccessibleName(/lukk navigasjonsmeny/i);
@@ -257,8 +258,11 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
   ).toBeVisible();
   const liquidPanelBounds = await liquidPanel.boundingBox();
   expect(liquidPanelBounds).not.toBeNull();
-  expect(liquidPanelBounds!.x).toBeGreaterThanOrEqual(0);
-  expect(liquidPanelBounds!.x + liquidPanelBounds!.width).toBeLessThanOrEqual(320);
+  if (liquidPanelBounds === null) {
+    throw new Error('Mobile liquid panel bounds should be available');
+  }
+  expect(liquidPanelBounds.x).toBeGreaterThanOrEqual(0);
+  expect(liquidPanelBounds.x + liquidPanelBounds.width).toBeLessThanOrEqual(320);
   await expect
     .poll(() =>
       page.locator('[aria-controls]').evaluateAll((nodes) =>
@@ -302,11 +306,64 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
   });
 
   expect(geometry).not.toBeNull();
-  expect(geometry!.lineCount).toBe(3);
-  expect(geometry!.lineDeltaX).toBeLessThanOrEqual(3);
-  expect(geometry!.lineDeltaY).toBeLessThanOrEqual(3);
-  expect(geometry!.buttonRight).toBeLessThanOrEqual(geometry!.headerRight);
-  expect(geometry!.overflowX).toBeLessThanOrEqual(0);
+  if (geometry === null) {
+    throw new Error('Mobile header geometry should be available');
+  }
+  expect(geometry.lineCount).toBe(3);
+  expect(geometry.lineDeltaX).toBeLessThanOrEqual(3);
+  expect(geometry.lineDeltaY).toBeLessThanOrEqual(3);
+  expect(geometry.buttonRight).toBeLessThanOrEqual(geometry.headerRight);
+  expect(geometry.overflowX).toBeLessThanOrEqual(0);
+});
+
+test('contact shader heading keeps decorative words clear of their clip box on mobile', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/#contact');
+  await page.locator('#contact').scrollIntoViewIfNeeded();
+
+  const geometry = await page.evaluate(() => {
+    const heading = document.querySelector('#contact-heading');
+    const words = Array.from(document.querySelectorAll('#contact-heading .section-shader-word'));
+    const context = document.createElement('canvas').getContext('2d');
+
+    if (!(heading instanceof HTMLElement) || !context || words.length === 0) {
+      return {
+        found: false,
+        overflowX: document.documentElement.scrollWidth - window.innerWidth,
+        words: [],
+      };
+    }
+
+    return {
+      found: true,
+      overflowX: document.documentElement.scrollWidth - window.innerWidth,
+      words: words.map((word) => {
+        const text = word.getAttribute('data-text') ?? word.textContent?.trim() ?? '';
+        const textLayer = word.querySelector(
+          '.section-shader-measure, .section-shader-static-fallback, .section-shader-fallback',
+        );
+        const style = getComputedStyle(
+          textLayer instanceof HTMLElement ? textLayer : word,
+        );
+        const rect = word.getBoundingClientRect();
+
+        context.font = style.font;
+
+        return {
+          bleedX: rect.width - context.measureText(text).width,
+          text,
+        };
+      }),
+    };
+  });
+
+  expect(geometry.found).toBe(true);
+  expect(geometry.overflowX).toBeLessThanOrEqual(0);
+  for (const word of geometry.words) {
+    expect(word.bleedX, `${word.text} should have shader bleed space`).toBeGreaterThanOrEqual(8);
+  }
 });
 
 test('absolute site header scrolls away with the hero instead of staying fixed', async ({ page }) => {
@@ -354,10 +411,13 @@ test('absolute site header scrolls away with the hero instead of staying fixed',
   });
 
   expect(scrollState).not.toBeNull();
-  expect(scrollState!.position).toBe('absolute');
-  expect(scrollState!.targetScrollY).toBeGreaterThan(0);
-  expect(scrollState!.scrollY).toBeGreaterThan(0);
-  expect(scrollState!.afterTop).toBeLessThan(scrollState!.beforeTop - 40);
+  if (scrollState === null) {
+    throw new Error('Header scroll state should be available');
+  }
+  expect(scrollState.position).toBe('absolute');
+  expect(scrollState.targetScrollY).toBeGreaterThan(0);
+  expect(scrollState.scrollY).toBeGreaterThan(0);
+  expect(scrollState.afterTop).toBeLessThan(scrollState.beforeTop - 40);
 });
 
 test('menu section buttons scroll to and focus target sections with breathing room', async ({

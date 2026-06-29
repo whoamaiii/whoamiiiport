@@ -121,12 +121,14 @@ export function HeroSection({
               </RenderErrorBoundary>
             </m.h1>
 
-            <m.p
-              {...heroReveal(0.46)}
-              className="hero-subtitle max-w-[25ch] text-[0.98rem] font-medium leading-[1.45] sm:text-[1.05rem] md:max-w-[27ch] md:text-[1.14rem]"
-            >
-              {HERO_COPY.subtitle}
-            </m.p>
+            {HERO_COPY.subtitle ? (
+              <m.p
+                {...heroReveal(0.46)}
+                className="hero-subtitle max-w-[25ch] text-[0.98rem] font-medium leading-[1.45] sm:text-[1.05rem] md:max-w-[27ch] md:text-[1.14rem]"
+              >
+                {HERO_COPY.subtitle}
+              </m.p>
+            ) : null}
           </div>
         </div>
       </div>

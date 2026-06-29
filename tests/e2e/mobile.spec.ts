@@ -65,6 +65,7 @@ test('mobile first viewport keeps hero and navigation coherent', async ({ page }
     const eyebrow = document.querySelector('.liquid-kicker');
     const heroTitle = document.querySelector('[data-testid="hero-title-visual"]');
     const subtitle = document.querySelector('.hero-subtitle');
+    const heroWords = Array.from(document.querySelectorAll('.hero-title-shader-word'));
 
     const rectFor = (element: Element | null) => {
       if (!element) {
@@ -86,6 +87,13 @@ test('mobile first viewport keeps hero and navigation coherent', async ({ page }
       eyebrow: rectFor(eyebrow),
       header: rectFor(header),
       heroTitle: rectFor(heroTitle),
+      heroWordBleedY: heroWords.map((word) => {
+        const rect = word.getBoundingClientRect();
+        const style = window.getComputedStyle(word);
+        const lineHeight = Number.parseFloat(style.lineHeight);
+
+        return Number.isFinite(lineHeight) ? rect.height - lineHeight : 0;
+      }),
       overflowX: document.documentElement.scrollWidth - window.innerWidth,
       subtitle: rectFor(subtitle),
       viewportHeight: window.innerHeight,
@@ -97,24 +105,170 @@ test('mobile first viewport keeps hero and navigation coherent', async ({ page }
   expect(geometry.header).not.toBeNull();
   expect(geometry.eyebrow).not.toBeNull();
   expect(geometry.heroTitle).not.toBeNull();
-  expect(geometry.subtitle).not.toBeNull();
-  expect(geometry.header!.top).toBeGreaterThanOrEqual(0);
-  expect(geometry.header!.left).toBeGreaterThanOrEqual(0);
-  expect(geometry.header!.right).toBeLessThanOrEqual(geometry.viewportWidth);
-  expect(geometry.header!.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
-  expect(geometry.eyebrow!.top).toBeGreaterThan(geometry.header!.bottom);
-  expect(geometry.eyebrow!.bottom).toBeLessThanOrEqual(geometry.heroTitle!.top);
-  expect(geometry.heroTitle!.bottom).toBeLessThanOrEqual(geometry.subtitle!.top);
-  expect(geometry.subtitle!.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
+  expect(geometry.subtitle).toBeNull();
+  if (
+    geometry.header === null
+    || geometry.eyebrow === null
+    || geometry.heroTitle === null
+  ) {
+    throw new Error('Mobile hero geometry should be available');
+  }
+  expect(geometry.header.top).toBeGreaterThanOrEqual(0);
+  expect(geometry.header.left).toBeGreaterThanOrEqual(0);
+  expect(geometry.header.right).toBeLessThanOrEqual(geometry.viewportWidth);
+  expect(geometry.header.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
+  expect(geometry.eyebrow.top).toBeGreaterThan(geometry.header.bottom);
+  expect(geometry.eyebrow.bottom).toBeLessThanOrEqual(geometry.heroTitle.top);
+  expect(geometry.heroTitle.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
+  expect(geometry.heroWordBleedY).toHaveLength(2);
+  for (const bleedY of geometry.heroWordBleedY) {
+    expect(bleedY).toBeGreaterThanOrEqual(12);
+  }
 
   const menuButton = page.getByRole('button', { name: /åpne meny/i });
   await expect(menuButton).toBeVisible();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
-  await expect(page.getByRole('heading', { name: /Endrede sanseflater\./i })).toBeVisible();
-  await expect(page.getByText(/Psykedelisk kunstportefølje/i)).toBeVisible();
-  await expect(
-    page.getByText(/Bilder fra den andre siden av glasset\./i),
-  ).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Altered perception\./i })).toBeVisible();
+  await expect(page.getByText(/Psychedelic art portfolio/i)).toBeVisible();
+  await expect(page.getByText(/Images from the other side of the glass\./i)).toHaveCount(0);
+});
+
+test('mobile shader headings keep the requested gallery scale and about placement', async ({
+  page,
+}) => {
+  await page.goto('/#gallery');
+  await page.locator('#gallery-library-heading').scrollIntoViewIfNeeded();
+
+  const galleryGeometry = await page.locator('#gallery-library-heading').evaluate((heading) => {
+    const rect = heading.getBoundingClientRect();
+    const word = heading.querySelector('.section-shader-word');
+
+    return {
+      fontSize: Number.parseFloat(window.getComputedStyle(heading).fontSize),
+      overflowX: document.documentElement.scrollWidth - window.innerWidth,
+      visibleText: word?.getAttribute('data-text') ?? '',
+      width: rect.width,
+    };
+  });
+
+  expect(galleryGeometry.visibleText).toBe('Galleri.');
+  expect(galleryGeometry.fontSize).toBeGreaterThanOrEqual(48);
+  expect(galleryGeometry.width).toBeLessThanOrEqual(390);
+  expect(galleryGeometry.overflowX).toBeLessThanOrEqual(0);
+
+  await page.goto('/#about');
+  await page.locator('#about-heading').scrollIntoViewIfNeeded();
+
+  const aboutGeometry = await page.locator('#about').evaluate((section) => {
+    const heading = section.querySelector('#about-heading');
+    const portrait = section.querySelector('img');
+    const word = section.querySelector('#about-heading .section-shader-word');
+
+    if (!(heading instanceof HTMLElement) || !(portrait instanceof HTMLElement)) {
+      return {
+        found: false,
+        headingBottom: 0,
+        headingCenter: 0,
+        imageCenter: 0,
+        imageTop: 0,
+        overflowX: document.documentElement.scrollWidth - window.innerWidth,
+        visualLineCount: 0,
+        visualText: '',
+      };
+    }
+
+    const headingRect = heading.getBoundingClientRect();
+    const portraitRect = portrait.getBoundingClientRect();
+
+    return {
+      found: true,
+      headingBottom: headingRect.bottom,
+      headingCenter: headingRect.left + headingRect.width / 2,
+      imageCenter: portraitRect.left + portraitRect.width / 2,
+      imageTop: portraitRect.top,
+      overflowX: document.documentElement.scrollWidth - window.innerWidth,
+      visualLineCount: section.querySelectorAll('#about-heading .section-shader-word').length,
+      visualText: word?.getAttribute('data-text') ?? '',
+    };
+  });
+
+  expect(aboutGeometry.found).toBe(true);
+  expect(aboutGeometry.visualText).toBe('Sinnet bak bildet');
+  expect(aboutGeometry.visualLineCount).toBe(1);
+  expect(Math.abs(aboutGeometry.headingCenter - aboutGeometry.imageCenter)).toBeLessThanOrEqual(28);
+  expect(aboutGeometry.imageTop).toBeGreaterThan(aboutGeometry.headingBottom);
+  expect(aboutGeometry.overflowX).toBeLessThanOrEqual(0);
+});
+
+test('mobile text blocks keep a deliberate reading measure', async ({ page }) => {
+  await page.goto('/');
+  await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.6));
+  await page.locator('#selected-works-heading').waitFor({ state: 'visible' });
+
+  const workGeometry = await page.locator('#work').evaluate((section) => {
+    const button = section.querySelector('button');
+    const subtitle = section.querySelector('.gallery-subtitle');
+    const buttonRect = button?.getBoundingClientRect();
+    const subtitleRect = subtitle?.getBoundingClientRect();
+
+    return {
+      buttonCenter:
+        buttonRect === undefined ? null : buttonRect.left + buttonRect.width / 2,
+      overflowX: document.documentElement.scrollWidth - window.innerWidth,
+      subtitleWidth: subtitleRect?.width ?? 0,
+      viewportCenter: window.innerWidth / 2,
+    };
+  });
+
+  expect(workGeometry.overflowX).toBeLessThanOrEqual(0);
+  expect(workGeometry.subtitleWidth).toBeLessThanOrEqual(300);
+  expect(workGeometry.buttonCenter).not.toBeNull();
+  if (workGeometry.buttonCenter === null) {
+    throw new Error('Selected works CTA should be measurable on mobile');
+  }
+  expect(Math.abs(workGeometry.buttonCenter - workGeometry.viewportCenter)).toBeLessThanOrEqual(18);
+
+  await page.locator('#about-heading').scrollIntoViewIfNeeded();
+
+  const aboutCopyGeometry = await page.locator('#about').evaluate((section) => {
+    const copyBlocks = Array.from(section.querySelectorAll('.about-body-copy'));
+    const socialRow = section.querySelector('.about-social-row');
+    const firstCopyRect = copyBlocks[0]?.getBoundingClientRect();
+    const copyRects = copyBlocks.map((block) => {
+      const rect = block.getBoundingClientRect();
+
+      return {
+        left: rect.left,
+        right: rect.right,
+        width: rect.width,
+      };
+    });
+    const socialRect = socialRow?.getBoundingClientRect();
+
+    return {
+      copyRects,
+      overflowX: document.documentElement.scrollWidth - window.innerWidth,
+      socialLeft: socialRect?.left ?? null,
+      firstCopyLeft: firstCopyRect?.left ?? null,
+    };
+  });
+
+  expect(aboutCopyGeometry.copyRects).toHaveLength(2);
+  for (const rect of aboutCopyGeometry.copyRects) {
+    expect(rect.left).toBeGreaterThanOrEqual(40);
+    expect(rect.right).toBeLessThanOrEqual(350);
+    expect(rect.width).toBeLessThanOrEqual(300);
+  }
+  expect(aboutCopyGeometry.socialLeft).not.toBeNull();
+  expect(aboutCopyGeometry.firstCopyLeft).not.toBeNull();
+  if (
+    aboutCopyGeometry.socialLeft === null
+    || aboutCopyGeometry.firstCopyLeft === null
+  ) {
+    throw new Error('About social row and copy should be measurable on mobile');
+  }
+  expect(Math.abs(aboutCopyGeometry.socialLeft - aboutCopyGeometry.firstCopyLeft)).toBeLessThanOrEqual(2);
+  expect(aboutCopyGeometry.overflowX).toBeLessThanOrEqual(0);
 });
 
 test('mobile menu traps focus and closes back to the trigger', async ({ page }) => {
@@ -204,10 +358,13 @@ test('mobile artwork modal covers the viewport and restores focus', async ({ pag
 
   const dialogBounds = await dialog.boundingBox();
   expect(dialogBounds).not.toBeNull();
-  expect(dialogBounds!.x).toBeLessThanOrEqual(1);
-  expect(dialogBounds!.y).toBeLessThanOrEqual(1);
-  expect(dialogBounds!.width).toBeGreaterThanOrEqual(389);
-  expect(dialogBounds!.height).toBeGreaterThanOrEqual(843);
+  if (dialogBounds === null) {
+    throw new Error('Mobile artwork modal bounds should be available');
+  }
+  expect(dialogBounds.x).toBeLessThanOrEqual(1);
+  expect(dialogBounds.y).toBeLessThanOrEqual(1);
+  expect(dialogBounds.width).toBeGreaterThanOrEqual(389);
+  expect(dialogBounds.height).toBeGreaterThanOrEqual(843);
 
   await expect(page.getByRole('button', { name: /lukk modal/i })).toBeFocused();
 

@@ -35,12 +35,9 @@ describe('section semantics', () => {
 
     const heading = screen.getByRole('heading', { name: CONTACT_COPY.heading });
 
-    expect(CONTACT_COPY.heading).toBe(
-      `${CONTACT_COPY.headingParts.lead} ${CONTACT_COPY.headingParts.accent}`,
-    );
+    expect(CONTACT_COPY.heading).toBe(CONTACT_COPY.headingParts.lead);
     expect(heading).toHaveAttribute('data-heading-variant', 'default');
     expect(heading).toHaveTextContent(CONTACT_COPY.headingParts.lead);
-    expect(heading).toHaveTextContent(CONTACT_COPY.headingParts.accent);
   });
 
   it('allows named regions to reference the default shader heading by id', () => {

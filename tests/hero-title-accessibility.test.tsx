@@ -85,19 +85,17 @@ describe('Hero title accessibility contract', () => {
     renderHeroSection();
 
     expect(
-      screen.getByRole('heading', { level: 1, name: /endrede sanseflater\./i }),
+      screen.getByRole('heading', { level: 1, name: /altered perception\./i }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('heading', { name: /endrede sanseflater\./i })).toHaveLength(1);
+    expect(screen.getAllByRole('heading', { name: /altered perception\./i })).toHaveLength(1);
     expect(getHeroTitleVisual()).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it('renders the hero eyebrow and refined subtitle copy', () => {
+  it('renders the hero eyebrow without a supporting line under the title', () => {
     renderHeroSection();
 
-    expect(screen.getByText(/psykedelisk kunstportefølje/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/bilder fra den andre siden av glasset\./i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/psychedelic art portfolio/i)).toBeInTheDocument();
+    expect(document.querySelector('.hero-subtitle')).toBeNull();
   });
 
   it('renders a forced fallback without reporting a wordmark mismatch', () => {
@@ -113,8 +111,8 @@ describe('Hero title accessibility contract', () => {
     );
 
     expect(getHeroTitleVisual()).toHaveAttribute('data-mode', 'fallback');
-    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Endrede');
-    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Sanseflater');
+    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Altered');
+    expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Perception');
     expect(reportError).not.toHaveBeenCalled();
   });
 

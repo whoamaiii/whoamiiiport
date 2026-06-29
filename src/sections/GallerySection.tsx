@@ -72,7 +72,7 @@ export function GallerySection({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={reducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.1 }}
-          className="mx-auto mt-10 flex max-w-5xl justify-start sm:justify-center"
+          className="mx-auto mt-10 flex max-w-5xl justify-center"
         >
           <button
             type="button"

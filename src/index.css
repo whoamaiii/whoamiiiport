@@ -712,6 +712,9 @@
   display: block;
   width: min(100%, 42rem);
   isolation: isolate;
+  overflow: visible;
+  --hero-title-word-bleed-inline: clamp(0.08em, 2vw, 0.16em);
+  --hero-title-word-bleed-block: 0.12em;
   filter:
     drop-shadow(0 2px 5px rgba(0, 0, 0, 0.24))
     drop-shadow(0 9px 18px rgba(0, 0, 0, 0.1))
@@ -733,6 +736,7 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 0;
+  overflow: visible;
 }
 
 .hero-title-shader-word {
@@ -745,6 +749,7 @@
   letter-spacing: -0.055em;
   line-height: 0.78;
   isolation: isolate;
+  overflow: visible;
   transform: skewX(-2.5deg);
   transform-origin: left center;
 }
@@ -760,6 +765,10 @@
   content: attr(data-text);
   position: absolute;
   inset: 0;
+  box-sizing: border-box;
+  display: block;
+  padding-inline: var(--hero-title-word-bleed-inline);
+  padding-block: var(--hero-title-word-bleed-block);
   pointer-events: none;
   white-space: pre;
   color: transparent;
@@ -808,6 +817,10 @@
 }
 
 .hero-title-shader-measure {
+  display: inline-block;
+  box-sizing: border-box;
+  padding-inline: var(--hero-title-word-bleed-inline);
+  padding-block: var(--hero-title-word-bleed-block);
   visibility: hidden;
   white-space: pre;
   pointer-events: none;
@@ -833,6 +846,9 @@
 }
 
 .hero-title-shader-fallback {
+  box-sizing: border-box;
+  padding-inline: var(--hero-title-word-bleed-inline);
+  padding-block: var(--hero-title-word-bleed-block);
   opacity: 0;
   visibility: hidden;
   color: transparent;
@@ -1027,10 +1043,45 @@
 .gallery-title {
   display: block;
   font-family: "Avenir Next Condensed", "Arial Narrow", var(--font-sans);
-  font-size: clamp(2.6rem, 8vw, 4.9rem);
+  font-size: clamp(3.15rem, 12vw, 5.4rem);
   font-weight: 700;
   letter-spacing: -0.055em;
   line-height: 0.9;
+}
+
+.about-copy-stack {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  --about-copy-measure: min(100%, 18.75rem);
+}
+
+.about-heading {
+  max-width: min(100%, 21rem);
+  align-self: center;
+}
+
+.about-body-copy,
+.about-social-row {
+  width: var(--about-copy-measure);
+  align-self: center;
+}
+
+.about-body-copy {
+  text-wrap: pretty;
+}
+
+@media (min-width: 768px) {
+  .about-heading {
+    max-width: none;
+    align-self: flex-start;
+  }
+
+  .about-body-copy,
+  .about-social-row {
+    --about-copy-measure: min(100%, 24rem);
+    align-self: flex-start;
+  }
 }
 
 .gallery-subtitle {
@@ -1112,6 +1163,10 @@
   position: relative;
   display: inline-block;
   isolation: isolate;
+  overflow: visible;
+  text-align: center;
+  --section-shader-word-bleed-inline: clamp(0.22em, 3vw, 0.34em);
+  --section-shader-word-bleed-block: 0.035em;
 }
 
 .section-shader-lines {
@@ -1125,6 +1180,7 @@
 
 .section-shader-line {
   display: block;
+  overflow: visible;
 }
 
 .section-shader-title.text-center .section-shader-lines {
@@ -1136,7 +1192,12 @@
   content: attr(data-text);
   position: absolute;
   inset: 0;
+  box-sizing: border-box;
+  display: block;
+  padding-inline: var(--section-shader-word-bleed-inline);
+  padding-block: var(--section-shader-word-bleed-block);
   pointer-events: none;
+  text-align: center;
   white-space: pre;
   color: transparent;
   font: inherit;
@@ -1180,6 +1241,10 @@
 }
 
 .section-shader-measure {
+  display: inline-block;
+  box-sizing: border-box;
+  padding-inline: var(--section-shader-word-bleed-inline);
+  padding-block: var(--section-shader-word-bleed-block);
   visibility: hidden;
   white-space: pre;
   pointer-events: none;
@@ -1205,6 +1270,10 @@
 }
 
 .section-shader-fallback {
+  box-sizing: border-box;
+  padding-inline: var(--section-shader-word-bleed-inline);
+  padding-block: var(--section-shader-word-bleed-block);
+  text-align: center;
   opacity: 0;
   transition: opacity 220ms ease;
   color: transparent;
@@ -1241,6 +1310,10 @@
 
 .section-shader-static-fallback {
   display: block;
+  box-sizing: border-box;
+  padding-inline: var(--section-shader-word-bleed-inline);
+  padding-block: var(--section-shader-word-bleed-block);
+  text-align: center;
   white-space: pre;
   color: transparent;
   background-image:
@@ -1348,7 +1421,7 @@
   }
 
   .gallery-title {
-    font-size: clamp(2.2rem, 10vw, 3rem);
+    font-size: clamp(3.05rem, 13vw, 3.55rem);
   }
 }
 

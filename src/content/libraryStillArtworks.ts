@@ -1,177 +1,173 @@
-import type { SpecialArtwork } from '../components/artworkData';
+import { bodyStillArtworks } from './libraryStillBodyArtworks';
+import { curatedArtworkNotes } from './curatedArtworkNotes';
+import type { LibraryArtworkEntry } from './portfolioGroups';
 
-interface LibraryStillArtworkEntry {
-  readonly id: string;
-  readonly artwork: SpecialArtwork;
-}
-
-export const stillArtworks = [
+const coreStillArtworks: readonly LibraryArtworkEntry[] = [
   {
-    id: 'eye-terrain',
+    id: 'textile-corridor',
+    group: 'liminal-rooms',
     artwork: {
-      imageSlug: 'eye-terrain',
-      title: {
-        primary: 'Øyeterreng',
-        secondary: 'nært signalportrett',
-      },
-      sections: [
-        {
-          body:
-            'Et øye blir til et lite værsystem. Hud, vipper, iris og opphøyde mønstre ligger i det samme våte optiske feltet, nært nok til at ansiktet begynner å lese som terreng.',
-        },
-        {
-          heading: 'Lesning',
-          body:
-            'Jeg liker når det endrede laget føles innebygd i stedet for påført. Øyet forblir menneskelig, men overflaten rundt begynner å oppføre seg som et kart over trykk, søvn og lys.',
-        },
-      ],
+      imageSlug: 'textile-corridor',
+      title: { primary: 'Tekstilkorridor', secondary: 'anbefalt åpner' },
+      sections: curatedArtworkNotes['textile-corridor'],
     },
   },
   {
-    id: 'trippy-jump',
+    id: 'corridor-touch',
+    group: 'liminal-rooms',
     artwork: {
-      imageSlug: 'trippy-jump',
-      title: {
-        primary: 'Fargefall',
-        secondary: 'fallende fargebrudd',
-      },
-      sections: [
-        {
-          body:
-            'En kropp faller inn i et fargebrudd. Bakke, himmel og bevegelsesuskarphet kollapser til én mettet tunnel, og figuren blir det eneste lesbare inne i støtet.',
-        },
-        {
-          heading: 'Lesning',
-          body:
-            'Dette handler mer om fart enn sted. Jeg ville at bildet skulle føles som sekundet før landing, når verden strekker seg og kroppen fortsatt prøver å holde seg samlet.',
-        },
-      ],
+      imageSlug: 'corridor-touch',
+      title: { primary: 'Korridorberøring', secondary: 'hånd mot levende vegg' },
+      sections: curatedArtworkNotes['corridor-touch'],
     },
   },
   {
-    id: 'snow-road',
+    id: 'patterned-hallway',
+    group: 'liminal-rooms',
     artwork: {
-      imageSlug: 'snow-road',
-      title: {
-        primary: 'Snøvei',
-        secondary: 'kald kaustisk vei',
-      },
-      sections: [
-        {
-          body:
-            'Gatelys og snø blir til en kald flytende hud. Veien er vanlig, men kanten av den begynner å krype med løkker, riller og små optiske blåmerker.',
-        },
-        {
-          heading: 'Lesning',
-          body:
-            'Tilbakeholdenheten er viktig. Det føles fortsatt som en nattlig gåtur, ikke et fantasisted. Den endrede tilstanden kommer gjennom snøen og lyset, og derfor føles den mer troverdig for meg.',
-        },
-      ],
+      imageSlug: 'patterned-hallway',
+      title: { primary: 'Mønstret motelhall', secondary: 'romlig drift' },
+      sections: curatedArtworkNotes['patterned-hallway'],
     },
   },
   {
-    id: 'leg-prism',
+    id: 'green-motel-wall',
+    group: 'liminal-rooms',
     artwork: {
-      imageSlug: 'leg-prism',
-      title: {
-        primary: 'Beinprisme',
-        secondary: 'hvilende kroppssignal',
-      },
-      sections: [
-        {
-          body:
-            'Beina bare hviler, men rommet er ikke rolig. Regnbuetrykk beveger seg over hud, gulv og skygge til kroppen føles som om den mottar vær fra innsiden av teppet.',
-        },
-        {
-          heading: 'Lesning',
-          body:
-            'Dette hører sammen med hånd- og negleverkene fordi kroppen først får være vanlig. Det rare er ikke et kostyme; det er lys som passerer over sliten hud og gjør det kjente nyfølsomt.',
-        },
-      ],
+      imageSlug: 'green-motel-wall',
+      title: { primary: 'Grønn motelhud', secondary: 'organisk veggvariant' },
+      sections: curatedArtworkNotes['green-motel-wall'],
     },
   },
   {
-    id: 'drain-bloom',
+    id: 'motel-feet',
+    group: 'liminal-rooms',
     artwork: {
-      imageSlug: 'drain-bloom',
-      title: {
-        primary: 'Slukblomst',
-        secondary: 'baderomsgulvorganisme',
-      },
-      sections: [
-        {
-          body:
-            'Et baderomsgulv blir til et vått lite økosystem. Såpe, fliser, sluk, hår, moseaktig materiale og regnbuemønster samler seg på det laveste punktet og begynner å oppføre seg som én organisme.',
-        },
-        {
-          heading: 'Lesning',
-          body:
-            'Jeg liker den stygge hjemlige sannheten i det. Det er ikke en ren portal. Det er smuss, vann og rester av kroppsmateriale som blir vakkert uten å late som det er rent.',
-        },
-      ],
-    },
-  },
-  {
-    id: 'open-hand-mouth',
-    artwork: {
-      imageSlug: 'open-hand-mouth',
-      title: {
-        primary: 'Åpen håndmunn',
-        secondary: 'visceral håndflateportal',
-      },
-      sections: [
-        {
-          body:
-            'Hånden åpner seg på for mange måter samtidig. Tenner, våt membran, mose og mettet mønster gjør håndflaten til noe mellom et sår, en munn og en døråpning.',
-        },
-        {
-          heading: 'Lesning',
-          body:
-            'Dette er et av de mer konfronterende kroppsverkene, men det trenger fortsatt håndverk og farge for å bære seg. Jeg vil at det skal føles ekkelt, levende og merkelig inviterende, ikke bare sjokkerende.',
-        },
-      ],
+      imageSlug: 'motel-feet',
+      title: { primary: 'Motel med føtter', secondary: 'førstepersonsrom' },
+      sections: curatedArtworkNotes['motel-feet'],
     },
   },
   {
     id: 'night-bus',
+    group: 'liminal-rooms',
     artwork: {
       imageSlug: 'night-bus',
-      title: {
-        primary: 'Nattbuss',
-        secondary: 'transittmønsterstudie',
-      },
-      sections: [
-        {
-          body:
-            'Et regnvått bussinteriør blir til et lite arkiv av refleksjoner, vindusglans, mønstrede seter og kontakt i håndskala. Kollektivtransport blir et privat endret rom et øyeblikk.',
-        },
-        {
-          heading: 'Lesning',
-          body:
-            'Det vanlige stedet er det viktige. Altered-state-språket kommer gjennom stoff, glass, regn og slitent nattlys, ikke gjennom å rømme fra stedet.',
-        },
-      ],
+      title: { primary: 'Nattbuss', secondary: 'transittmønster' },
+      sections: curatedArtworkNotes['night-bus'],
     },
   },
   {
-    id: 'handpose-mouth',
+    id: 'color-flood-hallway',
+    group: 'liminal-rooms',
     artwork: {
-      imageSlug: 'handpose-mouth',
-      title: {
-        primary: 'Håndposemunn',
-        secondary: 'bordobjekt-kropp',
-      },
-      sections: [
-        {
-          body:
-            'Et håndformet objekt åpner seg til tenner, tråder og organisk tekstur, lagt på en tallerken som noe halvveis mellom middag, skulptur og en dårlig idé som ble nyttig.',
-        },
-        {
-          heading: 'Lesning',
-          body:
-            'Det ligger mellom kroppshorror og håndverksobjekt. Jeg vil at ubehaget skal være ekte, men ikke tomt; detaljene må fortsette å trekke blikket tilbake etter den første reaksjonen.',
-        },
-      ],
+      imageSlug: 'color-flood-hallway',
+      title: { primary: 'Fargekorridor', secondary: 'maksimal overgang' },
+      sections: curatedArtworkNotes['color-flood-hallway'],
     },
   },
-] satisfies readonly LibraryStillArtworkEntry[];
+  {
+    id: 'living-floor',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: 'living-floor',
+      title: { primary: 'Levende gulv', secondary: 'ren hovedversjon' },
+      sections: curatedArtworkNotes['living-floor'],
+    },
+  },
+  {
+    id: 'coffee-cup',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: 'coffee-cup',
+      title: { primary: 'Kaffekopp', secondary: 'ritualobjekt' },
+      sections: curatedArtworkNotes['coffee-cup'],
+    },
+  },
+  {
+    id: 'leg-prism',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: 'leg-prism',
+      title: { primary: 'Beinprisme', secondary: 'kropp på gulvfelt' },
+      sections: curatedArtworkNotes['leg-prism'],
+    },
+  },
+  {
+    id: 'drain-bloom',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: 'drain-bloom',
+      title: { primary: 'Slukblomst', secondary: 'våtromsorganisme' },
+      sections: curatedArtworkNotes['drain-bloom'],
+    },
+  },
+  {
+    id: 'mushroom-offering',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: 'mushroom-offering',
+      title: { primary: 'Tatovert sopphånd', secondary: 'klar signatur' },
+      sections: curatedArtworkNotes['mushroom-offering'],
+    },
+  },
+  {
+    id: 'mycelial-hand',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: 'mycelial-hand',
+      title: { primary: 'Magisk hånd', secondary: 'organisk portal' },
+      sections: curatedArtworkNotes['mycelial-hand'],
+    },
+  },
+  {
+    id: 'fractal-palm',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: 'fractal-palm',
+      title: { primary: 'Fraktal håndflate', secondary: 'makroportal' },
+      sections: curatedArtworkNotes['fractal-palm'],
+    },
+  },
+  {
+    id: 'phone-portal',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: 'phone-portal',
+      title: { primary: 'Telefonportal', secondary: 'ramme i ramme' },
+      sections: curatedArtworkNotes['phone-portal'],
+    },
+  },
+  {
+    id: 'mirror-wanderer',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: 'mirror-wanderer',
+      title: { primary: 'Vandreren', secondary: 'speilrom med hånd' },
+      sections: curatedArtworkNotes['mirror-wanderer'],
+    },
+  },
+  {
+    id: 'fingernail-portal',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: 'fingernail-portal',
+      title: { primary: 'Negleportal', secondary: 'liten kroppsåpning' },
+      sections: curatedArtworkNotes['fingernail-portal'],
+    },
+  },
+  {
+    id: 'soft-mushroom-hand',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: 'soft-mushroom-hand',
+      title: { primary: 'Myk sopphånd', secondary: 'meditativ variant' },
+      sections: curatedArtworkNotes['soft-mushroom-hand'],
+    },
+  },
+];
+
+export const stillArtworks: readonly LibraryArtworkEntry[] = [
+  ...coreStillArtworks,
+  ...bodyStillArtworks,
+];

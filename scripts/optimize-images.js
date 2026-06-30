@@ -13,12 +13,6 @@ import sharp from 'sharp';
 import { existsSync, mkdirSync, statSync } from 'fs';
 import { join } from 'path';
 
-// Source image configurations.
-// Only slugs with originals under src/assets/ belong here. The current gallery
-// artworks (mushroom-offering, mycelial-hand, hand-portal-video-poster,
-// skin-terrain-video-poster) and the workflow carousel are manually managed
-// runtime assets under public/images/ until their originals are recovered —
-// see CLAUDE.md and tests/image-contract.test.ts.
 const SOURCES = [
   {
     input: './src/assets/liquid-perception-hero.png',

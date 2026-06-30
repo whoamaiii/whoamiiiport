@@ -15,7 +15,7 @@ describe('InteractiveArtworkCard image contracts', () => {
       '(prefers-reduced-motion: reduce)': false,
       '(min-width: 1024px)': false,
     });
-    const getModalSrcset = vi.fn(() => '/images/hand-portal-video-poster-modal-1600.webp 1600w');
+    const getModalSrcset = vi.fn(() => '/images/corridor-master-poster-modal-1600.webp 1600w');
 
     vi.doMock('../src/utils/images', async (importOriginal) => {
       const actual = await importOriginal<typeof import('../src/utils/images')>();
@@ -29,14 +29,14 @@ describe('InteractiveArtworkCard image contracts', () => {
 
     render(
       <InteractiveArtworkCard
-        imageSlug="hand-portal-video-poster"
-        videoSrc="/videos/hand-portal-study.mp4"
-        title={{ primary: 'Håndportal' }}
+        imageSlug="corridor-master-poster"
+        videoSrc="/videos/corridor-master.mp4"
+        title={{ primary: 'Korridormaster' }}
         sections={[{ body: 'Video notes.' }]}
       />,
     );
 
-    expect(screen.getByRole('button', { name: /se håndportal video med notater/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /se korridormaster video med notater/i })).toBeInTheDocument();
     expect(getModalSrcset).not.toHaveBeenCalled();
   });
 
@@ -244,7 +244,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     await waitFor(() => {
       expect(image).toHaveAttribute('src', '/images/mycelial-hand-800.webp');
       expect(image).toHaveAttribute('srcset');
-      expect(image).toHaveAttribute('alt', expect.stringMatching(/hånd med sopp/i));
+      expect(image).toHaveAttribute('alt', expect.stringMatching(/magisk hånd/i));
     });
   });
 });

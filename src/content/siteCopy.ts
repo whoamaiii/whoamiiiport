@@ -28,9 +28,9 @@ export const HERO_COPY: HeroCopy = {
 } as const;
 
 export const GALLERY_COPY: GalleryCopy = {
-  eyebrow: 'PORTFØLJEUTVALG',
+  eyebrow: 'KURATERT UTVALG',
   heading: 'Utvalgte verk.',
-  subtitle: 'Drømmebrente bilder og digitale artefakter hentet fra arkivet.',
+  subtitle: 'Første inngang til de sorterte seriene: rom, hjemlige flater, hender og ritualobjekter.',
 } as const;
 
 export const ABOUT_COPY = {

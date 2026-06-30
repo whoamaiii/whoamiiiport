@@ -21,6 +21,7 @@
     "test:e2e:preview": "npm run build && playwright test --config=playwright.preview.config.ts",
     "optimize-images": "node scripts/optimize-images.js && npm run optimize-avif",
     "optimize-avif": "node scripts/generate-avif-images.mjs",
+    "generate:curated-assets": "node scripts/generate-curated-portfolio-assets.mjs",
     "perf:mobile": "node scripts/measure-load-performance.mjs http://localhost:4173/"
   },
   "dependencies": {

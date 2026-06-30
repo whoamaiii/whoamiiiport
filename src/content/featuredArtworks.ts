@@ -1,31 +1,23 @@
-import {
-  fingernailPortalArtwork,
-  handPortalVideoArtwork,
-  mushroomOfferingArtwork,
-  mycelialHandArtwork,
-  type SpecialArtwork,
-} from '../components/artworkData';
+import type { SpecialArtwork } from '../components/artworkData';
+import { getLibraryArtworkEntry } from './libraryArtworks';
 
 interface FeaturedArtworkEntry {
-  id: string;
-  artwork: SpecialArtwork;
+  readonly id: string;
+  readonly artwork: SpecialArtwork;
 }
 
-export const FEATURED_ARTWORKS: FeaturedArtworkEntry[] = [
-  {
-    id: 'mushroom-offering',
-    artwork: mushroomOfferingArtwork,
-  },
-  {
-    id: 'mycelial-hand',
-    artwork: mycelialHandArtwork,
-  },
-  {
-    id: 'hand-portal-video',
-    artwork: handPortalVideoArtwork,
-  },
-  {
-    id: 'fingernail-portal',
-    artwork: fingernailPortalArtwork,
-  },
-];
+const featuredArtworkIds = [
+  'textile-corridor',
+  'night-bus',
+  'living-floor',
+  'mushroom-offering',
+] as const;
+
+export const FEATURED_ARTWORKS = featuredArtworkIds.map((id) => {
+  const entry = getLibraryArtworkEntry(id);
+
+  return {
+    id: entry.id,
+    artwork: entry.artwork,
+  };
+}) satisfies readonly FeaturedArtworkEntry[];

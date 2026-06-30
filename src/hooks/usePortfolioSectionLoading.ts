@@ -5,6 +5,7 @@ import {
   getInitialLibrarySectionLoad,
   getSectionIdFromHash,
   isDeferredSection,
+  preloadAboutImage,
   preloadFirstGalleryImage,
 } from '../utils/sectionLoading';
 
@@ -44,6 +45,7 @@ export function usePortfolioSectionLoading({
 
   const enableDeferredSections = useCallback(() => {
     setLoadDeferredSections(true);
+    preloadAboutImage();
   }, []);
 
   const enableGallerySection = useCallback(() => {
@@ -130,6 +132,10 @@ export function usePortfolioSectionLoading({
 
   const handleSectionNavigation = useCallback(
     (id: string) => {
+      if (typeof window !== 'undefined' && window.location.hash !== `#${id}`) {
+        window.history.pushState(null, '', `#${id}`);
+      }
+
       if (id === 'work' || isDeferredSection(id)) {
         enableGallerySection();
       }
@@ -156,6 +162,36 @@ export function usePortfolioSectionLoading({
       tryPendingSectionNavigation,
     ],
   );
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const sectionId = getSectionIdFromHash();
+
+      if (!sectionId) {
+        return;
+      }
+
+      if (sectionId === 'work' || isDeferredSection(sectionId)) {
+        enableGallerySectionRef.current();
+      }
+
+      if (sectionId === 'gallery') {
+        enableLibrarySectionRef.current();
+      }
+
+      if (isDeferredSection(sectionId)) {
+        enableDeferredSectionsRef.current();
+      }
+
+      pendingSectionNavigationRef.current = sectionId;
+      pendingNavigationAttemptsRef.current = 0;
+      tryPendingSectionNavigation();
+    };
+
+    window.addEventListener('hashchange', handleHashChange);
+
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [tryPendingSectionNavigation]);
 
   useEffect(() => {
     if (loadGallerySection) {

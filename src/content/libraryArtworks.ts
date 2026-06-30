@@ -1,15 +1,18 @@
-import type { SpecialArtwork } from '../components/artworkData';
-import { FEATURED_ARTWORKS } from './featuredArtworks';
 import { stillArtworks } from './libraryStillArtworks';
 import { videoArtworks } from './libraryVideoArtworks';
-
-interface LibraryArtworkEntry {
-  readonly id: string;
-  readonly artwork: SpecialArtwork;
-}
+import type { LibraryArtworkEntry } from './portfolioGroups';
 
 export const LIBRARY_ARTWORKS: readonly LibraryArtworkEntry[] = [
-  ...FEATURED_ARTWORKS,
   ...stillArtworks,
   ...videoArtworks,
 ];
+
+export function getLibraryArtworkEntry(id: string): LibraryArtworkEntry {
+  const entry = LIBRARY_ARTWORKS.find((artworkEntry) => artworkEntry.id === id);
+
+  if (entry) {
+    return entry;
+  }
+
+  throw new Error(`Missing curated artwork entry: ${id}`);
+}

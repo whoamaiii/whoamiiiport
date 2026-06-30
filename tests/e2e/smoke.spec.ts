@@ -12,11 +12,11 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   await page.evaluate(() => document.querySelector('#work')?.scrollIntoView({ block: 'start' }));
   await page.waitForFunction(() => Boolean(document.querySelector('#work')));
 
-  await expect(page.getByText(/PORTFØLJEUTVALG/i)).toBeVisible();
+  await expect(page.getByText(/KURATERT UTVALG/i)).toBeVisible();
   await expect(page.getByRole('heading', { name: /Utvalgte verk\./i })).toBeVisible();
   await expect(page.getByRole('region', { name: /Utvalgte verk\./i })).toBeVisible();
   await expect(
-    page.getByText(/Drømmebrente bilder og digitale artefakter hentet fra arkivet\./i),
+    page.getByText(/Første inngang til de sorterte seriene/i),
   ).toBeVisible();
   await expect(page.getByRole('main')).toHaveCount(1);
   await expect(page.getByTestId('site-header').getByRole('link', { name: /whoamiii/i })).toBeVisible();
@@ -82,12 +82,12 @@ test('skip link lands on main content and artwork modal opens and closes', async
   await expect(page.locator('#main-content')).toBeFocused();
 
   const artworkButton = page.getByRole('button', {
-    name: /se soppoffer.*verk/i,
+    name: /se tekstilkorridor.*verk/i,
   });
   await artworkButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /soppoffer/i,
+    name: /tekstilkorridor/i,
   });
   await expect(dialog).toBeVisible();
   await expect(page.getByRole('button', { name: /lukk modal/i })).toBeFocused();
@@ -103,7 +103,7 @@ test('skip link lands on main content and artwork modal opens and closes', async
 
   await expect(
     dialog.getByRole('img', {
-      name: /hånd som holder en sopp/i,
+      name: /smal tekstilkorridor/i,
     }),
   ).toBeVisible();
 
@@ -168,17 +168,17 @@ test('mobile process video card loads and exposes playback control', async ({ pa
     .toBeLessThanOrEqual(0);
 });
 
-test('third gallery card opens the Håndportal video modal', async ({ page }) => {
-  await page.goto('/#work');
+test('full gallery opens the Korridormaster video modal', async ({ page }) => {
+  await page.goto('/#gallery');
 
   const videoButton = page.getByRole('button', {
-    name: /se håndportal.*video/i,
+    name: /se korridormaster.*video/i,
   });
   await videoButton.scrollIntoViewIfNeeded();
   await videoButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /håndportal/i,
+    name: /korridormaster/i,
   });
   await expect(dialog).toBeVisible();
 
@@ -187,7 +187,7 @@ test('third gallery card opens the Håndportal video modal', async ({ page }) =>
   await expect(video).toHaveJSProperty('autoplay', true);
   await expect(video).toHaveJSProperty('muted', true);
   await expect(video).toHaveAttribute('preload', 'metadata');
-  await expect(video.locator('source')).toHaveAttribute('src', '/videos/hand-portal-study.mp4');
+  await expect(video.locator('source')).toHaveAttribute('src', '/videos/corridor-master.mp4');
   await expect
     .poll(() => video.evaluate((element) => !(element as HTMLVideoElement).paused))
     .toBe(true);
@@ -274,33 +274,36 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
     .toEqual([]);
 });
 
-test('mobile header keeps the hamburger lines centered in the glass bubble', async ({ page }) => {
+test('mobile header keeps the liquid glass menu icon centered', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
 
   const geometry = await page.evaluate(() => {
     const header = document.querySelector('[data-testid="site-header"]');
     const menuButton = document.querySelector('.site-header-menu-trigger');
-    const menuLines = document.querySelector('.site-header-menu-trigger-lines');
+    const menuIcon = document.querySelector('.site-header-menu-trigger .site-header-menu-trigger-icon');
 
-    if (!header || !menuButton || !menuLines) {
+    if (!header || !menuButton || !menuIcon) {
       return null;
     }
 
     const headerRect = header.getBoundingClientRect();
     const buttonRect = menuButton.getBoundingClientRect();
-    const linesRect = menuLines.getBoundingClientRect();
-    const expectedLineCenterX = buttonRect.left + buttonRect.width / 2;
+    const iconRect = menuIcon.getBoundingClientRect();
+    const expectedIconCenterX = buttonRect.left + buttonRect.width / 2;
     const expectedCenterY = buttonRect.top + buttonRect.height / 2;
-    const lineCenterX = linesRect.left + linesRect.width / 2;
-    const lineCenterY = linesRect.top + linesRect.height / 2;
+    const iconCenterX = iconRect.left + iconRect.width / 2;
+    const iconCenterY = iconRect.top + iconRect.height / 2;
 
     return {
       buttonRight: buttonRect.right,
       headerRight: headerRect.right,
-      lineDeltaX: Math.abs(lineCenterX - expectedLineCenterX),
-      lineDeltaY: Math.abs(lineCenterY - expectedCenterY),
-      lineCount: menuLines.querySelectorAll('span').length,
+      iconDeltaX: Math.abs(iconCenterX - expectedIconCenterX),
+      iconDeltaY: Math.abs(iconCenterY - expectedCenterY),
+      hasGlassTreatment:
+        menuButton.classList.contains('lg-icon-button')
+        || menuButton.classList.contains('site-header-menu-trigger--fallback'),
+      iconCount: menuButton.querySelectorAll('.site-header-menu-trigger-icon').length,
       overflowX: document.documentElement.scrollWidth - window.innerWidth,
     };
   });
@@ -309,9 +312,10 @@ test('mobile header keeps the hamburger lines centered in the glass bubble', asy
   if (geometry === null) {
     throw new Error('Mobile header geometry should be available');
   }
-  expect(geometry.lineCount).toBe(3);
-  expect(geometry.lineDeltaX).toBeLessThanOrEqual(3);
-  expect(geometry.lineDeltaY).toBeLessThanOrEqual(3);
+  expect(geometry.hasGlassTreatment).toBe(true);
+  expect(geometry.iconCount).toBe(1);
+  expect(geometry.iconDeltaX).toBeLessThanOrEqual(3);
+  expect(geometry.iconDeltaY).toBeLessThanOrEqual(3);
   expect(geometry.buttonRight).toBeLessThanOrEqual(geometry.headerRight);
   expect(geometry.overflowX).toBeLessThanOrEqual(0);
 });

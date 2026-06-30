@@ -1,35 +1,14 @@
-import { useEffect, useRef, useState, type ReactNode, type RefObject } from 'react';
+import { useRef, useState, type ReactNode, type RefObject } from 'react';
 import { AnimatePresence, m } from 'motion/react';
-import { LiquidGlassCard, type LiquidGlassSettings } from '@ogtirth/liquid-glass-oss';
+import { LiquidGlassCard } from '@ogtirth/liquid-glass-oss';
 import { X } from 'lucide-react';
 import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
-import { getImageUrl } from '../utils/images';
-
-const MOBILE_MENU_GLASS_BACKGROUND = getImageUrl('liquid-perception-hero', 720);
-const MOBILE_MENU_GLASS_SETTINGS = {
-  blur: 0.34, refraction: 0.34, chromaticAberration: 0.032, distortion: 0.014,
-  edgeHighlight: 0.14, specular: 0.16, fresnel: 1.02, depth: 38,
-  brightness: -0.08, saturation: -0.04, darkTint: 0.48, tintStrength: 0.12,
-  opacity: 1, liquidMotion: 0.08, liquidSpring: 0.048, liquidDamping: 0.88,
-} satisfies Partial<LiquidGlassSettings>;
-
-function supportsWebGlRendering(): boolean {
-  const canvas = document.createElement('canvas');
-  return Boolean(
-    canvas.getContext('webgl')
-    || canvas.getContext('experimental-webgl'),
-  );
-}
-
-function useWebGlSupport(): boolean | null {
-  const [isSupported, setIsSupported] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    setIsSupported(supportsWebGlRendering());
-  }, []);
-
-  return isSupported;
-}
+import { MobileMenuButton } from './MobileMenuButton';
+import {
+  MOBILE_MENU_GLASS_BACKGROUND,
+  MOBILE_MENU_GLASS_SETTINGS,
+  useWebGlSupport,
+} from './mobileMenuGlass';
 
 function MobileMenuLiquidPanel({ children }: { readonly children: ReactNode }) {
   const supportsWebGl = useWebGlSupport();
@@ -52,40 +31,6 @@ function MobileMenuLiquidPanel({ children }: { readonly children: ReactNode }) {
       <span className="mobile-menu-liquid-fallback-sheen" aria-hidden="true" />
       <div className="lg-card__content">{children}</div>
     </section>
-  );
-}
-
-interface MobileMenuButtonProps {
-  isOpen: boolean;
-  onClick: () => void;
-  buttonRef: RefObject<HTMLButtonElement | null>;
-}
-
-function MobileMenuButton({
-  isOpen,
-  onClick,
-  buttonRef,
-}: MobileMenuButtonProps) {
-  const triggerLabel = isOpen ? 'Lukk navigasjonsmeny' : 'Åpne meny';
-
-  return (
-    <button
-      ref={buttonRef}
-      type="button"
-      className="site-header-menu-trigger focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
-      onClick={onClick}
-      aria-label={triggerLabel}
-      aria-expanded={isOpen}
-      aria-haspopup="dialog"
-      aria-controls={isOpen ? 'mobile-menu' : undefined}
-      data-open={isOpen ? 'true' : 'false'}
-    >
-      <span className="site-header-menu-trigger-lines" aria-hidden="true">
-        <span />
-        <span />
-        <span />
-      </span>
-    </button>
   );
 }
 
@@ -129,7 +74,7 @@ function MobileMenu({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={reducedMotion ? { duration: 0 } : { duration: 0.2 }}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-zinc-950/94 px-6 backdrop-blur-2xl"
+          className="fixed inset-0 z-[80] flex items-center justify-center bg-zinc-950/94 px-6 backdrop-blur-2xl"
         >
           <h2 id={menuTitleId} className="sr-only">
             Navigasjonsmeny

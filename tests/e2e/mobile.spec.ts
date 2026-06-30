@@ -337,13 +337,13 @@ test('mobile artwork modal covers the viewport and restores focus', async ({ pag
   await page.goto('/#work');
 
   const artworkButton = page.getByRole('button', {
-    name: /se mycelhånd/i,
+    name: /se tekstilkorridor/i,
   });
   await artworkButton.scrollIntoViewIfNeeded();
   await artworkButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /mycelhånd/i,
+    name: /tekstilkorridor/i,
   });
   await expect(dialog).toBeVisible();
   await expect

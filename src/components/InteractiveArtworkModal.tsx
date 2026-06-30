@@ -68,7 +68,7 @@ export function InteractiveArtworkModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex items-center justify-center outline-none"
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden overscroll-none bg-black/95 backdrop-blur-xl outline-none"
           onClick={(event) => {
             if (event.target !== event.currentTarget) {
               return;
@@ -163,7 +163,7 @@ export function InteractiveArtworkModal({
                         : { x: state.isDesktopLayout ? 40 : 0, y: state.isDesktopLayout ? 0 : 24, opacity: 0 }
                     }
                     transition={state.prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
-                    className="lg:w-[26rem] w-full lg:max-w-none max-h-[42vh] lg:max-h-[80vh] overflow-y-auto glass-dark rounded-3xl p-6 md:p-7 custom-scrollbar"
+                    className={`relative z-10 lg:w-[26rem] w-full lg:max-w-none max-h-[50vh] lg:max-h-[80vh] overflow-y-auto overscroll-contain rounded-3xl border border-white/14 bg-zinc-950/96 p-6 shadow-[0_24px_80px_-44px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 md:p-7 custom-scrollbar ${media.isVideoArtwork ? 'mt-6 lg:mt-0' : ''}`}
                   >
                     <div className="mb-6 flex items-start justify-between gap-4">
                       <div>
@@ -174,7 +174,7 @@ export function InteractiveArtworkModal({
                           {content.title.primary}
                         </h3>
                         {content.title.secondary && (
-                          <p className="text-lg text-zinc-200 mt-1">
+                          <p className="mt-1 text-lg font-medium text-zinc-100/90">
                             {content.title.secondary}
                           </p>
                         )}
@@ -197,14 +197,14 @@ export function InteractiveArtworkModal({
                         return (
                           <div key={sectionKey}>
                             {sec.heading && (
-                              <h4 className="text-sm uppercase tracking-[0.2em] text-cyan-50 font-semibold mb-3">
+                              <h4 className="mb-3 text-sm font-bold uppercase tracking-[0.22em] text-cyan-50">
                                 {sec.heading}
                               </h4>
                             )}
                             {sec.body.split('\n\n').map((p) => (
                               <p
                                 key={`${sectionKey}-${p.slice(0, 48)}`}
-                                className="text-sm leading-[1.7] text-zinc-100 mb-3 font-light"
+                                className="mb-4 max-w-[62ch] text-[0.96rem] font-normal leading-[1.85] tracking-[0.01em] text-zinc-50/95 sm:text-base"
                               >
                                 {p}
                               </p>

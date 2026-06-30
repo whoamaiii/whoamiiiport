@@ -58,19 +58,39 @@ function getFocusLoopElements(
 
 function useBodyScrollLock(isLocked: boolean) {
   useEffect(() => {
-    if (!isLocked || typeof document === 'undefined') {
+    if (!isLocked || typeof document === 'undefined' || typeof window === 'undefined') {
       return;
     }
 
     const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyPosition = document.body.style.position;
+    const previousBodyTop = document.body.style.top;
+    const previousBodyWidth = document.body.style.width;
+    const previousBodyPaddingRight = document.body.style.paddingRight;
     const previousHtmlOverflow = document.documentElement.style.overflow;
+    const scrollX = window.scrollX;
+    const scrollY = window.scrollY;
+    const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 
     document.body.style.overflow = 'hidden';
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
     document.documentElement.style.overflow = 'hidden';
 
     return () => {
       document.body.style.overflow = previousBodyOverflow;
+      document.body.style.position = previousBodyPosition;
+      document.body.style.top = previousBodyTop;
+      document.body.style.width = previousBodyWidth;
+      document.body.style.paddingRight = previousBodyPaddingRight;
       document.documentElement.style.overflow = previousHtmlOverflow;
+      if (window.scrollX !== scrollX || window.scrollY !== scrollY) {
+        window.scrollTo(scrollX, scrollY);
+      }
     };
   }, [isLocked]);
 }
@@ -174,7 +194,7 @@ export function useOverlayBehavior({
       // to whatever the trigger is when the overlay actually closes.
       // eslint-disable-next-line react-hooks/exhaustive-deps
       const restoreTarget = restoreFocusRef?.current ?? previousFocusRef.current;
-      restoreTarget?.focus?.();
+      restoreTarget?.focus({ preventScroll: true });
       previousFocusRef.current = null;
     };
   }, [containerRef, initialFocusRef, isOpen, restoreFocusRef]);

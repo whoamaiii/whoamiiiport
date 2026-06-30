@@ -82,7 +82,8 @@ describe('section semantics', () => {
     expect(heading).toHaveAttribute('id', 'gallery-library-heading');
     expect(heading).toHaveAttribute('data-heading-variant', 'gallery');
     expect(screen.getByRole('region', { name: /galleri\./i })).toBeInTheDocument();
-    expect(screen.getByText(/fullt kunstarkiv/i)).toBeInTheDocument();
-    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(20);
+    expect(screen.getByText(/sortert kunstarkiv/i)).toBeInTheDocument();
+    expect(screen.getByRole('navigation', { name: /galleri-grupper/i })).toBeInTheDocument();
+    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(46);
   });
 });

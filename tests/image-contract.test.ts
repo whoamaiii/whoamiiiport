@@ -19,10 +19,11 @@ import {
   getModalAvifSrcset,
   getModalImageUrl,
   getModalSrcset,
+  type ModalImageSlug,
 } from '../src/utils/images';
-import { handPortalVideoArtwork, skinTerrainVideoArtwork } from '../src/components/artworkData';
 import { FEATURED_ARTWORKS } from '../src/content/featuredArtworks';
 import { LIBRARY_ARTWORKS } from '../src/content/libraryArtworks';
+import { PORTFOLIO_GROUPS } from '../src/content/portfolioGroups';
 import { FIRST_GALLERY_PRELOAD_IMAGE_URL } from '../src/App';
 import { ABOUT_SLUG } from '../src/sections/AboutSection';
 import {
@@ -57,6 +58,12 @@ const splitSrcsetEntries = (srcset: string) =>
     };
   });
 
+const expectedArtworkNoteHeadings = [
+  'Mening for meg',
+  'Hvordan det er laget',
+  'Materiale og overflate',
+] as const;
+
 describe('image contract', () => {
   it('keeps the hero asset contract explicit and resolvable', () => {
     expect(HERO_WIDTHS).toEqual([720, 960, 1440]);
@@ -90,16 +97,16 @@ describe('image contract', () => {
     expect(artworks).toHaveLength(4);
     expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(4);
     expect(FEATURED_ARTWORKS.map(({ id }) => id)).toEqual([
+      'textile-corridor',
+      'night-bus',
+      'living-floor',
       'mushroom-offering',
-      'mycelial-hand',
-      'hand-portal-video',
-      'fingernail-portal',
     ]);
     expect(artworks.map((artwork) => artwork.imageSlug)).toEqual([
+      'textile-corridor',
+      'night-bus',
+      'living-floor',
       'mushroom-offering',
-      'mycelial-hand',
-      'hand-portal-video-poster',
-      'fingernail-portal',
     ]);
 
     for (const artwork of artworks) {
@@ -116,38 +123,31 @@ describe('image contract', () => {
       });
     }
 
+    expect(getImageMetadata('textile-corridor').galleryObjectPosition).toBe('50% 48%');
+    expect(getImageMetadata('night-bus').galleryObjectPosition).toBe('50% 48%');
+    expect(getImageMetadata('living-floor').galleryObjectPosition).toBe('50% 50%');
     expect(getImageMetadata('mushroom-offering').galleryObjectPosition).toBe('50% 48%');
-    expect(getImageMetadata('mycelial-hand').galleryObjectPosition).toBe('50% 48%');
-    expect(getImageMetadata('hand-portal-video-poster').galleryObjectPosition).toBe('50% 52%');
-    expect(getImageMetadata('fingernail-portal').galleryObjectPosition).toBe('50% 46%');
   });
 
-  it('keeps the active image manifest free of retired gallery slugs', () => {
+  it('keeps the active image manifest aligned to the curated gallery slugs', () => {
+    const librarySlugs = LIBRARY_ARTWORKS.map(({ artwork }) => artwork.imageSlug);
+
     expect(Object.keys(IMAGE_MANIFEST)).toEqual([
       'liquid-perception-hero',
-      'mushroom-offering',
       'liquid-perception',
-      'mycelial-hand',
+      ...librarySlugs,
+    ]);
+    expect(Object.keys(IMAGE_MANIFEST)).not.toEqual(expect.arrayContaining([
       'hand-portal-video-poster',
       'skin-terrain-video-poster',
-      'eye-terrain',
       'trippy-jump',
       'snow-road',
-      'fingernail-portal',
-      'leg-prism',
-      'drain-bloom',
-      'open-hand-mouth',
-      'night-bus',
-      'handpose-mouth',
-      'tongue-study-poster',
-      'tattooed-mushroom-poster',
       'street-trip-poster',
       'feet-signal-poster',
-      'corridor-signal-poster',
       'eye-video-poster',
       'nasty-food-poster',
       'april-portal-poster',
-    ]);
+    ]));
   });
 
   it('preloads the first featured artwork mobile gallery asset from the app shell', () => {
@@ -172,60 +172,42 @@ describe('image contract', () => {
   });
 
   it('keeps gallery video sources explicit and resolvable', () => {
-    expect(GALLERY_VIDEOS).toEqual({
-      handPortal: {
-        src: '/videos/hand-portal-study.mp4',
-        type: 'video/mp4',
-        posterSlug: 'hand-portal-video-poster',
-      },
-      skinTerrain: {
-        src: '/videos/skin-terrain-study.mp4',
-        type: 'video/mp4',
-        posterSlug: 'skin-terrain-video-poster',
-      },
-      tongueStudy: {
-        src: '/videos/tongue-study.mp4',
-        type: 'video/mp4',
-        posterSlug: 'tongue-study-poster',
-      },
-      tattooedMushroom: {
-        src: '/videos/tattooed-mushroom.mp4',
-        type: 'video/mp4',
-        posterSlug: 'tattooed-mushroom-poster',
-      },
-      streetTrip: {
-        src: '/videos/street-trip.mp4',
-        type: 'video/mp4',
-        posterSlug: 'street-trip-poster',
-      },
-      feetSignal: {
-        src: '/videos/feet-signal.mp4',
-        type: 'video/mp4',
-        posterSlug: 'feet-signal-poster',
-      },
-      corridorSignal: {
-        src: '/videos/corridor-signal.mp4',
-        type: 'video/mp4',
-        posterSlug: 'corridor-signal-poster',
-      },
-      eyeVideo: {
-        src: '/videos/eye-video.mp4',
-        type: 'video/mp4',
-        posterSlug: 'eye-video-poster',
-      },
-      nastyFood: {
-        src: '/videos/nasty-food.mp4',
-        type: 'video/mp4',
-        posterSlug: 'nasty-food-poster',
-      },
-      aprilPortal: {
-        src: '/videos/april-portal.mp4',
-        type: 'video/mp4',
-        posterSlug: 'april-portal-poster',
-      },
+    expect(Object.keys(GALLERY_VIDEOS)).toEqual([
+      'corridorWallTouch',
+      'corridorMaster',
+      'cupObjectStudy',
+      'cupCoffee',
+      'rugField',
+      'livingFloor',
+      'magicHandMotion',
+      'tattooedMushroom',
+      'mushroomMotion',
+      'bodySinkCompanion',
+      'ecologicalHandStudy',
+      'facePerformance',
+      'tongueStudy',
+      'darkFigureSequence',
+      'eyeHoodStudy',
+      'barkMaterial',
+      'voidSpiral',
+    ]);
+    expect(GALLERY_VIDEOS.corridorMaster).toEqual({
+      src: '/videos/corridor-master.mp4',
+      type: 'video/mp4',
+      posterSlug: 'corridor-master-poster',
     });
-    expect(handPortalVideoArtwork.videoSrc).toBe(GALLERY_VIDEOS.handPortal.src);
-    expect(skinTerrainVideoArtwork.videoSrc).toBe(GALLERY_VIDEOS.skinTerrain.src);
+    expect(GALLERY_VIDEOS.tongueStudy).toEqual({
+      src: '/videos/tongue-study.mp4',
+      type: 'video/mp4',
+      posterSlug: 'tongue-study-poster',
+    });
+    expect(GALLERY_VIDEOS.voidSpiral).toEqual({
+      src: '/videos/void-spiral.mp4',
+      type: 'video/mp4',
+      posterSlug: 'void-spiral-poster',
+    });
+    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.src)).size).toBe(17);
+    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.posterSlug)).size).toBe(17);
 
     Object.values(GALLERY_VIDEOS).forEach((video) => {
       expect(existsSync(resolve('public', video.src.replace(/^\/+/, '')))).toBe(true);
@@ -234,8 +216,19 @@ describe('image contract', () => {
   });
 
   it('maps the full library to generated local media assets', () => {
-    expect(LIBRARY_ARTWORKS).toHaveLength(20);
-    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(20);
+    expect(LIBRARY_ARTWORKS).toHaveLength(46);
+    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(46);
+    expect(PORTFOLIO_GROUPS.map((group) => group.key)).toEqual([
+      'liminal-rooms',
+      'domestic-ecosystems',
+      'hand-portals',
+      'sink-organisms',
+      'tongue-terrain',
+      'threshold-studies',
+    ]);
+    PORTFOLIO_GROUPS.forEach((group) => {
+      expect(LIBRARY_ARTWORKS.some((entry) => entry.group === group.key)).toBe(true);
+    });
 
     for (const { artwork } of LIBRARY_ARTWORKS) {
       const metadata = getImageMetadata(artwork.imageSlug);
@@ -255,6 +248,29 @@ describe('image contract', () => {
       if (artwork.videoSrc) {
         expect(existsSync(resolve('public', artwork.videoSrc.replace(/^\/+/, '')))).toBe(true);
       }
+    }
+  });
+
+  it('keeps every curated artwork modal note substantial and process-oriented', () => {
+    for (const { id, artwork } of LIBRARY_ARTWORKS) {
+      expect(artwork.sections, id).toHaveLength(4);
+
+      const [intro, meaning, process, surface] = artwork.sections;
+      if (!intro || !meaning || !process || !surface) {
+        continue;
+      }
+
+      expect(intro.heading, id).toBeUndefined();
+      expect([meaning.heading, process.heading, surface.heading], id).toEqual(
+        expectedArtworkNoteHeadings,
+      );
+
+      for (const section of artwork.sections) {
+        expect(section.body.length, `${id}: ${section.heading ?? 'intro'}`).toBeGreaterThan(90);
+      }
+
+      expect(meaning.body.toLowerCase(), id).toContain('for meg');
+      expect(process.body.toLowerCase(), id).toContain('jeg');
     }
   });
 
@@ -362,29 +378,9 @@ describe('image contract', () => {
     expect(MODAL_FALLBACK_WIDTH).toBe(1600);
 
     const modalSlugs = [
-      'mushroom-offering',
       'liquid-perception',
-      'mycelial-hand',
-      'hand-portal-video-poster',
-      'skin-terrain-video-poster',
-      'eye-terrain',
-      'trippy-jump',
-      'snow-road',
-      'fingernail-portal',
-      'leg-prism',
-      'drain-bloom',
-      'open-hand-mouth',
-      'night-bus',
-      'handpose-mouth',
-      'tongue-study-poster',
-      'tattooed-mushroom-poster',
-      'street-trip-poster',
-      'feet-signal-poster',
-      'corridor-signal-poster',
-      'eye-video-poster',
-      'nasty-food-poster',
-      'april-portal-poster',
-    ] as const;
+      ...LIBRARY_ARTWORKS.map(({ artwork }) => artwork.imageSlug),
+    ] satisfies readonly ModalImageSlug[];
 
     for (const slug of modalSlugs) {
       const modalUrl = getModalImageUrl(slug);

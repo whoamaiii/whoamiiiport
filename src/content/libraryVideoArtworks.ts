@@ -1,146 +1,176 @@
-import type { SpecialArtwork } from '../components/artworkData';
 import { GALLERY_VIDEOS } from '../utils/media';
+import { curatedArtworkNotes } from './curatedArtworkNotes';
+import type { LibraryArtworkEntry } from './portfolioGroups';
 
-interface LibraryVideoArtworkEntry {
-  readonly id: string;
-  readonly artwork: SpecialArtwork;
-}
-
-export const videoArtworks = [
+export const videoArtworks: readonly LibraryArtworkEntry[] = [
   {
-    id: 'tongue-study',
+    id: 'corridor-wall-touch',
+    group: 'liminal-rooms',
     artwork: {
-      imageSlug: GALLERY_VIDEOS.tongueStudy.posterSlug,
-      videoSrc: GALLERY_VIDEOS.tongueStudy.src,
-      title: {
-        primary: 'Tungestudie',
-        secondary: 'vått bevegelsessignal',
-      },
-      sections: [
-        {
-          body:
-            'En kort våt studie der tungelignende tekstur, overflateglans og nær organisk bevegelse blir hele motivet. Den hører sammen med kroppsverkene fordi den er intim før den er abstrakt.',
-        },
-      ],
+      imageSlug: GALLERY_VIDEOS.corridorWallTouch.posterSlug,
+      videoSrc: GALLERY_VIDEOS.corridorWallTouch.src,
+      title: { primary: 'Korridorvegg', secondary: 'hånd i bevegelse' },
+      sections: curatedArtworkNotes['corridor-wall-touch'],
+    },
+  },
+  {
+    id: 'corridor-master',
+    group: 'liminal-rooms',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.corridorMaster.posterSlug,
+      videoSrc: GALLERY_VIDEOS.corridorMaster.src,
+      title: { primary: 'Korridormaster', secondary: 'bevegelig hovedrom' },
+      sections: curatedArtworkNotes['corridor-master'],
+    },
+  },
+  {
+    id: 'cup-object-study',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.cupObjectStudy.posterSlug,
+      videoSrc: GALLERY_VIDEOS.cupObjectStudy.src,
+      title: { primary: 'Objekt på flate', secondary: 'hjemlig studie' },
+      sections: curatedArtworkNotes['cup-object-study'],
+    },
+  },
+  {
+    id: 'cup-coffee',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.cupCoffee.posterSlug,
+      videoSrc: GALLERY_VIDEOS.cupCoffee.src,
+      title: { primary: 'Kaffebevegelse', secondary: 'kopp som anker' },
+      sections: curatedArtworkNotes['cup-coffee'],
+    },
+  },
+  {
+    id: 'rug-field',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.rugField.posterSlug,
+      videoSrc: GALLERY_VIDEOS.rugField.src,
+      title: { primary: 'Teppefelt', secondary: 'gulvvideo master' },
+      sections: curatedArtworkNotes['rug-field'],
+    },
+  },
+  {
+    id: 'living-floor-video',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.livingFloor.posterSlug,
+      videoSrc: GALLERY_VIDEOS.livingFloor.src,
+      title: { primary: 'Gulvfinal', secondary: 'donefloor' },
+      sections: curatedArtworkNotes['living-floor-video'],
+    },
+  },
+  {
+    id: 'magic-hand-motion',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.magicHandMotion.posterSlug,
+      videoSrc: GALLERY_VIDEOS.magicHandMotion.src,
+      title: { primary: 'Magisk håndbevegelse', secondary: 'portalstudie' },
+      sections: curatedArtworkNotes['magic-hand-motion'],
     },
   },
   {
     id: 'tattooed-mushroom',
+    group: 'hand-portals',
     artwork: {
       imageSlug: GALLERY_VIDEOS.tattooedMushroom.posterSlug,
       videoSrc: GALLERY_VIDEOS.tattooedMushroom.src,
-      title: {
-        primary: 'Tatovert sopp',
-        secondary: 'håndritual i bevegelse',
-      },
-      sections: [
-        {
-          body:
-            'En tatovert hånd og en sopp bærer offergesten inn i tid. Bevegelsen gjør at objektet føles holdt, sett på og nesten ladet av oppmerksomheten rundt det.',
-        },
-      ],
+      title: { primary: 'Tatovert soppvideo', secondary: 'OEV final' },
+      sections: curatedArtworkNotes['tattooed-mushroom'],
     },
   },
   {
-    id: 'street-trip',
+    id: 'mushroom-motion',
+    group: 'hand-portals',
     artwork: {
-      imageSlug: GALLERY_VIDEOS.streetTrip.posterSlug,
-      videoSrc: GALLERY_VIDEOS.streetTrip.src,
-      title: {
-        primary: 'Gatetripp',
-        secondary: 'gående forvrengning',
-      },
-      sections: [
-        {
-          body:
-            'Gatebevegelse blir til en vrengt korridor av farge. Figuren blir inne i bildets puls, fortsatt gående, mens verden rundt mister de rette kantene sine.',
-        },
-      ],
+      imageSlug: GALLERY_VIDEOS.mushroomMotion.posterSlug,
+      videoSrc: GALLERY_VIDEOS.mushroomMotion.src,
+      title: { primary: 'Soppbevegelse', secondary: 'motion master' },
+      sections: curatedArtworkNotes['mushroom-motion'],
     },
   },
   {
-    id: 'feet-signal',
+    id: 'body-sink-companion',
+    group: 'sink-organisms',
     artwork: {
-      imageSlug: GALLERY_VIDEOS.feetSignal.posterSlug,
-      videoSrc: GALLERY_VIDEOS.feetSignal.src,
-      title: {
-        primary: 'Fotsignal',
-        secondary: 'bakkekontakt i bevegelse',
-      },
-      sections: [
-        {
-          body:
-            'En bevegelsesstudie i fothøyde om trykk og kontakt. Bakken er ikke bakgrunn her; den svarer kroppen tilbake gjennom refraktert mønster og små vektforskyvninger.',
-        },
-      ],
+      imageSlug: GALLERY_VIDEOS.bodySinkCompanion.posterSlug,
+      videoSrc: GALLERY_VIDEOS.bodySinkCompanion.src,
+      title: { primary: 'Kroppsvask', secondary: 'sink companion' },
+      sections: curatedArtworkNotes['body-sink-companion'],
     },
   },
   {
-    id: 'corridor-signal',
+    id: 'ecological-hand-study',
+    group: 'sink-organisms',
     artwork: {
-      imageSlug: GALLERY_VIDEOS.corridorSignal.posterSlug,
-      videoSrc: GALLERY_VIDEOS.corridorSignal.src,
-      title: {
-        primary: 'Korridorsignal',
-        secondary: 'arkitektonisk drift',
-      },
-      sections: [
-        {
-          body:
-            'En korridor bøyer seg inn i et endret romfelt. Den rette arkitekturen gir driften noe å presse mot, så forvrengningen føles målt i stedet for løs.',
-        },
-      ],
+      imageSlug: GALLERY_VIDEOS.ecologicalHandStudy.posterSlug,
+      videoSrc: GALLERY_VIDEOS.ecologicalHandStudy.src,
+      title: { primary: 'Økologisk håndstudie', secondary: 'våt body-horror' },
+      sections: curatedArtworkNotes['ecological-hand-study'],
     },
   },
   {
-    id: 'eye-video',
+    id: 'tongue-study',
+    group: 'tongue-terrain',
     artwork: {
-      imageSlug: GALLERY_VIDEOS.eyeVideo.posterSlug,
-      videoSrc: GALLERY_VIDEOS.eyeVideo.src,
-      title: {
-        primary: 'Øyebevegelse',
-        secondary: 'nært portrett i bevegelse',
-      },
-      sections: [
-        {
-          body:
-            'Øyeportrettet blir tidslig. Små skift i hud, lys og tekstur gjør ansiktet levende og ustabilt, som om bildet tenker gjennom øyet.',
-        },
-      ],
+      imageSlug: GALLERY_VIDEOS.tongueStudy.posterSlug,
+      videoSrc: GALLERY_VIDEOS.tongueStudy.src,
+      title: { primary: 'Tungevideo', secondary: 'hovedmotion' },
+      sections: curatedArtworkNotes['tongue-study'],
     },
   },
   {
-    id: 'nasty-food',
+    id: 'dark-figure-sequence',
+    group: 'threshold-studies',
     artwork: {
-      imageSlug: GALLERY_VIDEOS.nastyFood.posterSlug,
-      videoSrc: GALLERY_VIDEOS.nastyFood.src,
-      title: {
-        primary: 'Ekkel mat',
-        secondary: 'visceral bordbevegelse',
-      },
-      sections: [
-        {
-          body:
-            'Et matformet bevegelsesverk som lener seg inn i ubehag, glans og organisk overlast. Det fungerer når avskyen og håndverket får bli i samme bilde.',
-        },
-      ],
+      imageSlug: GALLERY_VIDEOS.darkFigureSequence.posterSlug,
+      videoSrc: GALLERY_VIDEOS.darkFigureSequence.src,
+      title: { primary: 'Mørk figursekvens', secondary: 'prologvideo' },
+      sections: curatedArtworkNotes['dark-figure-sequence'],
     },
   },
   {
-    id: 'april-portal',
+    id: 'eye-hood-study',
+    group: 'threshold-studies',
     artwork: {
-      imageSlug: GALLERY_VIDEOS.aprilPortal.posterSlug,
-      videoSrc: GALLERY_VIDEOS.aprilPortal.src,
-      title: {
-        primary: 'Aprilportal',
-        secondary: 'vertikal arkivbevegelse',
-      },
-      sections: [
-        {
-          body:
-            'Et vertikalt arkivverk bygget for å sees som et fokusert objekt, ikke som bakgrunnstekstur. Det holder portalspråket høyt, komprimert og nært kroppen.',
-        },
-      ],
+      imageSlug: GALLERY_VIDEOS.eyeHoodStudy.posterSlug,
+      videoSrc: GALLERY_VIDEOS.eyeHoodStudy.src,
+      title: { primary: 'Øye og hette', secondary: 'nært vitne' },
+      sections: curatedArtworkNotes['eye-hood-study'],
     },
   },
-] satisfies readonly LibraryVideoArtworkEntry[];
+  {
+    id: 'face-performance',
+    group: 'threshold-studies',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.facePerformance.posterSlug,
+      videoSrc: GALLERY_VIDEOS.facePerformance.src,
+      title: { primary: 'Ansiktsperformance', secondary: 'munn og materiale' },
+      sections: curatedArtworkNotes['face-performance'],
+    },
+  },
+  {
+    id: 'bark-material',
+    group: 'threshold-studies',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.barkMaterial.posterSlug,
+      videoSrc: GALLERY_VIDEOS.barkMaterial.src,
+      title: { primary: 'Barkmateriale', secondary: 'teksturtest' },
+      sections: curatedArtworkNotes['bark-material'],
+    },
+  },
+  {
+    id: 'void-spiral',
+    group: 'threshold-studies',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.voidSpiral.posterSlug,
+      videoSrc: GALLERY_VIDEOS.voidSpiral.src,
+      title: { primary: 'Spiralvoid', secondary: 'abstrakt studie' },
+      sections: curatedArtworkNotes['void-spiral'],
+    },
+  },
+];

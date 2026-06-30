@@ -1,52 +1,87 @@
 export const GALLERY_VIDEOS = {
-  handPortal: {
-    src: '/videos/hand-portal-study.mp4',
+  corridorWallTouch: {
+    src: '/videos/corridor-wall-touch.mp4',
     type: 'video/mp4',
-    posterSlug: 'hand-portal-video-poster',
+    posterSlug: 'corridor-wall-touch-poster',
   },
-  skinTerrain: {
-    src: '/videos/skin-terrain-study.mp4',
+  corridorMaster: {
+    src: '/videos/corridor-master.mp4',
     type: 'video/mp4',
-    posterSlug: 'skin-terrain-video-poster',
+    posterSlug: 'corridor-master-poster',
   },
-  tongueStudy: {
-    src: '/videos/tongue-study.mp4',
+  cupObjectStudy: {
+    src: '/videos/cup-object-study.mp4',
     type: 'video/mp4',
-    posterSlug: 'tongue-study-poster',
+    posterSlug: 'cup-object-study-poster',
+  },
+  cupCoffee: {
+    src: '/videos/cup-coffee.mp4',
+    type: 'video/mp4',
+    posterSlug: 'cup-coffee-poster',
+  },
+  rugField: {
+    src: '/videos/rug-field.mp4',
+    type: 'video/mp4',
+    posterSlug: 'rug-field-poster',
+  },
+  livingFloor: {
+    src: '/videos/living-floor-video.mp4',
+    type: 'video/mp4',
+    posterSlug: 'living-floor-video-poster',
+  },
+  magicHandMotion: {
+    src: '/videos/magic-hand-motion.mp4',
+    type: 'video/mp4',
+    posterSlug: 'magic-hand-motion-poster',
   },
   tattooedMushroom: {
     src: '/videos/tattooed-mushroom.mp4',
     type: 'video/mp4',
     posterSlug: 'tattooed-mushroom-poster',
   },
-  streetTrip: {
-    src: '/videos/street-trip.mp4',
+  mushroomMotion: {
+    src: '/videos/mushroom-motion.mp4',
     type: 'video/mp4',
-    posterSlug: 'street-trip-poster',
+    posterSlug: 'mushroom-motion-poster',
   },
-  feetSignal: {
-    src: '/videos/feet-signal.mp4',
+  bodySinkCompanion: {
+    src: '/videos/body-sink-companion.mp4',
     type: 'video/mp4',
-    posterSlug: 'feet-signal-poster',
+    posterSlug: 'body-sink-companion-poster',
   },
-  corridorSignal: {
-    src: '/videos/corridor-signal.mp4',
+  ecologicalHandStudy: {
+    src: '/videos/ecological-hand-study.mp4',
     type: 'video/mp4',
-    posterSlug: 'corridor-signal-poster',
+    posterSlug: 'ecological-hand-study-poster',
   },
-  eyeVideo: {
-    src: '/videos/eye-video.mp4',
+  facePerformance: {
+    src: '/videos/face-performance.mp4',
     type: 'video/mp4',
-    posterSlug: 'eye-video-poster',
+    posterSlug: 'face-performance-poster',
   },
-  nastyFood: {
-    src: '/videos/nasty-food.mp4',
+  tongueStudy: {
+    src: '/videos/tongue-study.mp4',
     type: 'video/mp4',
-    posterSlug: 'nasty-food-poster',
+    posterSlug: 'tongue-study-poster',
   },
-  aprilPortal: {
-    src: '/videos/april-portal.mp4',
+  darkFigureSequence: {
+    src: '/videos/dark-figure-sequence.mp4',
     type: 'video/mp4',
-    posterSlug: 'april-portal-poster',
+    posterSlug: 'dark-figure-sequence-poster',
+  },
+  eyeHoodStudy: {
+    src: '/videos/eye-hood-study.mp4',
+    type: 'video/mp4',
+    posterSlug: 'eye-hood-study-poster',
+  },
+  barkMaterial: {
+    src: '/videos/bark-material.mp4',
+    type: 'video/mp4',
+    posterSlug: 'bark-material-poster',
+  },
+  voidSpiral: {
+    src: '/videos/void-spiral.mp4',
+    type: 'video/mp4',
+    posterSlug: 'void-spiral-poster',
   },
 } as const;

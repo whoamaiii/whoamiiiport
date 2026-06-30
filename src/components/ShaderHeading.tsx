@@ -113,10 +113,11 @@ export function ShaderHeading({
       className={`section-shader-title ${preset.rootClassName} ${className}`.trim()}
       data-heading-variant={variant}
       data-testid="shader-heading"
+      aria-label={semanticText}
       {...semanticHeadingProps}
     >
-      <span className="sr-only">{semanticText}</span>
-      <span aria-hidden="true">
+      <span className="sr-only" aria-hidden="true">{semanticText}</span>
+      <span aria-hidden="true" role="presentation">
         <RenderErrorBoundary
           context="section-shader-heading"
           fallback={

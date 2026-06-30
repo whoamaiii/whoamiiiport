@@ -58,7 +58,7 @@ export function GallerySection({
                 videoSrc={artwork.videoSrc}
                 title={artwork.title}
                 sections={artwork.sections}
-                sectionsLang={artwork.sectionsLang}
+                sectionsLang={artwork.sectionsLang ?? 'no'}
                 imageLoading={index === 0 ? 'eager' : 'lazy'}
                 imageFetchPriority={index === 0 ? 'auto' : 'low'}
                 deferImageUntilVisible={index > 0}

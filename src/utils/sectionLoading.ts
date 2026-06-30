@@ -1,9 +1,11 @@
 const FIRST_GALLERY_PRELOAD_ID = 'first-gallery-image-preload';
+const ABOUT_PRELOAD_ID = 'about-image-preload';
 
 // Hardcoded (instead of derived from FEATURED_ARTWORKS) so the gallery content
 // modules stay out of the main bundle. tests/image-contract.test.ts asserts it
 // matches the first featured artwork's mobile gallery asset.
-export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/mushroom-offering-560.avif';
+export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/textile-corridor-560.avif';
+const ABOUT_PRELOAD_IMAGE_URL = '/images/liquid-perception-560.avif';
 
 type HashSectionId = 'work' | 'gallery' | 'about' | 'contact';
 
@@ -32,7 +34,7 @@ export function isDeferredSection(id: string) {
 
 export function getInitialGallerySectionLoad() {
   const sectionId = getSectionIdFromHash();
-  return sectionId === 'work' || sectionId === 'about' || sectionId === 'contact';
+  return sectionId !== null;
 }
 
 export function getInitialLibrarySectionLoad() {
@@ -60,5 +62,24 @@ export function preloadFirstGalleryImage() {
   link.href = FIRST_GALLERY_PRELOAD_IMAGE_URL;
   link.media = '(max-width: 767px)';
   link.fetchPriority = 'auto';
+  document.head.append(link);
+}
+
+export function preloadAboutImage() {
+  if (typeof document === 'undefined') {
+    return;
+  }
+
+  if (document.getElementById(ABOUT_PRELOAD_ID)) {
+    return;
+  }
+
+  const link = document.createElement('link');
+  link.id = ABOUT_PRELOAD_ID;
+  link.rel = 'preload';
+  link.as = 'image';
+  link.href = ABOUT_PRELOAD_IMAGE_URL;
+  link.media = '(max-width: 767px)';
+  link.fetchPriority = 'high';
   document.head.append(link);
 }

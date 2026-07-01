@@ -11,6 +11,7 @@ const featuredArtworkIds = [
   'kaaffe-texture-motion',
   'living-floor',
   'mushroom-offering',
+  'psych-depth-embed-focus',
 ] as const;
 
 export const FEATURED_ARTWORKS = featuredArtworkIds.map((id) => {

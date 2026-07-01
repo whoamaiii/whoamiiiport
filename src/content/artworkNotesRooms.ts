@@ -91,6 +91,12 @@ export const roomArtworkNotes = {
     'Jeg har brukt colorgrade og motion til å la teksturen bevege seg uten at scenen mister den enkle hverdagsfølelsen. Effekten skal kjennes dyrket frem fra flaten, ikke lagt oppå som pynt.',
     'Materialet er varmt, blankt og litt seigt. Det skal føles som kaffe, bord, hudnært lys og psykedelisk mønster samlet i én langsom bevegelse.',
   ]),
+  'psych-depth-embed-focus': createArtworkSections([
+    'Dybdefokus-videoen ligger nær hånd- og soppspråket, men bruker mer romlig trykk. Motivet føles som om bildet er felt inn i dybden i stedet for bare lagt over flaten.',
+    'For meg fungerer den som en ekstra portal under sopphånden. Den tar den samme rituelle gesten og gjør den mer optisk, mer innfelt og mer fysisk i rommet.',
+    'Jeg har laget webversjonen fra ProRes-masteren og holdt den vertikale dybden, mens posterbildet bærer den klare første lesningen i galleriet. Motionen skal føles som kontrollert persepsjon, ikke tilfeldig støy.',
+    'Materialet er mørkt, glødende og lagdelt. Hånd, sopp, mønster og dybde skal kjennes sammenpresset til ett fokuspunkt.',
+  ]),
   'cup-object-study': createArtworkSections([
     'Et lite hverdagsobjekt blir sentrum for en overflate som beveger seg. Videoen er en rolig bro mellom gulv, ritual og endret syn.',
     'For meg handler den om hvordan et objekt kan holde fast virkeligheten mens resten av bildet begynner å flyte. Det er en liten test av tillit til det konkrete.',

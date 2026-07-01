@@ -19,6 +19,11 @@ export const GALLERY_VIDEOS = {
     type: 'video/mp4',
     posterSlug: 'kaaffe-texture-motion-poster',
   },
+  psychDepthEmbedFocus: {
+    src: '/videos/psych-depth-embed-focus.mp4',
+    type: 'video/mp4',
+    posterSlug: 'psych-depth-embed-focus-poster',
+  },
   cupObjectStudy: {
     src: '/videos/cup-object-study.mp4',
     type: 'video/mp4',

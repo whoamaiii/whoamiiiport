@@ -143,6 +143,10 @@ export const IMAGE_MANIFEST = {
     alt: 'Posterbilde fra kaffeevideo der kopp, bordflate og psykedelisk tekstur beveger seg som ett hjemlig felt',
     galleryObjectPosition: '50% 50%',
   },
+  'psych-depth-embed-focus-poster': {
+    alt: 'Posterbilde fra dybdefokusvideo der hånd og sopp ligger innfelt i et psykedelisk rom med sterk dybde',
+    galleryObjectPosition: '50% 50%',
+  },
   'cup-object-study-poster': {
     alt: 'Posterbilde fra vertikal kopp- og objektstudie på en mønstret hverdagsflate',
     galleryObjectPosition: '50% 50%',

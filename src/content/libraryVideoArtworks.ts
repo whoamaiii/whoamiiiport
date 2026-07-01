@@ -44,6 +44,16 @@ export const videoArtworks: readonly LibraryArtworkEntry[] = [
     },
   },
   {
+    id: 'psych-depth-embed-focus',
+    group: 'hand-portals',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.psychDepthEmbedFocus.posterSlug,
+      videoSrc: GALLERY_VIDEOS.psychDepthEmbedFocus.src,
+      title: { primary: 'Dybdefokus', secondary: 'innfelt OEV' },
+      sections: curatedArtworkNotes['psych-depth-embed-focus'],
+    },
+  },
+  {
     id: 'cup-object-study',
     group: 'domestic-ecosystems',
     artwork: {

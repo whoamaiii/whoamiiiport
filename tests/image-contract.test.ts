@@ -94,19 +94,21 @@ describe('image contract', () => {
   it('maps the current featured artworks to generated gallery assets', () => {
     const artworks = FEATURED_ARTWORKS.map(({ artwork }) => artwork);
 
-    expect(artworks).toHaveLength(4);
-    expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(4);
+    expect(artworks).toHaveLength(5);
+    expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(5);
     expect(FEATURED_ARTWORKS.map(({ id }) => id)).toEqual([
       'video5-optical-focus',
       'kaaffe-texture-motion',
       'living-floor',
       'mushroom-offering',
+      'psych-depth-embed-focus',
     ]);
     expect(artworks.map((artwork) => artwork.imageSlug)).toEqual([
       'video5-optical-focus-poster',
       'kaaffe-texture-motion-poster',
       'living-floor',
       'mushroom-offering',
+      'psych-depth-embed-focus-poster',
     ]);
 
     for (const artwork of artworks) {
@@ -127,6 +129,7 @@ describe('image contract', () => {
     expect(getImageMetadata('kaaffe-texture-motion-poster').galleryObjectPosition).toBe('50% 50%');
     expect(getImageMetadata('living-floor').galleryObjectPosition).toBe('50% 50%');
     expect(getImageMetadata('mushroom-offering').galleryObjectPosition).toBe('50% 48%');
+    expect(getImageMetadata('psych-depth-embed-focus-poster').galleryObjectPosition).toBe('50% 50%');
   });
 
   it('keeps the active image manifest aligned to the curated gallery slugs', () => {
@@ -177,6 +180,7 @@ describe('image contract', () => {
       'corridorMaster',
       'video5OpticalFocus',
       'kaaffeTextureMotion',
+      'psychDepthEmbedFocus',
       'cupObjectStudy',
       'cupCoffee',
       'rugField',
@@ -208,6 +212,11 @@ describe('image contract', () => {
       type: 'video/mp4',
       posterSlug: 'kaaffe-texture-motion-poster',
     });
+    expect(GALLERY_VIDEOS.psychDepthEmbedFocus).toEqual({
+      src: '/videos/psych-depth-embed-focus.mp4',
+      type: 'video/mp4',
+      posterSlug: 'psych-depth-embed-focus-poster',
+    });
     expect(GALLERY_VIDEOS.tongueStudy).toEqual({
       src: '/videos/tongue-study.mp4',
       type: 'video/mp4',
@@ -218,8 +227,8 @@ describe('image contract', () => {
       type: 'video/mp4',
       posterSlug: 'void-spiral-poster',
     });
-    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.src)).size).toBe(19);
-    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.posterSlug)).size).toBe(19);
+    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.src)).size).toBe(20);
+    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.posterSlug)).size).toBe(20);
 
     Object.values(GALLERY_VIDEOS).forEach((video) => {
       expect(existsSync(resolve('public', video.src.replace(/^\/+/, '')))).toBe(true);
@@ -228,8 +237,8 @@ describe('image contract', () => {
   });
 
   it('maps the full library to generated local media assets', () => {
-    expect(LIBRARY_ARTWORKS).toHaveLength(48);
-    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(48);
+    expect(LIBRARY_ARTWORKS).toHaveLength(49);
+    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(49);
     expect(PORTFOLIO_GROUPS.map((group) => group.key)).toEqual([
       'liminal-rooms',
       'domestic-ecosystems',

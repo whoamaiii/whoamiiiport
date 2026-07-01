@@ -4,7 +4,7 @@ const ABOUT_PRELOAD_ID = 'about-image-preload';
 // Hardcoded (instead of derived from FEATURED_ARTWORKS) so the gallery content
 // modules stay out of the main bundle. tests/image-contract.test.ts asserts it
 // matches the first featured artwork's mobile gallery asset.
-export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/textile-corridor-560.avif';
+export const FIRST_GALLERY_PRELOAD_IMAGE_URL = '/images/video5-optical-focus-poster-560.avif';
 const ABOUT_PRELOAD_IMAGE_URL = '/images/liquid-perception-560.avif';
 
 type HashSectionId = 'work' | 'gallery' | 'about' | 'contact';

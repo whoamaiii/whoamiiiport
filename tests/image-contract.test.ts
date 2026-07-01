@@ -97,14 +97,14 @@ describe('image contract', () => {
     expect(artworks).toHaveLength(4);
     expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(4);
     expect(FEATURED_ARTWORKS.map(({ id }) => id)).toEqual([
-      'textile-corridor',
-      'night-bus',
+      'video5-optical-focus',
+      'kaaffe-texture-motion',
       'living-floor',
       'mushroom-offering',
     ]);
     expect(artworks.map((artwork) => artwork.imageSlug)).toEqual([
-      'textile-corridor',
-      'night-bus',
+      'video5-optical-focus-poster',
+      'kaaffe-texture-motion-poster',
       'living-floor',
       'mushroom-offering',
     ]);
@@ -123,8 +123,8 @@ describe('image contract', () => {
       });
     }
 
-    expect(getImageMetadata('textile-corridor').galleryObjectPosition).toBe('50% 48%');
-    expect(getImageMetadata('night-bus').galleryObjectPosition).toBe('50% 48%');
+    expect(getImageMetadata('video5-optical-focus-poster').galleryObjectPosition).toBe('50% 50%');
+    expect(getImageMetadata('kaaffe-texture-motion-poster').galleryObjectPosition).toBe('50% 50%');
     expect(getImageMetadata('living-floor').galleryObjectPosition).toBe('50% 50%');
     expect(getImageMetadata('mushroom-offering').galleryObjectPosition).toBe('50% 48%');
   });
@@ -175,6 +175,8 @@ describe('image contract', () => {
     expect(Object.keys(GALLERY_VIDEOS)).toEqual([
       'corridorWallTouch',
       'corridorMaster',
+      'video5OpticalFocus',
+      'kaaffeTextureMotion',
       'cupObjectStudy',
       'cupCoffee',
       'rugField',
@@ -196,6 +198,16 @@ describe('image contract', () => {
       type: 'video/mp4',
       posterSlug: 'corridor-master-poster',
     });
+    expect(GALLERY_VIDEOS.video5OpticalFocus).toEqual({
+      src: '/videos/video5-optical-focus.mp4',
+      type: 'video/mp4',
+      posterSlug: 'video5-optical-focus-poster',
+    });
+    expect(GALLERY_VIDEOS.kaaffeTextureMotion).toEqual({
+      src: '/videos/kaaffe-texture-motion.mp4',
+      type: 'video/mp4',
+      posterSlug: 'kaaffe-texture-motion-poster',
+    });
     expect(GALLERY_VIDEOS.tongueStudy).toEqual({
       src: '/videos/tongue-study.mp4',
       type: 'video/mp4',
@@ -206,8 +218,8 @@ describe('image contract', () => {
       type: 'video/mp4',
       posterSlug: 'void-spiral-poster',
     });
-    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.src)).size).toBe(17);
-    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.posterSlug)).size).toBe(17);
+    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.src)).size).toBe(19);
+    expect(new Set(Object.values(GALLERY_VIDEOS).map((video) => video.posterSlug)).size).toBe(19);
 
     Object.values(GALLERY_VIDEOS).forEach((video) => {
       expect(existsSync(resolve('public', video.src.replace(/^\/+/, '')))).toBe(true);
@@ -216,8 +228,8 @@ describe('image contract', () => {
   });
 
   it('maps the full library to generated local media assets', () => {
-    expect(LIBRARY_ARTWORKS).toHaveLength(46);
-    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(46);
+    expect(LIBRARY_ARTWORKS).toHaveLength(48);
+    expect(new Set(LIBRARY_ARTWORKS.map(({ id }) => id)).size).toBe(48);
     expect(PORTFOLIO_GROUPS.map((group) => group.key)).toEqual([
       'liminal-rooms',
       'domestic-ecosystems',

@@ -84,6 +84,6 @@ describe('section semantics', () => {
     expect(screen.getByRole('region', { name: /galleri\./i })).toBeInTheDocument();
     expect(screen.getByText(/sortert kunstarkiv/i)).toBeInTheDocument();
     expect(screen.getByRole('navigation', { name: /galleri-grupper/i })).toBeInTheDocument();
-    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(46);
+    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(48);
   });
 });

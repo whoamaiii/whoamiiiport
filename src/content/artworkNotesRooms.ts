@@ -79,6 +79,18 @@ export const roomArtworkNotes = {
     'Jeg har bygget den som en motion-master av hallway-motivet, der kamerafølelse, dybde og mønster holdes i samme rytme. Bevegelsen er kontrollert for at rommet skal føles observert, ikke bare animert.',
     'Overflaten er tekstil, vegg, nattlys og våt digital glidning. Den bør stå som en hovedvideo fordi den forklarer hele romkapittelet uten å bli for brutal.',
   ]),
+  'video5-optical-focus': createArtworkSections([
+    'Video 5 er en mer konsentrert åpner: et mørkt rom, en kroppsnær hånd og en optisk forskyvning som holder seg tett på originalscenen.',
+    'For meg fungerer den fordi effekten ikke prøver å erstatte bildet. Den legger seg som perseptuelt trykk rundt hånd, vegg og dybde, slik at rommet fortsatt føles dokumentert.',
+    'Jeg har bygget finalen fra en ferdig oppskalert master og holdt bevegelsen kontrollert. Fokus ligger på dybde, kontakt og optisk glidning i stedet for mer farge eller større mutasjon.',
+    'Materialet skal kjennes mørkt, vått og fysisk nært. Den korte varigheten gjør at verket kan åpne utvalget som en presis motion-signatur.',
+  ]),
+  'kaaffe-texture-motion': createArtworkSections([
+    'Kaffeflaten gjør det hjemlige kapittelet mer fysisk. Koppen og bordet holder scenen rolig mens teksturen rundt dem begynner å gli som et levende felt.',
+    'For meg handler videoen om et lite ritual som blir større enn objektet. Kaffen er fortsatt konkret, men overflaten rundt den får en egen rytme og temperatur.',
+    'Jeg har brukt colorgrade og motion til å la teksturen bevege seg uten at scenen mister den enkle hverdagsfølelsen. Effekten skal kjennes dyrket frem fra flaten, ikke lagt oppå som pynt.',
+    'Materialet er varmt, blankt og litt seigt. Det skal føles som kaffe, bord, hudnært lys og psykedelisk mønster samlet i én langsom bevegelse.',
+  ]),
   'cup-object-study': createArtworkSections([
     'Et lite hverdagsobjekt blir sentrum for en overflate som beveger seg. Videoen er en rolig bro mellom gulv, ritual og endret syn.',
     'For meg handler den om hvordan et objekt kan holde fast virkeligheten mens resten av bildet begynner å flyte. Det er en liten test av tillit til det konkrete.',

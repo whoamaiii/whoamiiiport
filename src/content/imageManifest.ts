@@ -135,6 +135,14 @@ export const IMAGE_MANIFEST = {
     alt: 'Posterbilde fra korridorvideo med smal gang og våt mønstret arkitektur',
     galleryObjectPosition: '50% 50%',
   },
+  'video5-optical-focus-poster': {
+    alt: 'Posterbilde fra Video 5 der en hånd møter et mørkt rom med optisk psykedelisk forskyvning',
+    galleryObjectPosition: '50% 50%',
+  },
+  'kaaffe-texture-motion-poster': {
+    alt: 'Posterbilde fra kaffeevideo der kopp, bordflate og psykedelisk tekstur beveger seg som ett hjemlig felt',
+    galleryObjectPosition: '50% 50%',
+  },
   'cup-object-study-poster': {
     alt: 'Posterbilde fra vertikal kopp- og objektstudie på en mønstret hverdagsflate',
     galleryObjectPosition: '50% 50%',

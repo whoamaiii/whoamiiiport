@@ -24,6 +24,26 @@ export const videoArtworks: readonly LibraryArtworkEntry[] = [
     },
   },
   {
+    id: 'video5-optical-focus',
+    group: 'liminal-rooms',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.video5OpticalFocus.posterSlug,
+      videoSrc: GALLERY_VIDEOS.video5OpticalFocus.src,
+      title: { primary: 'Optisk fokus', secondary: 'Video 5 final' },
+      sections: curatedArtworkNotes['video5-optical-focus'],
+    },
+  },
+  {
+    id: 'kaaffe-texture-motion',
+    group: 'domestic-ecosystems',
+    artwork: {
+      imageSlug: GALLERY_VIDEOS.kaaffeTextureMotion.posterSlug,
+      videoSrc: GALLERY_VIDEOS.kaaffeTextureMotion.src,
+      title: { primary: 'Kaffeflate', secondary: 'tekstur i bevegelse' },
+      sections: curatedArtworkNotes['kaaffe-texture-motion'],
+    },
+  },
+  {
     id: 'cup-object-study',
     group: 'domestic-ecosystems',
     artwork: {

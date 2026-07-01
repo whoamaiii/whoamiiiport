@@ -283,7 +283,9 @@ test('mobile menu traps focus and closes back to the trigger', async ({ page }) 
   const contactButton = menu.getByRole('button', { name: /ta kontakt/i });
 
   await expect(menu).toBeVisible();
-  await expect(menuButton).toHaveAccessibleName(/lukk navigasjonsmeny/i);
+  await expect(menuButton).toHaveAttribute('aria-label', /lukk navigasjonsmeny/i);
+  await expect(menuButton).toHaveAttribute('aria-hidden', 'true');
+  await expect(menuButton).toHaveAttribute('tabindex', '-1');
   await expect(closeButton).toBeFocused();
 
   await page.keyboard.press('Shift+Tab');
@@ -337,13 +339,13 @@ test('mobile artwork modal covers the viewport and restores focus', async ({ pag
   await page.goto('/#work');
 
   const artworkButton = page.getByRole('button', {
-    name: /se tekstilkorridor/i,
+    name: /se optisk fokus/i,
   });
   await artworkButton.scrollIntoViewIfNeeded();
   await artworkButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /tekstilkorridor/i,
+    name: /optisk fokus/i,
   });
   await expect(dialog).toBeVisible();
   await expect

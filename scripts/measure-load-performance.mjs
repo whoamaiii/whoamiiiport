@@ -17,7 +17,7 @@ const THRESHOLDS = {
   firstGalleryReadyAfterScrollMs: 750,
 };
 const NOTABLE_RESOURCE_PATTERN =
-  /assets\/|liquid-perception|textile-corridor|night-bus|living-floor|mushroom-offering|typekit/;
+  /assets\/|liquid-perception|textile-corridor|kaaffe-texture-motion-poster|living-floor|mushroom-offering|typekit/;
 
 function round(value) {
   return Number.isFinite(value) ? Math.round(value) : null;
@@ -70,7 +70,7 @@ async function main() {
         .map((entry) => entry.startTime);
       const lowerGalleryResourcesBeforeScroll = resources
         .filter((entry) =>
-          /\/images\/(?:night-bus|living-floor|mushroom-offering)-/.test(entry.name),
+          /\/images\/(?:kaaffe-texture-motion-poster|living-floor|mushroom-offering)-/.test(entry.name),
         )
         .map((entry) => entry.name);
 

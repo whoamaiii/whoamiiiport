@@ -9,6 +9,16 @@ export const GALLERY_VIDEOS = {
     type: 'video/mp4',
     posterSlug: 'corridor-master-poster',
   },
+  video5OpticalFocus: {
+    src: '/videos/video5-optical-focus.mp4',
+    type: 'video/mp4',
+    posterSlug: 'video5-optical-focus-poster',
+  },
+  kaaffeTextureMotion: {
+    src: '/videos/kaaffe-texture-motion.mp4',
+    type: 'video/mp4',
+    posterSlug: 'kaaffe-texture-motion-poster',
+  },
   cupObjectStudy: {
     src: '/videos/cup-object-study.mp4',
     type: 'video/mp4',

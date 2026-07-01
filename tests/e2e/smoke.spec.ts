@@ -68,7 +68,7 @@ test('portfolio boots and the gallery shell is present', async ({ page }) => {
   });
   await expect(aboutImage).toHaveAttribute('src', /\/images\/liquid-perception-800\.webp$/);
   await expect(aboutImage).toHaveAttribute('srcset', /liquid-perception-1200\.webp 1200w/);
-  await expect(aboutImage).toHaveAttribute('loading', 'lazy');
+  await expect(aboutImage).toHaveAttribute('loading', 'eager');
 });
 
 test('skip link lands on main content and artwork modal opens and closes', async ({ page }) => {
@@ -82,12 +82,12 @@ test('skip link lands on main content and artwork modal opens and closes', async
   await expect(page.locator('#main-content')).toBeFocused();
 
   const artworkButton = page.getByRole('button', {
-    name: /se tekstilkorridor.*verk/i,
+    name: /se optisk fokus.*video/i,
   });
   await artworkButton.click();
 
   const dialog = page.getByRole('dialog', {
-    name: /tekstilkorridor/i,
+    name: /optisk fokus/i,
   });
   await expect(dialog).toBeVisible();
   await expect(page.getByRole('button', { name: /lukk modal/i })).toBeFocused();
@@ -102,9 +102,7 @@ test('skip link lands on main content and artwork modal opens and closes', async
     .toEqual([]);
 
   await expect(
-    dialog.getByRole('img', {
-      name: /smal tekstilkorridor/i,
-    }),
+    dialog.getByLabel(/optisk fokus.*video/i),
   ).toBeVisible();
 
   await page.keyboard.press('Escape');
@@ -244,12 +242,14 @@ test('narrow mobile header exposes a coherent menu trigger and dialog CTA', asyn
   expect(menuBounds.x + menuBounds.width).toBeLessThanOrEqual(320);
 
   await menuButton.click();
-  await expect(menuButton).toHaveAccessibleName(/lukk navigasjonsmeny/i);
+  await expect(menuButton).toHaveAttribute('aria-label', /lukk navigasjonsmeny/i);
+  await expect(menuButton).toHaveAttribute('aria-hidden', 'true');
+  await expect(menuButton).toHaveAttribute('tabindex', '-1');
   await expect(menuButton).toHaveAttribute('aria-expanded', 'true');
   await expect(menuButton).toHaveAttribute('aria-controls', 'mobile-menu');
   const dialog = page.getByRole('dialog', { name: /navigasjonsmeny/i });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole('button', { name: /^lukk meny$/i })).toBeVisible();
+  await expect(dialog.getByRole('button', { name: /^lukk meny$/i })).toBeFocused();
   await expect(dialog.getByRole('button', { name: /ta kontakt/i })).toBeVisible();
   const liquidPanel = dialog.locator('.mobile-menu-liquid-panel');
   await expect(liquidPanel).toBeVisible();

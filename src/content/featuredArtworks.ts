@@ -7,8 +7,8 @@ interface FeaturedArtworkEntry {
 }
 
 const featuredArtworkIds = [
-  'textile-corridor',
-  'night-bus',
+  'video5-optical-focus',
+  'kaaffe-texture-motion',
   'living-floor',
   'mushroom-offering',
 ] as const;

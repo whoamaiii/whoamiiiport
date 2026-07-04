@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { AnimatePresence, m } from 'motion/react';
@@ -56,6 +56,28 @@ export function InteractiveArtworkModal({
   refs,
   state,
 }: InteractiveArtworkModalProps) {
+  const infoPanelRef = useRef<HTMLDivElement>(null);
+  const mobileShowInfoButtonRef = useRef<HTMLButtonElement>(null);
+  const previousShowInfoRef = useRef(state.showInfo);
+
+  // On mobile the info toggle unmounts once the panel opens (and vice versa),
+  // which would otherwise drop keyboard focus onto <body> inside the dialog.
+  useEffect(() => {
+    const wasShowingInfo = previousShowInfoRef.current;
+    previousShowInfoRef.current = state.showInfo;
+
+    if (!state.isOpen || state.isDesktopLayout || state.showInfo === wasShowingInfo) {
+      return;
+    }
+
+    if (state.showInfo) {
+      infoPanelRef.current?.focus({ preventScroll: true });
+      return;
+    }
+
+    mobileShowInfoButtonRef.current?.focus({ preventScroll: true });
+  }, [state.isDesktopLayout, state.isOpen, state.showInfo]);
+
   return createPortal(
     <AnimatePresence>
       {state.isOpen && (
@@ -136,6 +158,7 @@ export function InteractiveArtworkModal({
                 {!state.isDesktopLayout && !state.showInfo && (
                   <div className="absolute inset-x-0 bottom-0 flex justify-center px-4 pb-4">
                     <button
+                      ref={mobileShowInfoButtonRef}
                       type="button"
                       onClick={handlers.onShowInfo}
                       className="glass-dark w-full max-w-md rounded-full px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
@@ -151,6 +174,8 @@ export function InteractiveArtworkModal({
                 {state.showInfo && (
                   <m.div
                     id={content.infoPanelId}
+                    ref={infoPanelRef}
+                    tabIndex={-1}
                     initial={
                       state.prefersReducedMotion
                         ? false
@@ -163,7 +188,7 @@ export function InteractiveArtworkModal({
                         : { x: state.isDesktopLayout ? 40 : 0, y: state.isDesktopLayout ? 0 : 24, opacity: 0 }
                     }
                     transition={state.prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
-                    className={`relative z-10 lg:w-[26rem] w-full lg:max-w-none max-h-[50vh] lg:max-h-[80vh] overflow-y-auto overscroll-contain rounded-3xl border border-white/14 bg-zinc-950/96 p-6 shadow-[0_24px_80px_-44px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 md:p-7 custom-scrollbar ${media.isVideoArtwork ? 'mt-6 lg:mt-0' : ''}`}
+                    className={`relative z-10 lg:w-[26rem] w-full lg:max-w-none max-h-[50vh] lg:max-h-[80vh] overflow-y-auto overscroll-contain rounded-3xl border border-white/14 bg-zinc-950/96 p-6 shadow-[0_24px_80px_-44px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 md:p-7 custom-scrollbar focus:outline-none ${media.isVideoArtwork ? 'mt-6 lg:mt-0' : ''}`}
                   >
                     <div className="mb-6 flex items-start justify-between gap-4">
                       <div>
@@ -182,6 +207,8 @@ export function InteractiveArtworkModal({
                       <button
                         type="button"
                         onClick={handlers.onHideInfo}
+                        aria-controls={content.infoPanelId}
+                        aria-expanded="true"
                         className="shrink-0 rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-zinc-100 transition-colors hover:text-white"
                       >
                         Skjul notater

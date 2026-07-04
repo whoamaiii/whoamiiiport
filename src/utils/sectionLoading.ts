@@ -9,23 +9,41 @@ const ABOUT_PRELOAD_IMAGE_URL = '/images/liquid-perception-560.avif';
 
 type HashSectionId = 'work' | 'gallery' | 'about' | 'contact';
 
-export function getSectionIdFromHash(): HashSectionId | null {
+const GALLERY_GROUP_TARGET_PREFIX = 'gallery-';
+
+function isHashSectionId(id: string): id is HashSectionId {
+  return id === 'work' || id === 'gallery' || id === 'about' || id === 'contact';
+}
+
+// Top-level section that must be mounted before `targetId` exists in the DOM.
+// Gallery group anchors (e.g. "gallery-hand-portals") live inside the library
+// section, so they resolve to 'gallery'.
+export function getSectionIdForTarget(targetId: string): HashSectionId | null {
+  if (isHashSectionId(targetId)) {
+    return targetId;
+  }
+
+  if (targetId.length > GALLERY_GROUP_TARGET_PREFIX.length
+    && targetId.startsWith(GALLERY_GROUP_TARGET_PREFIX)) {
+    return 'gallery';
+  }
+
+  return null;
+}
+
+// Element id the current hash should navigate to, or null for unknown hashes.
+export function getNavigationTargetFromHash(): string | null {
   if (typeof window === 'undefined') {
     return null;
   }
 
-  switch (window.location.hash) {
-    case '#work':
-      return 'work';
-    case '#gallery':
-      return 'gallery';
-    case '#about':
-      return 'about';
-    case '#contact':
-      return 'contact';
-    default:
-      return null;
-  }
+  const targetId = window.location.hash.slice(1);
+  return getSectionIdForTarget(targetId) ? targetId : null;
+}
+
+export function getSectionIdFromHash(): HashSectionId | null {
+  const targetId = getNavigationTargetFromHash();
+  return targetId === null ? null : getSectionIdForTarget(targetId);
 }
 
 export function isDeferredSection(id: string) {

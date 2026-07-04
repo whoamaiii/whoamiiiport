@@ -99,6 +99,7 @@ export function HeroSection({
 
             <m.p
               {...heroReveal(0.16)}
+              lang="en"
               className="liquid-kicker mb-4 text-[0.72rem] uppercase tracking-[0.28em] sm:text-[0.76rem]"
             >
               {HERO_COPY.eyebrow}
@@ -108,7 +109,7 @@ export function HeroSection({
               {...heroReveal(0.28)}
               className="mb-4 sm:mb-5 md:mb-6"
             >
-              <span className="sr-only">{HERO_COPY.titleSemantic}</span>
+              <span className="sr-only" lang="en">{HERO_COPY.titleSemantic}</span>
               <RenderErrorBoundary
                 context="hero-title"
                 fallback={<HeroTitleStaticFallback titleLines={HERO_COPY.titleLines} />}

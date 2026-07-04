@@ -1540,6 +1540,12 @@ body {
   animation: blob 10s infinite alternate;
 }
 
+/* The fixed backdrop sits behind opaque sections, so once the first viewport
+   is scrolled away the drift can't be seen — stop paying for it. */
+.psychedelic-backdrop--paused .animate-blob {
+  animation-play-state: paused;
+}
+
 .animation-delay-2000 {
   animation-delay: 2s;
 }

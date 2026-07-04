@@ -9,10 +9,10 @@ describe('static HTML shell', () => {
     const [firstTitleLine, secondTitleLine] = HERO_COPY.titleLines;
 
     expect(indexHtml).toContain(
-      `<p class="app-static-kicker">${HERO_COPY.eyebrow.toUpperCase()}</p>`,
+      `<p class="app-static-kicker" lang="en">${HERO_COPY.eyebrow.toUpperCase()}</p>`,
     );
     expect(indexHtml).toContain(
-      `<h1 class="app-static-title">${firstTitleLine}<br />${secondTitleLine}.</h1>`,
+      `<h1 class="app-static-title" lang="en">${firstTitleLine}<br />${secondTitleLine}.</h1>`,
     );
     expect(indexHtml).toContain('Whoamiii — Psychedelic art portfolio');
     expect(indexHtml).not.toContain('Endrede<br />Sanseflater.');

@@ -104,6 +104,49 @@ describe('InteractiveArtworkCard image contracts', () => {
     });
   });
 
+  it('moves focus into the mobile info panel and back to the toggle', async () => {
+    installMatchMediaMock({
+      '(prefers-reduced-motion: reduce)': true,
+      '(min-width: 1024px)': false,
+      '(max-width: 767px)': true,
+    });
+    const { default: InteractiveArtworkCard } = await import('../src/components/InteractiveArtworkCard');
+
+    render(
+      <InteractiveArtworkCard
+        imageSlug="mushroom-offering"
+        title={{ primary: 'Soppoffer' }}
+        sections={[{ body: 'Image notes.' }]}
+      />,
+    );
+
+    fireEvent.click(
+      screen.getByRole('button', { name: /se soppoffer verk med notater/i }),
+    );
+
+    const showInfoButton = await screen.findByRole('button', {
+      name: /les mening \+ prosess/i,
+    });
+    fireEvent.click(showInfoButton);
+
+    const infoPanel = document.getElementById('artwork-info-panel-mushroom-offering');
+    expect(infoPanel).not.toBeNull();
+    await waitFor(() => expect(infoPanel).toHaveFocus());
+
+    const hideInfoButton = screen.getByRole('button', { name: /skjul notater/i });
+    expect(hideInfoButton).toHaveAttribute(
+      'aria-controls',
+      'artwork-info-panel-mushroom-offering',
+    );
+    fireEvent.click(hideInfoButton);
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole('button', { name: /les mening \+ prosess/i }),
+      ).toHaveFocus(),
+    );
+  });
+
   it('keeps gallery card images lazy by default', async () => {
     installMatchMediaMock({
       '(prefers-reduced-motion: reduce)': false,

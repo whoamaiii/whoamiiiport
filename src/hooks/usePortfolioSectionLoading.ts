@@ -3,7 +3,8 @@ import {
   getInitialDeferredSectionLoad,
   getInitialGallerySectionLoad,
   getInitialLibrarySectionLoad,
-  getSectionIdFromHash,
+  getNavigationTargetFromHash,
+  getSectionIdForTarget,
   isDeferredSection,
   preloadAboutImage,
   preloadFirstGalleryImage,
@@ -39,7 +40,7 @@ export function usePortfolioSectionLoading({
   const pendingNavigationAttemptsRef = useRef(0);
 
   if (!pendingSectionNavigationInitializedRef.current) {
-    pendingSectionNavigationRef.current = getSectionIdFromHash();
+    pendingSectionNavigationRef.current = getNavigationTargetFromHash();
     pendingSectionNavigationInitializedRef.current = true;
   }
 
@@ -165,7 +166,13 @@ export function usePortfolioSectionLoading({
 
   useEffect(() => {
     const handleHashChange = () => {
-      const sectionId = getSectionIdFromHash();
+      const targetId = getNavigationTargetFromHash();
+
+      if (!targetId) {
+        return;
+      }
+
+      const sectionId = getSectionIdForTarget(targetId);
 
       if (!sectionId) {
         return;
@@ -183,7 +190,7 @@ export function usePortfolioSectionLoading({
         enableDeferredSectionsRef.current();
       }
 
-      pendingSectionNavigationRef.current = sectionId;
+      pendingSectionNavigationRef.current = targetId;
       pendingNavigationAttemptsRef.current = 0;
       tryPendingSectionNavigation();
     };

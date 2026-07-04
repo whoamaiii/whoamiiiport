@@ -326,6 +326,7 @@ test('mobile direct hashes land target sections cleanly', async ({ page }) => {
     { label: 'Verk', id: 'work' },
     { label: 'Om', id: 'about' },
     { label: 'Kontakt', id: 'contact' },
+    { label: 'Galleri-gruppe', id: 'gallery-hand-portals' },
   ] as const;
 
   for (const target of targets) {

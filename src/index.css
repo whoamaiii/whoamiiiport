@@ -1521,39 +1521,6 @@ body {
 }
 
 /* Psychedelic Background Animation */
-@keyframes blob {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
-  }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
-}
-
-.animate-blob {
-  animation: blob 10s infinite alternate;
-}
-
-/* The fixed backdrop sits behind opaque sections, so once the first viewport
-   is scrolled away the drift can't be seen — stop paying for it. */
-.psychedelic-backdrop--paused .animate-blob {
-  animation-play-state: paused;
-}
-
-.animation-delay-2000 {
-  animation-delay: 2s;
-}
-
-.animation-delay-4000 {
-  animation-delay: 4s;
-}
-
 /* Subtle hue rotation for the whole page to give a breathing, trippy feel */
 @keyframes hue-breathe {
   0% {

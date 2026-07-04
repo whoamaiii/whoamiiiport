@@ -7,7 +7,7 @@ This project is intentionally a static frontend. There is no backend, CMS, auth 
 ## Top-Level Composition
 
 - [`src/main.tsx`](../src/main.tsx) mounts the React app.
-- [`src/App.tsx`](../src/App.tsx) owns global composition, skip-link behavior, background motion values, and error boundaries for effect-heavy global UI.
+- [`src/App.tsx`](../src/App.tsx) owns global composition, skip-link behavior, hero motion values, and error boundaries for effect-heavy global UI.
 - [`src/sections/`](../src/sections) contains section-level ownership boundaries.
 
 ## Section Ownership

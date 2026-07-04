@@ -17,12 +17,6 @@ interface HeroMotionState {
   readonly headerOpacity: MotionValue<number>;
   readonly parallaxX: MotionValue<number>;
   readonly parallaxY: MotionValue<number>;
-  readonly blobX1: MotionValue<number>;
-  readonly blobY1: MotionValue<number>;
-  readonly blobX2: MotionValue<number>;
-  readonly blobY2: MotionValue<number>;
-  readonly blobX3: MotionValue<number>;
-  readonly blobY3: MotionValue<number>;
   readonly heroReveal: (delay?: number) => HeroRevealConfig;
 }
 
@@ -73,25 +67,6 @@ export function useHeroMotion({
       : 0,
   );
 
-  const blobX1 = useTransform(smoothX, (value) =>
-    enableReactivePointerEffectsRef.current ? value * 0.05 : 0,
-  );
-  const blobY1 = useTransform(smoothY, (value) =>
-    enableReactivePointerEffectsRef.current ? value * 0.05 : 0,
-  );
-  const blobX2 = useTransform(smoothX, (value) =>
-    enableReactivePointerEffectsRef.current ? value * -0.05 : 0,
-  );
-  const blobY2 = useTransform(smoothY, (value) =>
-    enableReactivePointerEffectsRef.current ? value * -0.05 : 0,
-  );
-  const blobX3 = useTransform(smoothX, (value) =>
-    enableReactivePointerEffectsRef.current ? value * 0.03 : 0,
-  );
-  const blobY3 = useTransform(smoothY, (value) =>
-    enableReactivePointerEffectsRef.current ? value * -0.03 : 0,
-  );
-
   const heroReveal = (delay = 0): HeroRevealConfig =>
     prefersReducedMotion
       ? HERO_REVEAL_REDUCED_CONFIG
@@ -120,12 +95,6 @@ export function useHeroMotion({
     headerOpacity,
     parallaxX,
     parallaxY,
-    blobX1,
-    blobY1,
-    blobX2,
-    blobY2,
-    blobX3,
-    blobY3,
     heroReveal,
   };
 }

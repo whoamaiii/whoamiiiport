@@ -12,7 +12,6 @@ import { useMediaQuery } from './hooks/useMediaQuery';
 import { usePortfolioSectionLoading } from './hooks/usePortfolioSectionLoading';
 import { useReducedMotion } from './hooks/useReducedMotion';
 import { HeroSection } from './sections/HeroSection';
-import { PsychedelicBackground } from './sections/PsychedelicBackground';
 import { SiteHeader } from './sections/SiteHeader';
 
 const GallerySection = lazy(() =>
@@ -39,12 +38,6 @@ export default function App() {
     headerOpacity,
     parallaxX,
     parallaxY,
-    blobX1,
-    blobY1,
-    blobX2,
-    blobY2,
-    blobX3,
-    blobY3,
     heroReveal,
   } = useHeroMotion({ prefersReducedMotion, enableReactivePointerEffects });
   const {
@@ -92,16 +85,6 @@ export default function App() {
         >
           Hopp til innhold
         </a>
-
-        <PsychedelicBackground
-          blobX1={blobX1}
-          blobY1={blobY1}
-          blobX2={blobX2}
-          blobY2={blobY2}
-          blobX3={blobX3}
-          blobY3={blobY3}
-          interactive={enableReactivePointerEffects}
-        />
 
         <SiteHeader
           reducedMotion={prefersReducedMotion}

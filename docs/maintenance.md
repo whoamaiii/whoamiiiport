@@ -101,7 +101,7 @@ Before adding new motion:
 
 ## Modifying Gallery Color and Ambient Effects
 
-- Keep the global [`PsychedelicBackground`](../src/sections/PsychedelicBackground.tsx) behind the main sections, not blended above the gallery. A page-wide `color-dodge` or high-opacity magenta layer can tint every artwork and make the gallery look accidentally red.
+- The former global `PsychedelicBackground` blob layer was removed: it sat at `z-[5]` behind the opaque hero image and section backgrounds (`z-10`/`z-20`), so it contributed no visible pixels while still animating blurred layers on the GPU (verified by screenshot-diffing with the layer hidden). If an ambient page-wide layer returns, keep it behind the main sections, not blended above the gallery — a page-wide `color-dodge` or high-opacity magenta layer can tint every artwork and make the gallery look accidentally red.
 - Keep gallery-card hover/focus accents in [`InteractiveArtworkCard`](../src/components/InteractiveArtworkCard.tsx) subtle and cool enough that red-heavy artwork does not turn the whole section into a red wash.
 - If a visual tuning changes ambient background, gallery card glow, or gallery heading fallback color, check the built site in a real browser after scrolling to the gallery. The art may contain strong reds; the page chrome should not be adding a separate red cast.
 

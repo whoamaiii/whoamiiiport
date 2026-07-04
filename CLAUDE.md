@@ -29,7 +29,7 @@ CI (`.github/workflows/ci.yml`) runs `npm ci` → Playwright install → `npm ru
 ## Architecture you can't see by reading one file
 
 ### Section ownership boundary
-`src/App.tsx` composes the page, owns the skip link (which moves focus to `#main-content`, not just the hash), background motion values, and wraps effect-heavy globals in `RenderErrorBoundary`. Each `src/sections/*Section.tsx` is the single owner of its semantics, layout, and copy placement. Don't reach across sections; route shared behavior through `src/hooks/` instead.
+`src/App.tsx` composes the page, owns the skip link (which moves focus to `#main-content`, not just the hash), hero motion values, and wraps effect-heavy globals in `RenderErrorBoundary`. Each `src/sections/*Section.tsx` is the single owner of its semantics, layout, and copy placement. Don't reach across sections; route shared behavior through `src/hooks/` instead.
 
 ### Shared behavior layer (use these, don't reinvent)
 - `src/hooks/useMediaQuery.ts` — the only place new `matchMedia` subscriptions should originate.

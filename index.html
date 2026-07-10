@@ -1,43 +1,103 @@
 <!doctype html>
-<html lang="no">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Psychedelic art portfolio by Whoamiii — altered perception, bodily portals and tactile digital artifacts." />
-    <meta name="theme-color" content="#09090b" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#08090b" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta
+      name="description"
+      content="Psychedelic digital art by Whoamiii, transforming personal photographs through AI-assisted image research, painterly logic and altered perception."
+    />
+
     <link rel="canonical" href="https://whoamiii.art/" />
-    <meta property="og:title" content="Whoamiii — Psychedelic art portfolio" />
-    <meta property="og:description" content="Altered perception, bodily portals and tactile digital artifacts." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://whoamiii.art/" />
-    <meta property="og:image" content="https://whoamiii.art/social-preview.png" />
-    <meta property="og:image:width" content="1280" />
-    <meta property="og:image:height" content="720" />
-    <meta property="og:image:alt" content="Preview of the hero section in Whoamiii's psychedelic art portfolio." />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Whoamiii — Psychedelic art portfolio" />
-    <meta name="twitter:description" content="Altered perception, bodily portals and tactile digital artifacts." />
-    <meta name="twitter:image" content="https://whoamiii.art/social-preview.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+
+    <meta property="og:title" content="Whoamiii — Altered Perception" />
+    <meta
+      property="og:description"
+      content="Personal photographs pushed into unstable encounters between the organic and the synthetic."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Whoamiii" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:url" content="https://whoamiii.art/" />
+    <meta property="og:image" content="https://whoamiii.art/social-preview.png" />
+    <meta property="og:image:secure_url" content="https://whoamiii.art/social-preview.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1280" />
+    <meta property="og:image:height" content="720" />
+    <meta
+      property="og:image:alt"
+      content="Whoamiii's chrome-masked forest portrait and Altered Perception wordmark."
+    />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Whoamiii — Altered Perception" />
+    <meta
+      name="twitter:description"
+      content="Personal photographs pushed into unstable encounters between the organic and the synthetic."
+    />
+    <meta name="twitter:image" content="https://whoamiii.art/social-preview.png" />
+    <meta
+      name="twitter:image:alt"
+      content="Whoamiii's chrome-masked forest portrait and Altered Perception wordmark."
+    />
+
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
-        "@type": "WebSite",
-        "name": "Whoamiii",
-        "url": "https://whoamiii.art/",
-        "inLanguage": "no",
-        "author": {
-          "@type": "Person",
-          "name": "Whoamiii",
-          "url": "https://whoamiii.art/",
-          "sameAs": [
-            "https://instagram.com/whoamiii",
-            "https://twitter.com/whoamiii"
-          ]
-        }
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://whoamiii.art/#website",
+            "url": "https://whoamiii.art/",
+            "name": "Whoamiii",
+            "description": "Psychedelic digital art exploring altered perception, organic surfaces and personal photography.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "ProfilePage",
+            "@id": "https://whoamiii.art/#portfolio",
+            "url": "https://whoamiii.art/",
+            "name": "Whoamiii — Altered Perception",
+            "isPartOf": {
+              "@id": "https://whoamiii.art/#website"
+            },
+            "mainEntity": {
+              "@id": "https://whoamiii.art/#artist"
+            },
+            "inLanguage": "en"
+          },
+          {
+            "@type": "Person",
+            "@id": "https://whoamiii.art/#artist",
+            "name": "Quentin",
+            "alternateName": "Whoamiii",
+            "url": "https://whoamiii.art/",
+            "jobTitle": "Digital Artist",
+            "homeLocation": {
+              "@type": "Place",
+              "name": "Oslo, Norway"
+            },
+            "knowsAbout": [
+              "Digital art",
+              "Psychedelic art",
+              "AI-assisted image making",
+              "Visual experimentation"
+            ],
+            "sameAs": [
+              "https://instagram.com/whoamiii",
+              "https://twitter.com/whoamiii"
+            ]
+          }
+        ]
       }
     </script>
+
     <link
       rel="preload"
       as="image"
@@ -56,265 +116,534 @@
       imagesizes="100vw"
       fetchpriority="high"
     />
-    <title>Whoamiii — Psychedelic art portfolio</title>
+
+    <title>Whoamiii — Altered Perception / Psychedelic Digital Art</title>
+
     <style>
-      /* Critical inline styles to prevent FOUC */
-      body { background: #09090b; margin: 0; }
-      #root,
-      .app-static-shell {
-        min-height: 100vh;
-        min-height: 100svh;
+      :root {
+        color-scheme: dark;
+        --static-surface: #08090b;
+        --static-ink: #eee5d8;
+        --static-muted: #9b9995;
+        --static-line: rgba(238, 229, 216, 0.66);
+        --static-blue: #79b7c7;
       }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        min-width: 20rem;
+        scroll-behavior: smooth;
+        background: var(--static-surface);
+      }
+
+      body {
+        min-width: 20rem;
+        min-height: 100%;
+        margin: 0;
+        overflow-x: hidden;
+        color: var(--static-ink);
+        background: var(--static-surface);
+        font-family: "Manrope Variable", Manrope, ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      a {
+        color: inherit;
+      }
+
       .app-static-shell {
         position: relative;
-        overflow-x: hidden;
-        color: rgba(246, 242, 238, 0.94);
-        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: #09090b;
+        min-height: 100vh;
+        min-height: 100svh;
+        overflow: clip;
+        background:
+          radial-gradient(circle at 82% 5%, rgba(36, 78, 96, 0.12), transparent 28rem),
+          var(--static-surface);
       }
-      .app-static-shell a {
-        color: inherit;
+
+      .app-static-shell::after {
+        content: "";
+        position: fixed;
+        z-index: 20;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.04;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.72'/%3E%3C/svg%3E");
+        mix-blend-mode: soft-light;
+      }
+
+      .app-static-nav {
+        position: absolute;
+        z-index: 3;
+        inset: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: min(100%, 90rem);
+        margin-inline: auto;
+        padding: 1rem;
+      }
+
+      .app-static-logo {
+        position: relative;
+        color: rgba(248, 239, 226, 0.97);
+        font-family: "Barlow Condensed", "Arial Narrow", ui-sans-serif, sans-serif;
+        font-size: clamp(1.45rem, 7vw, 1.9rem);
+        font-weight: 600;
+        line-height: 1;
+        letter-spacing: 0.015em;
         text-decoration: none;
       }
+
+      .app-static-logo::after {
+        content: "";
+        position: absolute;
+        right: -0.54rem;
+        bottom: 0.05rem;
+        width: 0.27rem;
+        height: 0.27rem;
+        background: var(--static-blue);
+      }
+
+      .app-static-nav-link {
+        display: grid;
+        place-items: center;
+        min-width: 3rem;
+        min-height: 3rem;
+        border: 1px solid rgba(238, 229, 216, 0.46);
+        border-radius: 50%;
+        font-size: 0.58rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-decoration: none;
+        text-transform: uppercase;
+      }
+
       .app-static-hero {
         position: relative;
         min-height: 100vh;
         min-height: 100svh;
         overflow: hidden;
         background:
-          linear-gradient(90deg, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.48) 42%, rgba(9, 9, 11, 0.18) 100%),
-          linear-gradient(0deg, rgba(9, 9, 11, 0.92) 0%, rgba(9, 9, 11, 0.18) 40%, rgba(9, 9, 11, 0.38) 100%),
-          image-set(url("/images/liquid-perception-hero-720.avif") type("image/avif"), url("/images/liquid-perception-hero-720.webp") type("image/webp")) center / cover no-repeat,
-          linear-gradient(180deg, #0b0712 0%, #09090b 100%);
+          linear-gradient(to top, rgba(8, 9, 11, 0.98) 0%, rgba(8, 9, 11, 0.6) 38%, rgba(8, 9, 11, 0.08) 72%),
+          linear-gradient(to bottom, rgba(8, 9, 11, 0.55), transparent 24%),
+          image-set(url("/images/liquid-perception-hero-720.avif") type("image/avif"), url("/images/liquid-perception-hero-720.webp") type("image/webp")) 39% center / cover no-repeat,
+          #07090c;
       }
-      .app-static-nav {
-        position: absolute;
-        z-index: 2;
-        left: clamp(1rem, 5vw, 4.25rem);
-        right: clamp(1rem, 5vw, 4.25rem);
-        top: clamp(1rem, 4vw, 2rem);
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: center;
-        gap: clamp(0.42rem, 1.05vw, 0.95rem);
-      }
-      .app-static-logo {
-        display: inline-flex;
-        align-items: center;
-        justify-content: flex-start;
-        width: min(11.75rem, 57vw);
-        overflow: hidden;
-        border: 1px solid rgba(247, 250, 255, 0.5);
-        border-radius: 999px;
-        padding: 1rem 1.05rem;
-        color: rgba(225, 249, 255, 0.96);
-        background:
-          radial-gradient(circle at 22% 14%, rgba(255, 255, 255, 0.2), transparent 32%),
-          linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(8, 12, 18, 0.48));
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.42),
-          inset 0 -16px 28px rgba(0, 0, 0, 0.24),
-          0 14px 34px rgba(0, 0, 0, 0.3);
-        font: italic 900 clamp(1.1rem, 5.8vw, 1.78rem)/0.8 "Arial Narrow", "Avenir Next Condensed", ui-sans-serif, system-ui, sans-serif;
-        letter-spacing: -0.055em;
-        text-shadow:
-          0 1px 0 rgba(255, 255, 255, 0.22),
-          0 7px 13px rgba(0, 0, 0, 0.55);
-        backdrop-filter: blur(20px) saturate(150%);
-      }
-      .app-static-link {
+
+      .app-static-copy {
         position: relative;
-        overflow: hidden;
-        border: 1px solid rgba(230, 246, 255, 0.38);
-        border-radius: 999px;
-        padding: 0.92rem 1rem;
-        background:
-          linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.035)),
-          rgba(9, 10, 16, 0.34);
-        box-shadow:
-          inset 0 1px 0 rgba(255, 255, 255, 0.36),
-          0 12px 28px rgba(0, 0, 0, 0.24);
-        font-size: 0.78rem;
-        font-weight: 800;
+        z-index: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        min-height: 100vh;
+        min-height: 100svh;
+        width: min(100%, 90rem);
+        margin-inline: auto;
+        padding: 7.75rem 1rem 1.35rem;
+      }
+
+      .app-static-kicker {
+        margin: 0 0 0.8rem;
+        color: rgba(238, 229, 216, 0.75);
+        font-size: 0.66rem;
+        font-weight: 600;
         letter-spacing: 0.18em;
         text-transform: uppercase;
-        backdrop-filter: blur(20px) saturate(150%);
       }
-      .app-static-copy {
-        position: absolute;
-        z-index: 1;
-        left: clamp(2rem, 8vw, 5rem);
-        right: 1.5rem;
-        top: min(68vh, 35.5rem);
-      }
-      .app-static-kicker {
-        margin: 0 0 2.5rem;
-        color: rgba(235, 232, 229, 0.7);
-        font: 500 0.86rem/1.2 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        letter-spacing: 0.32em;
-        text-shadow: 0 0.1rem 0.6rem rgba(0, 0, 0, 0.6);
-      }
+
       .app-static-title {
         margin: 0;
-        max-width: 36rem;
-        color: transparent;
-        font: italic 900 clamp(3.02rem, 16.2vw, 4.72rem)/0.8 "Avenir Next Condensed", "Arial Narrow", ui-sans-serif, system-ui, sans-serif;
-        letter-spacing: -0.06em;
-        -webkit-text-stroke: 0.48px rgba(238, 252, 255, 0.38);
-        background:
-          linear-gradient(112deg, rgba(255, 255, 255, 0) 0 31%, rgba(255, 252, 231, 0.72) 43%, rgba(113, 228, 246, 0.54) 51%, rgba(255, 255, 255, 0) 63%),
-          linear-gradient(128deg, #eafcff 0%, #a9edf5 22%, #f5dec0 42%, #d68a78 58%, #b8b1ed 78%, #f6fbff 100%);
-        background-size: 165% 165%, 230% 230%;
-        background-position: 52% 45%, 0% 48%;
-        -webkit-background-clip: text;
-        background-clip: text;
-        filter:
-          drop-shadow(0.009em 0.022em 0.018em rgba(2, 6, 16, 0.52))
-          drop-shadow(0 0 0.055em rgba(94, 219, 242, 0.16));
+        color: var(--static-ink);
+        font-family: "Barlow Condensed", "Arial Narrow", ui-sans-serif, sans-serif;
+        font-size: clamp(3.2rem, 16vw, 7.8rem);
+        font-weight: 600;
+        line-height: 0.74;
+        letter-spacing: -0.025em;
+        text-transform: uppercase;
+        text-shadow: 0 0.35rem 0.7rem rgba(0, 0, 0, 0.5);
       }
+
       .app-static-subtitle {
-        max-width: 18rem;
-        margin: 2.6rem 0 0;
-        color: rgba(248, 244, 241, 0.88);
-        font-size: clamp(1.32rem, 5.4vw, 2rem);
-        line-height: 1.38;
-        text-shadow: 0 0.18rem 0.9rem rgba(0, 0, 0, 0.68);
+        max-width: 33ch;
+        margin: 1.3rem 0 1.65rem;
+        color: rgba(238, 229, 216, 0.82);
+        font-size: clamp(0.9rem, 3.8vw, 1.05rem);
+        line-height: 1.55;
+        letter-spacing: -0.012em;
+        text-wrap: pretty;
       }
-      .app-static-work {
-        padding: 4rem clamp(1.25rem, 5vw, 5rem) 5rem;
-        background:
-          radial-gradient(circle at 18% 0%, rgba(103, 232, 249, 0.13), transparent 32rem),
-          radial-gradient(circle at 90% 8%, rgba(245, 222, 192, 0.1), transparent 28rem),
-          #09090b;
-      }
-      .app-static-work-label {
-        margin: 0 0 0.85rem;
-        color: rgba(235, 232, 229, 0.62);
-        font-size: 0.74rem;
-        letter-spacing: 0.28em;
+
+      .app-static-entry,
+      .app-static-contact-link {
+        display: grid;
+        grid-template-columns: 1.5rem 1fr auto;
+        align-items: center;
+        gap: 1rem;
+        min-height: 3.75rem;
+        padding: 0.9rem 0;
+        border-top: 1px solid var(--static-line);
+        border-bottom: 1px solid var(--static-line);
+        font-size: 0.76rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-decoration: none;
         text-transform: uppercase;
       }
-      .app-static-work h2 {
-        margin: 0 0 1.5rem;
-        max-width: 18rem;
-        font-size: clamp(2.1rem, 12vw, 4.8rem);
-        line-height: 0.9;
-        letter-spacing: -0.04em;
+
+      .app-static-entry::before,
+      .app-static-contact-link::before {
+        content: "+";
+        font-size: 1.45rem;
+        font-weight: 300;
+        line-height: 1;
       }
+
+      .app-static-entry::after,
+      .app-static-contact-link::after {
+        content: "↗";
+        font-size: 1.45rem;
+        font-weight: 300;
+        line-height: 1;
+      }
+
+      .app-static-work {
+        width: min(100%, 90rem);
+        margin-inline: auto;
+        padding: clamp(6.5rem, 22vw, 11rem) 1rem clamp(7rem, 24vw, 12rem);
+      }
+
+      .app-static-work-header {
+        display: grid;
+        grid-template-columns: 1px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+        margin-bottom: clamp(4rem, 16vw, 7.5rem);
+      }
+
+      .app-static-signal {
+        display: block;
+        min-height: clamp(8.5rem, 30vw, 15rem);
+        background: linear-gradient(to bottom, var(--static-line), rgba(238, 229, 216, 0.08));
+      }
+
+      .app-static-work-label,
+      .app-static-index {
+        color: rgba(238, 229, 216, 0.65);
+        font-size: 0.65rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      .app-static-work-label {
+        margin: 0 0 0.85rem;
+      }
+
+      .app-static-work h2,
+      .app-static-contact h2 {
+        margin: 0;
+        font-family: "Barlow Condensed", "Arial Narrow", ui-sans-serif, sans-serif;
+        font-size: clamp(3.4rem, 17vw, 8.5rem);
+        font-weight: 400;
+        line-height: 0.8;
+        letter-spacing: -0.025em;
+        text-transform: uppercase;
+      }
+
+      .app-static-work-intro {
+        max-width: 31ch;
+        margin: 1.35rem 0 0;
+        color: rgba(216, 210, 202, 0.76);
+        font-size: clamp(0.96rem, 3.6vw, 1.12rem);
+        line-height: 1.65;
+      }
+
       .app-static-grid {
         display: grid;
-        gap: 1rem;
+        gap: 4.75rem 1rem;
       }
+
       .app-static-card {
         margin: 0;
-        overflow: hidden;
-        border: 1px solid rgba(255, 255, 255, 0.13);
-        border-radius: 1rem;
-        background: rgba(255, 255, 255, 0.05);
       }
+
+      .app-static-card:nth-child(even) {
+        width: 82%;
+        margin-left: auto;
+      }
+
+      .app-static-card picture,
       .app-static-card img {
         display: block;
         width: 100%;
+      }
+
+      .app-static-card img {
         aspect-ratio: 4 / 5;
         object-fit: cover;
+        background: #101319;
       }
-      .app-static-card picture {
-        display: block;
+
+      .app-static-card:nth-child(2) img {
+        aspect-ratio: 1;
       }
-      .app-static-card-placeholder {
-        display: block;
-        aspect-ratio: 4 / 5;
-        background:
-          radial-gradient(circle at 28% 18%, rgba(103, 232, 249, 0.18), transparent 34%),
-          radial-gradient(circle at 72% 82%, rgba(245, 222, 192, 0.11), transparent 38%),
-          linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.018));
+
+      .app-static-card:nth-child(3) img {
+        aspect-ratio: 5 / 4;
       }
+
       .app-static-card figcaption {
-        padding: 0.95rem 1rem 1.1rem;
-        color: rgba(245, 241, 236, 0.82);
-        font-size: 0.95rem;
+        margin-top: 0.7rem;
+        padding-top: 0.7rem;
+        border-top: 1px solid rgba(238, 229, 216, 0.24);
+        font-size: 0.83rem;
+        letter-spacing: 0.03em;
       }
+
+      .app-static-index {
+        display: block;
+        margin-bottom: 0.48rem;
+      }
+
+      .app-static-contact {
+        padding: 1rem 1rem 2.5rem;
+      }
+
+      .app-static-contact-inner {
+        width: min(100%, 90rem);
+        margin-inline: auto;
+        padding-top: 5rem;
+        border-top: 1px solid rgba(238, 229, 216, 0.2);
+      }
+
+      .app-static-contact h2 {
+        max-width: 7ch;
+        margin-bottom: 3.5rem;
+      }
+
+      .app-static-contact-link {
+        word-break: break-word;
+      }
+
       @media (min-width: 768px) {
+        .app-static-nav,
+        .app-static-copy {
+          padding-inline: clamp(2rem, 5vw, 4.5rem);
+        }
+
         .app-static-hero {
           background:
-            linear-gradient(90deg, rgba(9, 9, 11, 0.9) 0%, rgba(9, 9, 11, 0.5) 37%, rgba(9, 9, 11, 0.12) 100%),
-            linear-gradient(0deg, rgba(9, 9, 11, 0.86) 0%, rgba(9, 9, 11, 0.12) 48%, rgba(9, 9, 11, 0.3) 100%),
+            linear-gradient(to top, rgba(8, 9, 11, 0.98) 0%, rgba(8, 9, 11, 0.43) 41%, rgba(8, 9, 11, 0.05) 73%),
+            linear-gradient(to right, rgba(8, 9, 11, 0.45), transparent 62%),
+            linear-gradient(to bottom, rgba(8, 9, 11, 0.48), transparent 24%),
             image-set(url("/images/liquid-perception-hero-1440.avif") type("image/avif"), url("/images/liquid-perception-hero-1440.webp") type("image/webp")) center 42% / cover no-repeat,
-            linear-gradient(180deg, #0b0712 0%, #09090b 100%);
+            #07090c;
         }
-        .app-static-nav {
-          grid-template-columns: minmax(10.5rem, 27vw) minmax(8rem, 1fr);
-        }
-        .app-static-logo {
-          justify-content: center;
-          width: auto;
-          padding: clamp(2.05rem, 2.55vw, 2.55rem) clamp(1.7rem, 3.5vw, 3.5rem);
-          font-size: clamp(1.75rem, 3.65vw, 4.25rem);
-        }
-        .app-static-link {
-          padding: clamp(1.45rem, 1.7vw, 1.75rem) clamp(1.05rem, 2.1vw, 2.05rem);
-          text-align: right;
-        }
+
         .app-static-copy {
-          left: 5rem;
-          top: 14rem;
+          padding-bottom: 2.5rem;
         }
+
+        .app-static-copy > div,
+        .app-static-entry {
+          width: min(42rem, 55vw);
+        }
+
+        .app-static-title {
+          font-size: clamp(7.5rem, 12vw, 12.75rem);
+        }
+
+        .app-static-work {
+          padding-inline: clamp(2rem, 5vw, 4.5rem);
+        }
+
+        .app-static-work-header {
+          grid-template-columns: 1px minmax(0, 1fr);
+          gap: clamp(2rem, 5vw, 5rem);
+        }
+
+        .app-static-work h2 {
+          font-size: clamp(7rem, 12vw, 13.5rem);
+        }
+
         .app-static-grid {
-          grid-template-columns: repeat(4, minmax(0, 1fr));
+          grid-template-columns: repeat(12, minmax(0, 1fr));
+          gap: clamp(6rem, 11vw, 11rem) clamp(1rem, 2.4vw, 2rem);
         }
-        .app-static-card img {
-          aspect-ratio: 3 / 4;
+
+        .app-static-card:nth-child(1) {
+          grid-column: 1 / span 5;
+        }
+
+        .app-static-card:nth-child(2) {
+          grid-column: 8 / span 5;
+          width: 100%;
+          margin-top: 10rem;
+        }
+
+        .app-static-card:nth-child(3) {
+          grid-column: 2 / span 7;
+        }
+
+        .app-static-card:nth-child(4) {
+          grid-column: 9 / span 4;
+          width: 100%;
+          margin-top: 8rem;
+        }
+
+        .app-static-contact {
+          padding-inline: clamp(2rem, 5vw, 4.5rem);
+        }
+
+        .app-static-contact h2 {
+          max-width: 8ch;
+          font-size: clamp(7rem, 11vw, 12rem);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
         }
       }
     </style>
-    <script type="module" crossorigin src="/assets/index-BRzqWZPg.js"></script>
+    <script type="module" crossorigin src="/assets/index-DCpeHDQ1.js"></script>
     <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-Cyuzqnbw.js">
     <link rel="modulepreload" crossorigin href="/assets/vendor-motion-BswUR8At.js">
     <link rel="modulepreload" crossorigin href="/assets/vendor-react-DB-ua7HJ.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-DneC1e7v.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-Doa0u_zR.css">
   </head>
   <body>
     <div id="root">
       <div class="app-static-shell">
-        <section class="app-static-hero" aria-label="Forhåndsvisning av Whoamiii-porteføljen">
-          <nav class="app-static-nav" aria-label="Forhåndsvisningsnavigasjon">
+        <section class="app-static-hero" aria-labelledby="app-static-title">
+          <nav class="app-static-nav" aria-label="Primary navigation">
             <a class="app-static-logo" href="/">WHOAMIII</a>
-            <a class="app-static-link" href="#work">Verk</a>
+            <a class="app-static-nav-link" href="#work">Work</a>
           </nav>
+
           <div class="app-static-copy">
-            <p class="app-static-kicker" lang="en">PSYCHEDELIC ART PORTFOLIO</p>
-            <h1 class="app-static-title" lang="en">Altered<br />Perception.</h1>
+            <div>
+              <p class="app-static-kicker" lang="en">DIGITAL ARTIST / VISUAL EXPERIMENTS</p>
+              <h1 id="app-static-title" class="app-static-title" lang="en">Altered<br />Perception.</h1>
+              <p class="app-static-subtitle">
+                Personal photographs pushed into unstable encounters between the organic and the
+                synthetic.
+              </p>
+            </div>
+            <a class="app-static-entry" href="#work">Enter the archive</a>
           </div>
         </section>
-        <section id="work" class="app-static-work" aria-label="Forhåndsvisning av utvalgte verk">
-          <p class="app-static-work-label">Kuratert utvalg</p>
-          <h2>Utvalgte verk.</h2>
-          <div class="app-static-grid">
-            <figure class="app-static-card">
-              <picture>
-                <source type="image/avif" srcset="/images/video5-optical-focus-poster-480.avif" />
-                <img src="/images/video5-optical-focus-poster-480.webp" alt="Posterbilde fra Video 5 der en hånd møter et mørkt rom med optisk psykedelisk forskyvning" loading="lazy" decoding="async" fetchpriority="low" />
-              </picture>
-              <figcaption>Optisk fokus</figcaption>
-            </figure>
-            <figure class="app-static-card">
-              <span class="app-static-card-placeholder" aria-hidden="true"></span>
-              <figcaption>Kaffeflate</figcaption>
-            </figure>
-            <figure class="app-static-card">
-              <span class="app-static-card-placeholder" aria-hidden="true"></span>
-              <figcaption>Levende gulv</figcaption>
-            </figure>
-            <figure class="app-static-card">
-              <span class="app-static-card-placeholder" aria-hidden="true"></span>
-              <figcaption>Tatovert sopphånd</figcaption>
-            </figure>
-            <figure class="app-static-card">
-              <span class="app-static-card-placeholder" aria-hidden="true"></span>
-              <figcaption>Dybdefokus</figcaption>
-            </figure>
-          </div>
-        </section>
+
+        <main>
+          <section id="work" class="app-static-work" aria-labelledby="app-static-work-title">
+            <header class="app-static-work-header">
+              <span class="app-static-signal" aria-hidden="true"></span>
+              <div>
+                <p class="app-static-work-label">Curated sequence / 01—04</p>
+                <h2 id="app-static-work-title">Selected work</h2>
+                <p class="app-static-work-intro">
+                  Rooms become skin. Hands become interfaces. Familiar images drift into living
+                  surfaces.
+                </p>
+              </div>
+            </header>
+
+            <div class="app-static-grid">
+              <figure class="app-static-card">
+                <noscript>
+                  <picture>
+                  <source
+                    type="image/avif"
+                    srcset="/images/video5-optical-focus-poster-480.avif"
+                  />
+                  <img
+                    src="/images/video5-optical-focus-poster-480.webp"
+                    alt="A hand enters a dark room distorted by optical psychedelic movement."
+                    width="480"
+                    height="874"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  </picture>
+                </noscript>
+                <span class="app-static-index">01 — Moving image</span>
+                <figcaption>Optisk fokus</figcaption>
+              </figure>
+
+              <figure class="app-static-card">
+                <noscript>
+                  <picture>
+                  <source
+                    type="image/avif"
+                    srcset="/images/kaaffe-texture-motion-poster-480.avif"
+                  />
+                  <img
+                    src="/images/kaaffe-texture-motion-poster-480.webp"
+                    alt="A coffee cup and tabletop merging into a moving psychedelic surface."
+                    width="480"
+                    height="873"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  </picture>
+                </noscript>
+                <span class="app-static-index">02 — Moving image</span>
+                <figcaption>Kaffeflate</figcaption>
+              </figure>
+
+              <figure class="app-static-card">
+                <noscript>
+                  <picture>
+                  <source type="image/avif" srcset="/images/living-floor-480.avif" />
+                  <img
+                    src="/images/living-floor-480.webp"
+                    alt="A living-room floor behaving like wet earth, mycelium and textile."
+                    width="480"
+                    height="658"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  </picture>
+                </noscript>
+                <span class="app-static-index">03 — Still image</span>
+                <figcaption>Levende gulv</figcaption>
+              </figure>
+
+              <figure class="app-static-card">
+                <noscript>
+                  <picture>
+                  <source type="image/avif" srcset="/images/mushroom-offering-480.avif" />
+                  <img
+                    src="/images/mushroom-offering-480.webp"
+                    alt="A tattooed hand holding a dried mushroom in a first-person ritual gesture."
+                    width="480"
+                    height="853"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  </picture>
+                </noscript>
+                <span class="app-static-index">04 — Still image</span>
+                <figcaption>Tatovert sopphånd</figcaption>
+              </figure>
+            </div>
+          </section>
+
+          <section class="app-static-contact" aria-labelledby="app-static-contact-title">
+            <div class="app-static-contact-inner">
+              <h2 id="app-static-contact-title">Make something strange with me.</h2>
+              <a class="app-static-contact-link" href="mailto:hello@whoamiii.art">
+                hello@whoamiii.art
+              </a>
+            </div>
+          </section>
+        </main>
       </div>
     </div>
   </body>

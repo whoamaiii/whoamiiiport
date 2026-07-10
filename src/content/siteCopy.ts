@@ -40,10 +40,17 @@ export const ABOUT_COPY = {
   intro:
     'I turn personal photographs into unstable encounters between the organic and the synthetic.',
   body:
-    'My practice moves between digital manipulation, AI-assisted image research, painterly logic and psychedelic image-making. I build from real rooms, hands, bodies and rituals, then push the familiar until it starts behaving like memory.',
-  identity: 'Quentin / Whoamiii',
+    'My practice moves between personal photographs, 3D Blender scenes, AI-assisted image research and psychedelic visual effects that occur under the influence of psychedelic substances.',
+  identity: 'Q / Whoamiii',
   location: 'Oslo, Norway / available worldwide',
 } as const;
+
+export const SOCIAL_LINKS = {
+  instagram: 'https://www.instagram.com/quentin_qmann/',
+  x: 'https://x.com/Quentin21118961',
+} as const;
+
+export const CONTACT_EMAIL = 'whoamiii@poke.com' as const;
 
 const CONTACT_HEADING_PARTS = {
   lead: 'Make something strange with me.',
@@ -53,5 +60,5 @@ export const CONTACT_COPY: ContactCopy = {
   heading: CONTACT_HEADING_PARTS.lead,
   headingParts: CONTACT_HEADING_PARTS,
   body: 'Open for commissions, collaborations and exhibitions.',
-  cta: 'hello@whoamiii.art',
+  cta: CONTACT_EMAIL,
 } as const;

@@ -1,5 +1,5 @@
 import { m } from 'motion/react';
-import { CONTACT_COPY } from '../content/siteCopy';
+import { CONTACT_COPY, CONTACT_EMAIL } from '../content/siteCopy';
 
 interface ContactSectionProps {
   readonly reducedMotion: boolean;
@@ -44,9 +44,9 @@ export default function ContactSection({ reducedMotion }: ContactSectionProps) {
         </div>
 
         <a
-          href="mailto:hello@whoamiii.art"
+          href={`mailto:${CONTACT_EMAIL}`}
           className="contact-email"
-          aria-label="Email Whoamiii at hello@whoamiii.art"
+          aria-label={`Email Whoamiii at ${CONTACT_EMAIL}`}
         >
           <span>{CONTACT_COPY.cta}</span>
           <DiagonalArrow />

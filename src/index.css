@@ -1018,11 +1018,12 @@ a {
 .process-timeline strong {
   max-width: 6ch;
   font-family: var(--font-display);
-  font-size: clamp(1.45rem, 6.8vw, 3.2rem);
+  font-size: clamp(1.25rem, 5.8vw, 3.2rem);
   font-weight: 400;
   line-height: 0.86;
   letter-spacing: -0.015em;
   text-transform: uppercase;
+  overflow-wrap: anywhere;
 }
 
 .process-media {

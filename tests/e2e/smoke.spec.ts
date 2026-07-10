@@ -18,9 +18,21 @@ test('portfolio boots with the new editorial identity and production metadata', 
   await page.getByRole('button', { name: 'About' }).click();
   await expect(page.getByRole('heading', { name: 'The mind behind the image' })).toBeVisible();
   await expect(page.getByText(/AI-assisted image research/i)).toBeVisible();
+  await expect(page.locator('#about').getByRole('link', { name: 'Instagram' })).toHaveAttribute(
+    'href',
+    'https://www.instagram.com/quentin_qmann/',
+  );
+  await expect(page.locator('#about').getByRole('link', { name: 'X' })).toHaveAttribute(
+    'href',
+    'https://x.com/Quentin21118961',
+  );
 
   await page.getByRole('button', { name: 'Contact' }).click();
   await expect(page.getByRole('heading', { name: 'Make something strange with me.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /whoamiii@poke.com/i })).toHaveAttribute(
+    'href',
+    'mailto:whoamiii@poke.com',
+  );
   await expect(page.getByRole('contentinfo').getByRole('link', { name: /Whoamiii/i })).toBeVisible();
 
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://whoamiii.art/');

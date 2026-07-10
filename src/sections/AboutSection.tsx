@@ -1,5 +1,5 @@
 import { ImageReveal } from '../components/ImageReveal';
-import { ABOUT_COPY } from '../content/siteCopy';
+import { ABOUT_COPY, SOCIAL_LINKS } from '../content/siteCopy';
 import {
   getAboutSizes,
   getGalleryAvifSrcset,
@@ -78,11 +78,11 @@ export default function AboutSection() {
           </div>
 
           <nav className="about-links" aria-label="Whoamiii social profiles">
-            <a href="https://instagram.com/whoamiii" target="_blank" rel="noopener noreferrer">
+            <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer">
               <span>Instagram</span>
               <DiagonalArrow />
             </a>
-            <a href="https://twitter.com/whoamiii" target="_blank" rel="noopener noreferrer">
+            <a href={SOCIAL_LINKS.x} target="_blank" rel="noopener noreferrer">
               <span>X</span>
               <DiagonalArrow />
             </a>

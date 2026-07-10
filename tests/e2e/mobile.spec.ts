@@ -221,7 +221,7 @@ test('contact and fixed header remain legible on a narrow viewport', async ({ pa
   await page.goto('/#contact');
 
   await expect(page.getByRole('heading', { name: 'Make something strange with me.' })).toBeVisible();
-  await expect(page.getByRole('link', { name: /hello@whoamiii.art/i })).toBeVisible();
+  await expect(page.getByRole('link', { name: /whoamiii@poke.com/i })).toBeVisible();
   await expect(page.getByTestId('site-header')).toHaveCSS('position', 'fixed');
 
   const geometry = await page.evaluate(() => {

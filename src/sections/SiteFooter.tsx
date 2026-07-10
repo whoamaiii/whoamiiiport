@@ -1,3 +1,5 @@
+import { CONTACT_EMAIL, SOCIAL_LINKS } from '../content/siteCopy';
+
 export default function SiteFooter() {
   return (
     <footer className="site-footer">
@@ -7,13 +9,13 @@ export default function SiteFooter() {
         </a>
 
         <nav aria-label="Footer links">
-          <a href="https://instagram.com/whoamiii" target="_blank" rel="noopener noreferrer">
+          <a href={SOCIAL_LINKS.instagram} target="_blank" rel="noopener noreferrer">
             Instagram
           </a>
-          <a href="https://twitter.com/whoamiii" target="_blank" rel="noopener noreferrer">
+          <a href={SOCIAL_LINKS.x} target="_blank" rel="noopener noreferrer">
             X
           </a>
-          <a href="mailto:hello@whoamiii.art">Email</a>
+          <a href={`mailto:${CONTACT_EMAIL}`}>Email</a>
         </nav>
 
         <p>Oslo — Norway</p>

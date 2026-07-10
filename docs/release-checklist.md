@@ -1,91 +1,77 @@
 # Release Checklist
 
-## Required Commands
-
-Run all of these from the repository root:
+## Automated Gate
 
 ```bash
-npm run check
-npm run test:e2e
+npm ci
+npm run check:ci
+npm run test:e2e:preview
 ```
 
-## Manual Verification
+## Mobile-First Visual Pass
 
-### Hero Readability Pass
+At `390x844`, verify:
 
-- Confirm the eyebrow, hero title, and subtitle all appear within the first viewport with the fixed header present.
-- Confirm the static hero image keeps the subtitle readable across the first mobile viewport.
-- Confirm the localized readability mask supports the left-aligned lockup without turning into a visible muddy blob or full-frame dark wash.
-- Check a narrow mobile viewport and confirm the eyebrow, title, and subtitle keep controlled line breaks without overlap.
+- the fixed header, eyebrow, title, subtitle, and entry action fit the first hero
+  viewport without overlap or horizontal overflow
+- selected-work heading, intro, four varied artwork frames, external captions,
+  and archive action form a coherent sequence
+- process-stage labels do not clip, the film frame is intentional, and both
+  playback controls reflect the same state
+- all six archive chapters show a lead image, count, and expansion state; only
+  one chapter opens and only its cards mount
+- about portrait, statement, identity, contact title, email action, and footer
+  preserve readable wrapping and touch targets
 
-### Gallery Intro Pass
+Perform a desktop regression after mobile is approved.
 
-- Confirm the gallery eyebrow, heading, and subtitle appear before the artwork grid and read as one lockup.
-- Confirm the gallery region is still named from `Selected Works.` and not from the eyebrow or subtitle.
-- Check a narrow mobile viewport and confirm the gallery title still fits without ugly overflow or clipped shader text.
-- Confirm the old neon underline is gone and the section still feels anchored without it.
-- Confirm the ambient background and gallery card glow do not add a red or magenta cast over the whole artwork grid.
+## Navigation and Loading
 
-### Keyboard Pass
+- Load `/`, `/#work`, `/#gallery`, `/#about`, `/#contact`, and one
+  `/#gallery-…` chapter anchor in fresh tabs.
+- Confirm the requested section mounts and remains aligned at the viewport top
+  after preceding lazy content settles.
+- Confirm labelled loading states do not create a blank page or replace final
+  landmarks.
+- Navigate through both desktop links and the mobile index.
 
-- Tab to the skip link.
-- Activate it and confirm focus lands on main content.
-- Open an artwork modal, verify focus enters it, then press Escape and confirm focus returns to the artwork trigger.
-- Open the mobile menu on a narrow viewport, verify focus is trapped, then press Escape and confirm focus returns to the menu button.
+## Keyboard and Accessibility
 
-### Reduced-Motion Pass
+- Activate the skip link and confirm focus lands on `main`.
+- Open the mobile menu: focus enters, Tab cycles inside, Escape closes it, and
+  focus returns to the menu button.
+- Open image and video artwork dialogs: verify labels, notes toggle, media
+  controls, Escape, and trigger focus restoration.
+- Expand and collapse archive chapters by keyboard.
+- Confirm every visible hover treatment has a focus-visible equivalent.
 
-- Enable reduced motion in the browser or OS.
-- Confirm `HeroTitleHybrid` switches to a static presentation without losing readability or hierarchy.
-- Confirm the eyebrow, semantic heading, and subtitle remain readable without depending on parallax, sheen, or motion-only meaning.
-- Confirm core text and navigation remain readable without depending on parallax, cursor-follow, or motion-only meaning.
-- Confirm the gallery intro remains readable and intentional even if shader animation pauses or never starts.
+## Reduced Motion and Media
 
-### Fallback Pass
+- Enable reduced motion and confirm the full hierarchy remains readable.
+- Confirm hero and section reveals no longer depend on motion.
+- Confirm the process film does not autoplay, remains manually playable, and
+  pauses when moved offscreen.
+- Confirm artwork videos have posters, native controls, and valid same-origin
+  sources.
 
-- Confirm the hero title remains readable if the decorative wordmark layer fails or is disabled.
-- Confirm the semantic heading still exposes `Altered Perceptions.` even if the decorative layer is unavailable.
-- Confirm the subtitle remains readable during fallback and is not visually dependent on the decorative title effect.
-- Confirm shader headings remain readable if the effect falls back.
-- Confirm interactive content still works if decorative effect layers fail.
+## Build and Metadata
 
-## Preview Verification
+- Inspect the production preview, not only the dev server.
+- Confirm `dist/` includes `CNAME`, `.nojekyll`, `robots.txt`, `sitemap.xml`,
+  icons, manifest, social preview, images, videos, and hashed assets.
+- Confirm document title, description, canonical URL, Open Graph/Twitter image,
+  JSON-LD, and `lang` match the current English portfolio.
+- Confirm direct asset URLs return successfully and no console error appears.
 
-- Validate the preview deployment builds from `dist/`.
-- Confirm static assets load correctly.
-- Confirm hashed build assets are cacheable.
-- Verify the hero lockup still renders cleanly in preview, including the decorative title, eyebrow, and subtitle.
-- Verify the system font stack keeps non-hero typography usable on the target platform.
-- Verify gallery video manifest paths resolve from `public/videos/` on the preview host.
+## Production Domain
 
-## Production Domain Verification
+- GitHub Pages reports `status: built`, `source.branch: gh-pages`,
+  `cname: whoamiii.art`, approved certificate, and HTTPS enforcement.
+- `https://whoamiii.art/` returns `200`.
+- `https://www.whoamiii.art/` and HTTP redirect to the HTTPS apex.
+- Cloudflare retains the four GitHub Pages A records and DNS-only `www` CNAME.
+- A real browser render shows the new site, not only a successful status code.
 
-- Confirm GitHub Pages reports `status: built`, `source.branch: gh-pages`, and `cname: whoamiii.art`.
-- Confirm Cloudflare DNS has the four GitHub Pages A records for `whoamiii.art`.
-- Confirm Cloudflare DNS has `www` as a DNS-only CNAME to `whoamaiii.github.io`.
-- Confirm GitHub Pages reports `https_certificate.state: approved` and `https_enforced: true`.
-- Confirm `https://whoamiii.art/` returns `200 OK`.
-- Confirm `https://www.whoamiii.art/` redirects to `https://whoamiii.art/`.
-- Confirm `http://whoamiii.art/` redirects to HTTPS.
-
-## Security and Header Review
-
-Expected host support:
-
-- CSP and security headers configured at the static host level, not in this repo
-- CSP that allows same-origin images/videos and any required `data:` or `blob:` sources for effect fallbacks
-- standard static-site security headers as supported by the host
-- Production error monitoring is not currently wired. [`src/lib/reportError.ts`](../src/lib/reportError.ts) logs only in development, so a release should not claim production telemetry unless that adapter is deliberately expanded.
-
-## Release Stop Conditions
-
-Do not release if any of the following are true:
-
-- skip-link focus is broken
-- a named region or major heading lacks a stable accessible name
-- the hero subtitle becomes unreadable over the static hero image
-- reduced-motion mode leaves the hero dependent on decorative motion
-- hero-title fallback leaves the first viewport blank or visually broken
-- `npm run check` fails
-- `npm run test:e2e` fails
-- the preview deployment differs materially from local behavior
+Do not release while any automated gate fails, the first mobile viewport clips,
+deep links drift, focus trapping/restoration breaks, reduced motion removes
+content, media paths fail, or the preview differs materially from the build.

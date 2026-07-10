@@ -1,6 +1,5 @@
 import { useEffect, useRef, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
-import { X } from 'lucide-react';
 import { AnimatePresence, m } from 'motion/react';
 import type { ArtworkSection, ArtworkTitle } from './artworkData';
 
@@ -87,10 +86,11 @@ export function InteractiveArtworkModal({
           aria-modal="true"
           aria-labelledby={content.modalTitleId}
           tabIndex={-1}
-          initial={{ opacity: 0 }}
+          initial={state.prefersReducedMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden overscroll-none bg-black/95 backdrop-blur-xl outline-none"
+          transition={state.prefersReducedMotion ? { duration: 0 } : { duration: 0.24 }}
+          className="artwork-modal"
           onClick={(event) => {
             if (event.target !== event.currentTarget) {
               return;
@@ -100,17 +100,18 @@ export function InteractiveArtworkModal({
           }}
         >
           <h2 id={content.modalTitleId} className="sr-only">
-            {content.displayTitle} verkdetaljer
+            {content.displayTitle} artwork details
           </h2>
 
           <button
             ref={refs.closeButtonRef}
             type="button"
             onClick={handlers.onClose}
-            className="absolute top-6 right-6 z-20 p-3 text-zinc-400 hover:text-white transition-colors rounded-full hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
-            aria-label="Lukk modal"
+            className="artwork-modal-close"
+            aria-label="Close artwork"
           >
-            <X size={24} />
+            <span aria-hidden="true" />
+            <span aria-hidden="true" />
           </button>
 
           <div className="w-full h-full flex items-center justify-center p-4 md:p-8 lg:p-12">
@@ -123,13 +124,13 @@ export function InteractiveArtworkModal({
                     animate={{ scale: 1, opacity: 1 }}
                     transition={state.prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
                     poster={media.modalImageUrl}
-                    autoPlay
+                    autoPlay={!state.prefersReducedMotion}
                     controls
                     muted
                     playsInline
                     preload="metadata"
                     aria-label={`${content.displayTitle} video`}
-                    className="max-w-full max-h-[68vh] lg:max-h-full object-contain rounded-lg bg-black"
+                    className="max-w-full max-h-[68vh] lg:max-h-full object-contain bg-zinc-950"
                   >
                     <source src={media.videoSrc} type="video/mp4" />
                   </m.video>
@@ -150,7 +151,7 @@ export function InteractiveArtworkModal({
                       srcSet={media.modalSrcset}
                       sizes="(max-width: 1024px) 100vw, 70vw"
                       alt={content.imageAlt}
-                      className="max-w-full max-h-[68vh] lg:max-h-full object-contain rounded-lg"
+                      className="max-w-full max-h-[68vh] lg:max-h-full object-contain"
                     />
                   </picture>
                 )}
@@ -161,10 +162,10 @@ export function InteractiveArtworkModal({
                       ref={mobileShowInfoButtonRef}
                       type="button"
                       onClick={handlers.onShowInfo}
-                      className="glass-dark w-full max-w-md rounded-full px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
+                      className="artwork-modal-info-toggle"
                       aria-expanded={state.showInfo}
                     >
-                      Les mening + prosess
+                      Read meaning + process
                     </button>
                   </div>
                 )}
@@ -188,34 +189,29 @@ export function InteractiveArtworkModal({
                         : { x: state.isDesktopLayout ? 40 : 0, y: state.isDesktopLayout ? 0 : 24, opacity: 0 }
                     }
                     transition={state.prefersReducedMotion ? { duration: 0 } : { duration: 0.3 }}
-                    className={`relative z-10 lg:w-[26rem] w-full lg:max-w-none max-h-[50vh] lg:max-h-[80vh] overflow-y-auto overscroll-contain rounded-3xl border border-white/14 bg-zinc-950/96 p-6 shadow-[0_24px_80px_-44px_rgba(0,0,0,0.9),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-2xl backdrop-saturate-150 md:p-7 custom-scrollbar focus:outline-none ${media.isVideoArtwork ? 'mt-6 lg:mt-0' : ''}`}
+                    className={`artwork-modal-panel custom-scrollbar ${media.isVideoArtwork ? 'mt-6 lg:mt-0' : ''}`}
                   >
                     <div className="mb-6 flex items-start justify-between gap-4">
                       <div>
                         <p className="text-xs uppercase tracking-[0.3em] text-cyan-100 font-medium mb-2">
-                          Verknotater
+                          Artist notes
                         </p>
                         <h3 className="text-2xl font-bold text-white leading-tight">
                           {content.title.primary}
                         </h3>
-                        {content.title.secondary && (
-                          <p className="mt-1 text-lg font-medium text-zinc-100/90">
-                            {content.title.secondary}
-                          </p>
-                        )}
                       </div>
                       <button
                         type="button"
                         onClick={handlers.onHideInfo}
                         aria-controls={content.infoPanelId}
                         aria-expanded="true"
-                        className="shrink-0 rounded-full border border-white/10 px-3 py-1 text-xs uppercase tracking-[0.2em] text-zinc-100 transition-colors hover:text-white"
+                        className="artwork-modal-hide-notes"
                       >
-                        Skjul notater
+                        Hide notes
                       </button>
                     </div>
 
-                    <div className="mb-4 h-px w-14 bg-gradient-to-r from-cyan-300 to-emerald-300 rounded-full" />
+                    <div className="mb-4 h-px w-14 bg-cyan-200/65" />
 
                     <div className="space-y-6" lang={content.sectionsLang}>
                       {content.sections.map((sec) => {
@@ -237,7 +233,7 @@ export function InteractiveArtworkModal({
                               </p>
                             ))}
                             {sec.formula && (
-                              <div className="my-4 p-3 rounded-xl bg-black/40 border border-cyan-300/20">
+                              <div className="my-4 border border-cyan-300/20 bg-zinc-950/70 p-3">
                                 <pre className="text-xs text-cyan-100/90 font-mono whitespace-pre-wrap leading-relaxed">
                                   {sec.formula}
                                 </pre>
@@ -262,16 +258,16 @@ export function InteractiveArtworkModal({
                     type="button"
                     onClick={handlers.onShowInfo}
                     aria-expanded={state.showInfo}
-                    className="glass-dark w-full rounded-3xl px-6 py-5 text-left transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-cyan-200"
+                    className="artwork-modal-desktop-toggle"
                   >
                     <p className="text-xs uppercase tracking-[0.3em] text-cyan-100/80 mb-2">
-                      Verknotater
+                      Artist notes
                     </p>
                     <p className="text-xl font-semibold text-white">
-                      Les hva verket betyr og hvordan det er bygget
+                      Read the meaning and process behind the work
                     </p>
                     <p className="mt-2 text-sm text-zinc-400">
-                      Åpne notatene i et rolig sidepanel mens verket blir stående i synsfeltet.
+                      Open the field notes while the artwork remains in view.
                     </p>
                   </button>
                 </div>

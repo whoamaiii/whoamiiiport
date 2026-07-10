@@ -38,6 +38,7 @@ export function usePortfolioSectionLoading({
   const pendingSectionNavigationInitializedRef = useRef(false);
   const pendingNavigationTimerRef = useRef<number | null>(null);
   const pendingNavigationAttemptsRef = useRef(0);
+  const layoutSyncCleanupRef = useRef<(() => void) | null>(null);
 
   if (!pendingSectionNavigationInitializedRef.current) {
     pendingSectionNavigationRef.current = getNavigationTargetFromHash();
@@ -76,17 +77,39 @@ export function usePortfolioSectionLoading({
         return false;
       }
 
-      target.scrollIntoView({
-        behavior: prefersReducedMotion ? 'auto' : 'smooth',
-        block: 'start',
-      });
+      layoutSyncCleanupRef.current?.();
+
+      const alignTarget = (behavior: ScrollBehavior = 'auto') => {
+        target.scrollIntoView({ behavior, block: 'start' });
+      };
+
+      alignTarget(prefersReducedMotion ? 'auto' : 'smooth');
       target.focus({ preventScroll: true });
-      window.setTimeout(() => {
-        target.scrollIntoView({
-          behavior: 'auto',
-          block: 'start',
-        });
-      }, prefersReducedMotion ? 0 : 240);
+
+      const fallbackTimers: number[] = [];
+      let observer: ResizeObserver | null = null;
+
+      if (typeof ResizeObserver === 'function') {
+        observer = new ResizeObserver(() => alignTarget());
+        observer.observe(document.documentElement);
+      } else {
+        fallbackTimers.push(window.setTimeout(() => alignTarget(), 320));
+        fallbackTimers.push(window.setTimeout(() => alignTarget(), 900));
+      }
+
+      const stopLayoutSyncTimer = window.setTimeout(() => {
+        observer?.disconnect();
+        fallbackTimers.forEach((timer) => window.clearTimeout(timer));
+        layoutSyncCleanupRef.current = null;
+        alignTarget();
+      }, prefersReducedMotion ? 600 : 1800);
+
+      layoutSyncCleanupRef.current = () => {
+        observer?.disconnect();
+        fallbackTimers.forEach((timer) => window.clearTimeout(timer));
+        window.clearTimeout(stopLayoutSyncTimer);
+      };
+
       return true;
     },
     [prefersReducedMotion],
@@ -163,6 +186,35 @@ export function usePortfolioSectionLoading({
       tryPendingSectionNavigation,
     ],
   );
+
+  useEffect(() => {
+    const targetId = pendingSectionNavigationRef.current;
+
+    if (!targetId) {
+      return;
+    }
+
+    const sectionId = getSectionIdForTarget(targetId);
+
+    if (!sectionId) {
+      return;
+    }
+
+    if (sectionId === 'work' || isDeferredSection(sectionId)) {
+      enableGallerySectionRef.current();
+    }
+
+    if (sectionId === 'gallery') {
+      enableLibrarySectionRef.current();
+    }
+
+    if (isDeferredSection(sectionId)) {
+      enableDeferredSectionsRef.current();
+    }
+
+    pendingNavigationAttemptsRef.current = 0;
+    tryPendingSectionNavigation();
+  }, [tryPendingSectionNavigation]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -294,7 +346,13 @@ export function usePortfolioSectionLoading({
     tryPendingSectionNavigation,
   ]);
 
-  useEffect(() => clearPendingNavigationTimer, [clearPendingNavigationTimer]);
+  useEffect(
+    () => () => {
+      clearPendingNavigationTimer();
+      layoutSyncCleanupRef.current?.();
+    },
+    [clearPendingNavigationTimer],
+  );
 
   return {
     loadGallerySection,

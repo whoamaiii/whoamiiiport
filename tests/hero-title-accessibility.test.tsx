@@ -91,11 +91,11 @@ describe('Hero title accessibility contract', () => {
     expect(getHeroTitleVisual()).toHaveAttribute('aria-hidden', 'true');
   });
 
-  it('renders the hero eyebrow without a supporting line under the title', () => {
+  it('renders the hero eyebrow and supporting line under the title', () => {
     renderHeroSection();
 
-    expect(screen.getByText(/psychedelic art portfolio/i)).toBeInTheDocument();
-    expect(document.querySelector('.hero-subtitle')).toBeNull();
+    expect(screen.getByText(HERO_COPY.eyebrow)).toBeInTheDocument();
+    expect(screen.getByText(HERO_COPY.subtitle)).toHaveClass('hero-subtitle');
   });
 
   it('renders a forced fallback without reporting a wordmark mismatch', () => {

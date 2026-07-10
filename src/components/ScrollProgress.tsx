@@ -13,7 +13,7 @@ function ScrollProgressBar() {
     <m.div
       data-testid="scroll-progress"
       aria-hidden="true"
-      className="pointer-events-none fixed top-0 left-0 right-0 h-[2px] origin-left bg-gradient-to-r from-cyan-300 via-[var(--accent-secondary)] to-[var(--accent-warm)] z-[90]"
+      className="pointer-events-none fixed top-0 left-0 right-0 h-[2px] origin-left bg-gradient-to-r from-cyan-300 via-[var(--accent-primary)] to-[var(--accent-warm)] z-[90]"
       style={{ scaleX }}
     />
   );

@@ -1,5 +1,6 @@
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
 import { FEATURED_ARTWORKS } from '../src/content/featuredArtworks';
 import { getAvifImageUrl, getImageUrl } from '../src/utils/images';
@@ -18,8 +19,16 @@ describe('document head contract', () => {
     );
   });
 
-  it('keeps the referenced social preview asset in the public runtime bundle', () => {
+  it('keeps correctly sized social and install assets in the public runtime bundle', async () => {
     expect(existsSync(resolve('public/social-preview.png'))).toBe(true);
+    expect(await sharp(resolve('public/social-preview.png')).metadata()).toMatchObject({
+      width: 1280,
+      height: 720,
+    });
+    expect(await sharp(resolve('public/apple-touch-icon.png')).metadata()).toMatchObject({
+      width: 180,
+      height: 180,
+    });
   });
 
   it('keeps the static preview shell aligned with the featured gallery', () => {
@@ -28,26 +37,16 @@ describe('document head contract', () => {
     );
 
     expect(figcaptions).toEqual(FEATURED_ARTWORKS.map(({ artwork }) => artwork.title.primary));
-
-    const [firstFeaturedArtwork, ...lowerPriorityArtworks] = FEATURED_ARTWORKS.map(
-      ({ artwork }) => artwork,
-    );
-    const firstThumbnailUrl = getImageUrl(firstFeaturedArtwork.imageSlug, 480);
-    const firstThumbnailAvifUrl = getAvifImageUrl(firstFeaturedArtwork.imageSlug, 480);
-
-    expect(indexHtml).toContain(`src="${firstThumbnailUrl}"`);
-    expect(indexHtml).toContain(`srcset="${firstThumbnailAvifUrl}"`);
+    expect(indexHtml.match(/<noscript>/g)).toHaveLength(FEATURED_ARTWORKS.length);
 
     for (const { artwork } of FEATURED_ARTWORKS) {
       const thumbnailUrl = getImageUrl(artwork.imageSlug, 480);
       const thumbnailAvifUrl = getAvifImageUrl(artwork.imageSlug, 480);
+
+      expect(indexHtml).toContain(`src="${thumbnailUrl}"`);
+      expect(indexHtml).toContain(`srcset="${thumbnailAvifUrl}"`);
       expect(existsSync(resolve('public', thumbnailUrl.replace(/^\/+/, '')))).toBe(true);
       expect(existsSync(resolve('public', thumbnailAvifUrl.replace(/^\/+/, '')))).toBe(true);
-    }
-
-    for (const artwork of lowerPriorityArtworks) {
-      expect(indexHtml).not.toContain(`src="${getImageUrl(artwork.imageSlug, 480)}"`);
-      expect(indexHtml).not.toContain(`srcset="${getAvifImageUrl(artwork.imageSlug, 480)}"`);
     }
   });
 

@@ -1,101 +1,67 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const MOBILE_SECTION_LANDING_MAX_VIEWPORT_RATIO = 0.28;
+async function expectNoHorizontalOverflow(page: Page) {
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth))
+    .toBeLessThanOrEqual(0);
+}
 
 async function expectSectionLanding(
   page: Page,
   sectionId: string,
-  label: string,
   options: { expectFocused?: boolean } = {},
 ) {
   await expect
     .poll(
       () =>
         page.evaluate(
-          ({ expectFocused, maxViewportRatio, sectionId }) => {
+          ({ expectFocused, sectionId }) => {
             const section = document.getElementById(sectionId);
-            const header = document.querySelector('[data-testid="site-header"]');
+            if (!section) return false;
 
-            if (!section || !header) {
-              return false;
-            }
-
-            const sectionRect = section.getBoundingClientRect();
-            const headerRect = header.getBoundingClientRect();
-            const headerIsVisible = headerRect.bottom > 0 && headerRect.top < window.innerHeight;
-            const sectionIsInViewport =
-              sectionRect.top < window.innerHeight && sectionRect.bottom > 0;
-            const sectionIsClearOfHeader =
-              !headerIsVisible || sectionRect.top - headerRect.bottom >= 12;
-            const sectionDoesNotLandTooLow =
-              sectionRect.top <= window.innerHeight * maxViewportRatio;
-            const hasNoHorizontalOverflow =
-              document.documentElement.scrollWidth - window.innerWidth <= 0;
-            const focusMatches = !expectFocused || document.activeElement === section;
-
+            const rect = section.getBoundingClientRect();
             return (
-              focusMatches
-              && sectionIsInViewport
-              && sectionIsClearOfHeader
-              && sectionDoesNotLandTooLow
-              && hasNoHorizontalOverflow
+              rect.top <= 2
+              && rect.bottom > 0
+              && document.documentElement.scrollWidth <= window.innerWidth
+              && (!expectFocused || document.activeElement === section)
             );
           },
-          {
-            expectFocused: options.expectFocused ?? false,
-            maxViewportRatio: MOBILE_SECTION_LANDING_MAX_VIEWPORT_RATIO,
-            sectionId,
-          },
+          { expectFocused: options.expectFocused ?? false, sectionId },
         ),
-      {
-        message: `${label} should land visibly near the top of the mobile viewport`,
-        timeout: 5000,
-      },
+      { message: `${sectionId} should align to the top of the mobile viewport`, timeout: 6000 },
     )
     .toBe(true);
 }
 
-test('mobile first viewport keeps hero and navigation coherent', async ({ page }) => {
+test('mobile first viewport presents the identity without overflow', async ({ page }) => {
   await page.goto('/');
 
   await expect(page).toHaveTitle(/Whoamiii/i);
+  await expect(page.getByRole('heading', { name: 'Altered perception.' })).toBeVisible();
+  await expect(
+    page.getByText(/Personal photographs pushed into unstable encounters/i),
+  ).toBeVisible();
+  await expect(page.getByRole('link', { name: /Enter the archive/i })).toBeVisible();
 
   const geometry = await page.evaluate(() => {
     const header = document.querySelector('[data-testid="site-header"]');
-    const eyebrow = document.querySelector('.liquid-kicker');
-    const heroTitle = document.querySelector('[data-testid="hero-title-visual"]');
-    const subtitle = document.querySelector('.hero-subtitle');
-    const heroWords = Array.from(document.querySelectorAll('.hero-title-shader-word'));
+    const hero = document.querySelector('.hero-section');
+    const heading = document.querySelector('.hero-heading');
+    const image = document.querySelector('.hero-background-image');
 
     const rectFor = (element: Element | null) => {
-      if (!element) {
-        return null;
-      }
-
+      if (!element) return null;
       const rect = element.getBoundingClientRect();
-      return {
-        bottom: rect.bottom,
-        height: rect.height,
-        left: rect.left,
-        right: rect.right,
-        top: rect.top,
-        width: rect.width,
-      };
+      return { bottom: rect.bottom, left: rect.left, right: rect.right, top: rect.top };
     };
 
     return {
-      eyebrow: rectFor(eyebrow),
       header: rectFor(header),
-      heroTitle: rectFor(heroTitle),
-      heroWordBleedY: heroWords.map((word) => {
-        const rect = word.getBoundingClientRect();
-        const style = window.getComputedStyle(word);
-        const lineHeight = Number.parseFloat(style.lineHeight);
-
-        return Number.isFinite(lineHeight) ? rect.height - lineHeight : 0;
-      }),
+      heading: rectFor(heading),
+      hero: rectFor(hero),
+      image: rectFor(image),
       overflowX: document.documentElement.scrollWidth - window.innerWidth,
-      subtitle: rectFor(subtitle),
       viewportHeight: window.innerHeight,
       viewportWidth: window.innerWidth,
     };
@@ -103,275 +69,177 @@ test('mobile first viewport keeps hero and navigation coherent', async ({ page }
 
   expect(geometry.overflowX).toBeLessThanOrEqual(0);
   expect(geometry.header).not.toBeNull();
-  expect(geometry.eyebrow).not.toBeNull();
-  expect(geometry.heroTitle).not.toBeNull();
-  expect(geometry.subtitle).toBeNull();
-  if (
-    geometry.header === null
-    || geometry.eyebrow === null
-    || geometry.heroTitle === null
-  ) {
-    throw new Error('Mobile hero geometry should be available');
-  }
-  expect(geometry.header.top).toBeGreaterThanOrEqual(0);
-  expect(geometry.header.left).toBeGreaterThanOrEqual(0);
-  expect(geometry.header.right).toBeLessThanOrEqual(geometry.viewportWidth);
-  expect(geometry.header.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
-  expect(geometry.eyebrow.top).toBeGreaterThan(geometry.header.bottom);
-  expect(geometry.eyebrow.bottom).toBeLessThanOrEqual(geometry.heroTitle.top);
-  expect(geometry.heroTitle.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
-  expect(geometry.heroWordBleedY).toHaveLength(2);
-  for (const bleedY of geometry.heroWordBleedY) {
-    expect(bleedY).toBeGreaterThanOrEqual(12);
-  }
+  expect(geometry.heading).not.toBeNull();
+  expect(geometry.hero).not.toBeNull();
+  expect(geometry.image).not.toBeNull();
+  expect(geometry.hero?.top).toBeLessThanOrEqual(0);
+  expect(geometry.hero?.bottom).toBeGreaterThanOrEqual(geometry.viewportHeight);
+  expect(geometry.heading?.bottom).toBeLessThanOrEqual(geometry.viewportHeight);
+  expect(geometry.header?.left).toBeGreaterThanOrEqual(0);
+  expect(geometry.header?.right).toBeLessThanOrEqual(geometry.viewportWidth);
 
-  const menuButton = page.getByRole('button', { name: /åpne meny/i });
+  const menuButton = page.getByRole('button', { name: 'Open menu' });
   await expect(menuButton).toBeVisible();
   await expect(menuButton).toHaveAttribute('aria-expanded', 'false');
-  await expect(page.getByRole('heading', { name: /Altered perception\./i })).toBeVisible();
-  await expect(page.getByText(/Psychedelic art portfolio/i)).toBeVisible();
-  await expect(page.getByText(/Images from the other side of the glass\./i)).toHaveCount(0);
+  await expect(menuButton).not.toHaveAttribute('aria-controls');
 });
 
-test('mobile shader headings keep the requested gallery scale and about placement', async ({
-  page,
-}) => {
-  await page.goto('/#gallery');
-  await page.locator('#gallery-library-heading').scrollIntoViewIfNeeded();
-
-  const galleryGeometry = await page.locator('#gallery-library-heading').evaluate((heading) => {
-    const rect = heading.getBoundingClientRect();
-    const word = heading.querySelector('.section-shader-word');
-
-    return {
-      fontSize: Number.parseFloat(window.getComputedStyle(heading).fontSize),
-      overflowX: document.documentElement.scrollWidth - window.innerWidth,
-      visibleText: word?.getAttribute('data-text') ?? '',
-      width: rect.width,
-    };
-  });
-
-  expect(galleryGeometry.visibleText).toBe('Galleri.');
-  expect(galleryGeometry.fontSize).toBeGreaterThanOrEqual(48);
-  expect(galleryGeometry.width).toBeLessThanOrEqual(390);
-  expect(galleryGeometry.overflowX).toBeLessThanOrEqual(0);
-
-  await page.goto('/#about');
-  await page.locator('#about-heading').scrollIntoViewIfNeeded();
-
-  const aboutGeometry = await page.locator('#about').evaluate((section) => {
-    const heading = section.querySelector('#about-heading');
-    const portrait = section.querySelector('img');
-    const word = section.querySelector('#about-heading .section-shader-word');
-
-    if (!(heading instanceof HTMLElement) || !(portrait instanceof HTMLElement)) {
-      return {
-        found: false,
-        headingBottom: 0,
-        headingCenter: 0,
-        imageCenter: 0,
-        imageTop: 0,
-        overflowX: document.documentElement.scrollWidth - window.innerWidth,
-        visualLineCount: 0,
-        visualText: '',
-      };
-    }
-
-    const headingRect = heading.getBoundingClientRect();
-    const portraitRect = portrait.getBoundingClientRect();
-
-    return {
-      found: true,
-      headingBottom: headingRect.bottom,
-      headingCenter: headingRect.left + headingRect.width / 2,
-      imageCenter: portraitRect.left + portraitRect.width / 2,
-      imageTop: portraitRect.top,
-      overflowX: document.documentElement.scrollWidth - window.innerWidth,
-      visualLineCount: section.querySelectorAll('#about-heading .section-shader-word').length,
-      visualText: word?.getAttribute('data-text') ?? '',
-    };
-  });
-
-  expect(aboutGeometry.found).toBe(true);
-  expect(aboutGeometry.visualText).toBe('Sinnet bak bildet');
-  expect(aboutGeometry.visualLineCount).toBe(1);
-  expect(Math.abs(aboutGeometry.headingCenter - aboutGeometry.imageCenter)).toBeLessThanOrEqual(28);
-  expect(aboutGeometry.imageTop).toBeGreaterThan(aboutGeometry.headingBottom);
-  expect(aboutGeometry.overflowX).toBeLessThanOrEqual(0);
-});
-
-test('mobile text blocks keep a deliberate reading measure', async ({ page }) => {
-  await page.goto('/');
-  await page.evaluate(() => window.scrollTo(0, window.innerHeight * 0.6));
+test('mobile editorial sections keep deliberate scale and reading measure', async ({ page }) => {
+  await page.goto('/#work');
   await page.locator('#selected-works-heading').waitFor({ state: 'visible' });
 
   const workGeometry = await page.locator('#work').evaluate((section) => {
-    const button = section.querySelector('button');
-    const subtitle = section.querySelector('.gallery-subtitle');
-    const buttonRect = button?.getBoundingClientRect();
-    const subtitleRect = subtitle?.getBoundingClientRect();
+    const heading = section.querySelector('#selected-works-heading');
+    const intro = section.querySelector('.editorial-intro');
+    const firstArtwork = section.querySelector('.selected-work-item');
+    const headingRect = heading?.getBoundingClientRect();
+    const introRect = intro?.getBoundingClientRect();
+    const artworkRect = firstArtwork?.getBoundingClientRect();
 
     return {
-      buttonCenter:
-        buttonRect === undefined ? null : buttonRect.left + buttonRect.width / 2,
+      artworkWidth: artworkRect?.width ?? 0,
+      headingFontSize: heading ? Number.parseFloat(getComputedStyle(heading).fontSize) : 0,
+      headingWidth: headingRect?.width ?? 0,
+      introWidth: introRect?.width ?? 0,
       overflowX: document.documentElement.scrollWidth - window.innerWidth,
-      subtitleWidth: subtitleRect?.width ?? 0,
-      viewportCenter: window.innerWidth / 2,
     };
   });
 
+  expect(workGeometry.headingFontSize).toBeGreaterThanOrEqual(64);
+  expect(workGeometry.headingWidth).toBeLessThanOrEqual(390);
+  expect(workGeometry.introWidth).toBeLessThanOrEqual(330);
+  expect(workGeometry.artworkWidth).toBeGreaterThan(250);
   expect(workGeometry.overflowX).toBeLessThanOrEqual(0);
-  expect(workGeometry.subtitleWidth).toBeLessThanOrEqual(300);
-  expect(workGeometry.buttonCenter).not.toBeNull();
-  if (workGeometry.buttonCenter === null) {
-    throw new Error('Selected works CTA should be measurable on mobile');
-  }
-  expect(Math.abs(workGeometry.buttonCenter - workGeometry.viewportCenter)).toBeLessThanOrEqual(18);
 
-  await page.locator('#about-heading').scrollIntoViewIfNeeded();
+  await page.goto('/#about');
+  await page.locator('#about-heading').waitFor({ state: 'visible' });
 
-  const aboutCopyGeometry = await page.locator('#about').evaluate((section) => {
-    const copyBlocks = Array.from(section.querySelectorAll('.about-body-copy'));
-    const socialRow = section.querySelector('.about-social-row');
-    const firstCopyRect = copyBlocks[0]?.getBoundingClientRect();
-    const copyRects = copyBlocks.map((block) => {
-      const rect = block.getBoundingClientRect();
-
-      return {
-        left: rect.left,
-        right: rect.right,
-        width: rect.width,
-      };
-    });
-    const socialRect = socialRow?.getBoundingClientRect();
+  const aboutGeometry = await page.locator('#about').evaluate((section) => {
+    const heading = section.querySelector('#about-heading');
+    const portrait = section.querySelector('.about-portrait');
+    const copy = section.querySelector('.about-copy');
+    const headingRect = heading?.getBoundingClientRect();
+    const portraitRect = portrait?.getBoundingClientRect();
+    const copyRect = copy?.getBoundingClientRect();
 
     return {
-      copyRects,
+      copyWidth: copyRect?.width ?? 0,
+      headingBottom: headingRect?.bottom ?? 0,
       overflowX: document.documentElement.scrollWidth - window.innerWidth,
-      socialLeft: socialRect?.left ?? null,
-      firstCopyLeft: firstCopyRect?.left ?? null,
+      portraitTop: portraitRect?.top ?? 0,
+      portraitWidth: portraitRect?.width ?? 0,
     };
   });
 
-  expect(aboutCopyGeometry.copyRects).toHaveLength(2);
-  for (const rect of aboutCopyGeometry.copyRects) {
-    expect(rect.left).toBeGreaterThanOrEqual(40);
-    expect(rect.right).toBeLessThanOrEqual(350);
-    expect(rect.width).toBeLessThanOrEqual(300);
-  }
-  expect(aboutCopyGeometry.socialLeft).not.toBeNull();
-  expect(aboutCopyGeometry.firstCopyLeft).not.toBeNull();
-  if (
-    aboutCopyGeometry.socialLeft === null
-    || aboutCopyGeometry.firstCopyLeft === null
-  ) {
-    throw new Error('About social row and copy should be measurable on mobile');
-  }
-  expect(Math.abs(aboutCopyGeometry.socialLeft - aboutCopyGeometry.firstCopyLeft)).toBeLessThanOrEqual(2);
-  expect(aboutCopyGeometry.overflowX).toBeLessThanOrEqual(0);
+  expect(aboutGeometry.portraitTop).toBeGreaterThanOrEqual(aboutGeometry.headingBottom - 24);
+  expect(aboutGeometry.portraitWidth).toBeGreaterThan(300);
+  expect(aboutGeometry.copyWidth).toBeLessThanOrEqual(330);
+  expect(aboutGeometry.overflowX).toBeLessThanOrEqual(0);
 });
 
-test('mobile menu traps focus and closes back to the trigger', async ({ page }) => {
+test('mobile menu traps focus, navigates, and restores focus', async ({ page }) => {
   await page.goto('/');
 
-  const menuButton = page.locator('.site-header-menu-trigger');
-  await expect(menuButton).toHaveAccessibleName(/åpne meny/i);
-  await menuButton.click();
+  const trigger = page.locator('.site-header-menu-trigger');
+  await expect(trigger).toHaveAccessibleName('Open menu');
+  await trigger.click();
 
-  const menu = page.getByRole('dialog', { name: /navigasjonsmeny/i });
-  const closeButton = menu.getByRole('button', { name: /lukk meny/i });
-  const contactButton = menu.getByRole('button', { name: /ta kontakt/i });
+  const menu = page.getByRole('dialog', { name: 'Index / Whoamiii' });
+  const closeButton = menu.getByRole('button', { name: 'Close menu' });
+  const contactButton = menu.getByRole('button', { name: 'Contact' });
 
   await expect(menu).toBeVisible();
-  await expect(menuButton).toHaveAttribute('aria-label', /lukk navigasjonsmeny/i);
-  await expect(menuButton).toHaveAttribute('aria-hidden', 'true');
-  await expect(menuButton).toHaveAttribute('tabindex', '-1');
+  await expect(trigger).toHaveAttribute('aria-controls', 'mobile-menu');
   await expect(closeButton).toBeFocused();
-
   await page.keyboard.press('Shift+Tab');
   await expect(contactButton).toBeFocused();
-
   await page.keyboard.press('Tab');
   await expect(closeButton).toBeFocused();
-
   await page.keyboard.press('Escape');
   await expect(menu).toHaveCount(0);
-  await expect(menuButton).toBeFocused();
+  await expect(trigger).toBeFocused();
+
+  await trigger.click();
+  await menu.getByRole('button', { name: 'Archive' }).click();
+  await expect(menu).toHaveCount(0);
+  await expectSectionLanding(page, 'gallery', { expectFocused: true });
 });
 
-test('mobile menu lands target sections cleanly', async ({ page }) => {
-  const targets = [
-    { label: 'Verk', id: 'work', menuLabel: /verk/i },
-    { label: 'Om', id: 'about', menuLabel: /om/i },
-    { label: 'Kontakt', id: 'contact', menuLabel: /ta kontakt/i },
-  ] as const;
-
-  for (const target of targets) {
+test('mobile direct hashes load and align lazy sections', async ({ page }) => {
+  for (const id of ['work', 'gallery', 'about', 'contact', 'gallery-hand-portals']) {
     await page.goto('about:blank');
-    await page.goto('/');
-    await expect(page.getByRole('button', { name: /åpne meny/i })).toBeVisible();
-    await page.getByRole('button', { name: /åpne meny/i }).click();
-
-    const menu = page.getByRole('dialog', { name: /navigasjonsmeny/i });
-    await expect(menu).toBeVisible();
-    await menu.getByRole('button', { name: target.menuLabel }).click();
-    await expect(menu).toHaveCount(0);
-
-    await expectSectionLanding(page, target.id, target.label, { expectFocused: true });
+    await page.goto(`/#${id}`);
+    await expectSectionLanding(page, id);
   }
 });
 
-test('mobile direct hashes land target sections cleanly', async ({ page }) => {
-  const targets = [
-    { label: 'Verk', id: 'work' },
-    { label: 'Om', id: 'about' },
-    { label: 'Kontakt', id: 'contact' },
-    { label: 'Galleri-gruppe', id: 'gallery-hand-portals' },
-  ] as const;
+test('mobile archive progressively reveals one chapter', async ({ page }) => {
+  await page.goto('/#gallery');
 
-  for (const target of targets) {
-    await page.goto('about:blank');
-    await page.goto(`/#${target.id}`);
-    await expectSectionLanding(page, target.id, target.label);
-  }
+  const rooms = page.getByRole('button', { name: /Rooms.*10 works/i });
+  const surfaces = page.getByRole('button', { name: /Domestic surfaces/i });
+  await expect(rooms).toHaveAttribute('aria-expanded', 'false');
+  await rooms.click();
+  await expect(rooms).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('#archive-panel-liminal-rooms')).toBeVisible();
+  await expect(page.locator('#archive-panel-liminal-rooms .artwork-card-trigger')).toHaveCount(10);
+
+  await surfaces.click();
+  await expect(rooms).toHaveAttribute('aria-expanded', 'false');
+  await expect(surfaces).toHaveAttribute('aria-expanded', 'true');
+  await expect(page.locator('#archive-panel-liminal-rooms')).toHaveCount(0);
+  await expectNoHorizontalOverflow(page);
 });
 
 test('mobile artwork modal covers the viewport and restores focus', async ({ page }) => {
   await page.goto('/#work');
 
   const artworkButton = page.getByRole('button', {
-    name: /se optisk fokus/i,
+    name: /View Optisk fokus video and artist notes/i,
   });
-  await artworkButton.scrollIntoViewIfNeeded();
   await artworkButton.click();
 
-  const dialog = page.getByRole('dialog', {
-    name: /optisk fokus/i,
-  });
+  const dialog = page.getByRole('dialog', { name: /Optisk fokus artwork details/i });
   await expect(dialog).toBeVisible();
-  await expect
-    .poll(() =>
-      page.locator('[aria-controls]').evaluateAll((nodes) =>
-        nodes
-          .map((node) => node.getAttribute('aria-controls'))
-          .filter((id): id is string => typeof id === 'string' && !document.getElementById(id)),
-      ),
-    )
-    .toEqual([]);
+  await expect(page.getByRole('button', { name: 'Close artwork' })).toBeFocused();
+  await expect(dialog.getByRole('button', { name: 'Read meaning + process' })).toBeVisible();
 
-  const dialogBounds = await dialog.boundingBox();
-  expect(dialogBounds).not.toBeNull();
-  if (dialogBounds === null) {
-    throw new Error('Mobile artwork modal bounds should be available');
-  }
-  expect(dialogBounds.x).toBeLessThanOrEqual(1);
-  expect(dialogBounds.y).toBeLessThanOrEqual(1);
-  expect(dialogBounds.width).toBeGreaterThanOrEqual(389);
-  expect(dialogBounds.height).toBeGreaterThanOrEqual(843);
-
-  await expect(page.getByRole('button', { name: /lukk modal/i })).toBeFocused();
+  const bounds = await dialog.boundingBox();
+  expect(bounds).not.toBeNull();
+  expect(bounds?.x).toBeLessThanOrEqual(1);
+  expect(bounds?.y).toBeLessThanOrEqual(1);
+  expect(bounds?.width).toBeGreaterThanOrEqual(389);
+  expect(bounds?.height).toBeGreaterThanOrEqual(843);
 
   await page.keyboard.press('Escape');
   await expect(dialog).toHaveCount(0);
   await expect(artworkButton).toBeFocused();
+});
+
+test('contact and fixed header remain legible on a narrow viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 568 });
+  await page.goto('/#contact');
+
+  await expect(page.getByRole('heading', { name: 'Make something strange with me.' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /hello@whoamiii.art/i })).toBeVisible();
+  await expect(page.getByTestId('site-header')).toHaveCSS('position', 'fixed');
+
+  const geometry = await page.evaluate(() => {
+    const heading = document.querySelector('#contact-heading');
+    const trigger = document.querySelector('.site-header-menu-trigger');
+    const headingRect = heading?.getBoundingClientRect();
+    const triggerRect = trigger?.getBoundingClientRect();
+
+    return {
+      headingLeft: headingRect?.left ?? -1,
+      headingRight: headingRect?.right ?? 321,
+      overflowX: document.documentElement.scrollWidth - window.innerWidth,
+      triggerRight: triggerRect?.right ?? 321,
+    };
+  });
+
+  expect(geometry.headingLeft).toBeGreaterThanOrEqual(0);
+  expect(geometry.headingRight).toBeLessThanOrEqual(320);
+  expect(geometry.triggerRight).toBeLessThanOrEqual(320);
+  expect(geometry.overflowX).toBeLessThanOrEqual(0);
 });

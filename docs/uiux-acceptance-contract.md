@@ -1,38 +1,42 @@
 # UI/UX Acceptance Contract
 
-This note is the lightweight contract for the remaining Whoamiii UI/UX completion work.
+## Locked Experience
 
-## Locked Rules
+- The hero is static, responsive, image-first, and readable in the first mobile
+  viewport.
+- The selected sequence contains four curated works with intentionally different
+  ratios and captions outside the media.
+- The process presentation is one short vertical film with three labelled stages.
+- The living archive contains 49 works in six numbered chapters, keeps one
+  chapter open, and mounts only the open chapter's artwork cards.
+- About and contact complete one continuous editorial narrative rather than a
+  collection of interchangeable panels.
+- Barlow Condensed and variable Manrope are the bundled typography sources.
+- Mobile `390x844` clarity has priority over desktop spectacle.
 
-- The gallery shows four local artworks only.
-- Gallery video paths must be declared in `src/utils/media.ts` and resolve to same-origin files in `public/videos/`.
-- The hero is static image-first for this release; no hero overlay video is shipped.
-- The skip link must target `#main-content`.
-- The page must expose one real `main` landmark.
-- Modal artwork images must resolve to generated local responsive assets.
-- Reduced motion must disable both CSS motion and JS-driven motion.
-- The preserved `src/glass-effect/` subsystem is an intentional dormant/reference exception and may only return to live nav use after a dedicated stability gate passes.
-- CSP is a host-level responsibility for this static app, and production error telemetry is not active until `src/lib/reportError.ts` grows a real reporting adapter.
+## Interaction
 
-## Implementation Notes
+- The skip link targets and focuses `#main-content`.
+- `#work`, `#gallery`, `#about`, `#contact`, and archive chapter hashes mount and
+  align their lazy destination.
+- Menu and modal trap focus, close with Escape, restore focus, and clean up body
+  scroll locking.
+- Chapter triggers expose expansion state and controlled-panel relationships.
+- Reduced motion disables non-essential movement and automatic process playback
+  without removing content.
 
-- The image pipeline uses slug-based helpers in `src/utils/images.ts`.
-- The video pipeline uses the explicit media manifest in `src/utils/media.ts`.
-- The gallery, About imagery, and video posters use generated local variants rather than direct source assets.
-- The preserved `src/glass-effect/` subsystem is allowed to stay in the codebase even if it is not live yet; keep the exception explicit instead of treating it as accidental dead code.
+## Media and Performance
 
-## Current Release Status
+- All artwork images resolve through generated local responsive variants.
+- All video paths are explicit same-origin files under `public/videos/`.
+- Hero media is eager; lower media is prioritized or deferred according to its
+  place in the sequence.
+- Lower page sections are lazy, closed archive chapters remain lightweight, and
+  the process film pauses offscreen.
 
-- The gallery is limited to the four local artworks in the slug-based image pipeline.
-- The About section now also resolves through the same generated local image pipeline.
-- Each featured artwork now resolves through explicit generated modal variants in `/public/images`.
-- The active gallery video set is the explicit same-origin media manifest declared in `src/utils/media.ts`.
-- `src/glass-effect/` is preserved as a future/reference subsystem, but it is not live in the navigation for this release.
+## Acceptance
 
-## Validation Expectations
-
-- Unit tests should confirm generated asset paths exist.
-- Unit tests should confirm media manifest video paths exist.
-- Smoke tests should confirm the page loads and the gallery shell renders.
-- Mobile Playwright checks should confirm the first viewport, header/menu, and artwork modal remain coherent at `390x844`.
-- Accessibility checks should confirm skip-link, menu, and modal behavior once the UI tasks are complete.
+The change is complete only when `npm run check:ci` and
+`npm run test:e2e:preview` pass, the manual mobile/reduced-motion/keyboard passes
+are clean, metadata matches the current site, and the production domain serves
+the same built experience.

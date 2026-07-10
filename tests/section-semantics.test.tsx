@@ -1,24 +1,10 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { ShaderHeading } from '../src/components/ShaderHeading';
 import ContactSection from '../src/sections/ContactSection';
 import { GallerySection } from '../src/sections/GallerySection';
 import { LibrarySection } from '../src/sections/LibrarySection';
 import { CONTACT_COPY, GALLERY_COPY } from '../src/content/siteCopy';
 import { installMatchMediaMock } from './helpers/matchMedia';
-
-vi.mock('../src/lib/shaderRenderer', () => ({
-  ShaderRenderer: class MockShaderRenderer {
-    element = document.createElement('canvas');
-    render = vi.fn();
-    start = vi.fn((onFrame: (canvas: HTMLCanvasElement, time: number) => void) => {
-      onFrame(this.element, 0.25);
-    });
-    stop = vi.fn();
-    dispose = vi.fn();
-    resize = vi.fn();
-  },
-}));
 
 vi.mock('../src/components/InteractiveArtworkCard', () => ({
   default: function MockInteractiveArtworkCard() {
@@ -27,7 +13,7 @@ vi.mock('../src/components/InteractiveArtworkCard', () => ({
 }));
 
 describe('section semantics', () => {
-  it('keeps the contact heading accessible while rendering through the shader heading system', () => {
+  it('keeps the contact heading accessible in the editorial contact surface', () => {
     installMatchMediaMock({
       '(prefers-reduced-motion: reduce)': true,
     });
@@ -36,54 +22,39 @@ describe('section semantics', () => {
     const heading = screen.getByRole('heading', { name: CONTACT_COPY.heading });
 
     expect(CONTACT_COPY.heading).toBe(CONTACT_COPY.headingParts.lead);
-    expect(heading).toHaveAttribute('data-heading-variant', 'default');
+    expect(heading).toHaveAttribute('id', 'contact-heading');
+    expect(heading).toHaveClass('contact-title');
     expect(heading).toHaveTextContent(CONTACT_COPY.headingParts.lead);
-  });
-
-  it('allows named regions to reference the default shader heading by id', () => {
-    render(
-      <section aria-labelledby="selected-works-heading">
-        <ShaderHeading id="selected-works-heading">Utvalgte verk.</ShaderHeading>
-      </section>,
-    );
-
-    const heading = screen.getByRole('heading', { name: /utvalgte verk\./i });
-    expect(heading).toHaveAttribute('id', 'selected-works-heading');
-    expect(heading).toHaveAttribute('data-heading-variant', 'default');
-    expect(screen.getByRole('region', { name: /utvalgte verk\./i })).toBeInTheDocument();
-  });
-
-  it('uses ShaderHeading ariaLabel as semantic text without naming from decorative lines', () => {
-    render(
-      <ShaderHeading ariaLabel="Utvalgte verk." visualLines={['Arkiv', 'Signaler']}>
-        Gallery overview
-      </ShaderHeading>,
-    );
-
-    expect(screen.getByRole('heading', { name: /utvalgte verk\./i })).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: /arkiv signaler/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('region', { name: CONTACT_COPY.heading })).toBeInTheDocument();
   });
 
   it('keeps the gallery region named from the gallery heading while the supporting copy stays visible', () => {
     render(<GallerySection reducedMotion={false} />);
 
-    const heading = screen.getByRole('heading', { name: /utvalgte verk\./i });
+    const heading = screen.getByRole('heading', { name: GALLERY_COPY.heading });
     expect(heading).toHaveAttribute('id', 'selected-works-heading');
-    expect(heading).toHaveAttribute('data-heading-variant', 'gallery');
-    expect(screen.getByRole('region', { name: /utvalgte verk\./i })).toBeInTheDocument();
+    expect(heading).toHaveClass('selected-work-title');
+    expect(screen.getByRole('region', { name: GALLERY_COPY.heading })).toBeInTheDocument();
     expect(screen.getByText(GALLERY_COPY.eyebrow)).toBeInTheDocument();
     expect(screen.getByText(GALLERY_COPY.subtitle)).toBeInTheDocument();
   });
 
-  it('keeps the full gallery region named as a separate library surface', () => {
+  it('keeps the archive named and only mounts artwork cards for the open chapter', () => {
     render(<LibrarySection reducedMotion={false} />);
 
-    const heading = screen.getByRole('heading', { name: /galleri\./i });
+    const heading = screen.getByRole('heading', { name: /the living archive/i });
     expect(heading).toHaveAttribute('id', 'gallery-library-heading');
-    expect(heading).toHaveAttribute('data-heading-variant', 'gallery');
-    expect(screen.getByRole('region', { name: /galleri\./i })).toBeInTheDocument();
-    expect(screen.getByText(/sortert kunstarkiv/i)).toBeInTheDocument();
-    expect(screen.getByRole('navigation', { name: /galleri-grupper/i })).toBeInTheDocument();
-    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(49);
+    expect(heading).toHaveClass('archive-title');
+    expect(screen.getByRole('region', { name: /the living archive/i })).toBeInTheDocument();
+    expect(screen.getByText(/49 works \/ 6 chapters/i)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /enter chapter/i })).toHaveLength(6);
+    expect(screen.queryByTestId('mock-artwork-card')).not.toBeInTheDocument();
+
+    const roomsChapter = screen.getByRole('button', { name: /rooms.*10 works.*enter chapter/i });
+    fireEvent.click(roomsChapter);
+
+    expect(roomsChapter).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getAllByTestId('mock-artwork-card')).toHaveLength(10);
+    expect(screen.getByText(/10 works in this chapter/i)).toBeInTheDocument();
   });
 });

@@ -1,27 +1,17 @@
 # Deployment and Domain
 
-This portfolio is served as a static site from GitHub Pages.
+Whoamiii is served as a static Vite build from GitHub Pages.
 
-## Current Production Setup
+## Production Configuration
 
-- Production domain: `whoamiii.art`
-- Registrar: GoDaddy
-- Authoritative DNS: Cloudflare
-- GitHub repository: `whoamaiii/whoamiiiport`
-- GitHub Pages source: `gh-pages` branch, `/` root
-- Custom domain file on `gh-pages`: `CNAME` with `whoamiii.art`
-- HTTPS: certificate approved and HTTPS enforcement enabled in GitHub Pages
+- Domain: `whoamiii.art`
+- Repository: `whoamaiii/whoamiiiport`
+- GitHub Pages source: root of the `gh-pages` branch
+- Custom domain source file: [`public/CNAME`](../public/CNAME)
+- DNS provider: Cloudflare; GoDaddy remains the registrar
+- HTTPS: enforced by GitHub Pages
 
-GoDaddy is not where the live DNS records are managed. GoDaddy only owns the
-domain registration. Cloudflare is the place to edit DNS because the domain
-uses Cloudflare nameservers:
-
-- `ariella.ns.cloudflare.com`
-- `vin.ns.cloudflare.com`
-
-## Required DNS Records
-
-Keep the GitHub Pages records DNS-only in Cloudflare.
+Cloudflare should keep the GitHub Pages records DNS-only:
 
 | Type | Name | Content |
 | --- | --- | --- |
@@ -31,40 +21,48 @@ Keep the GitHub Pages records DNS-only in Cloudflare.
 | `A` | `whoamiii.art` | `185.199.111.153` |
 | `CNAME` | `www` | `whoamaiii.github.io` |
 
-Do not remove unrelated DNS records such as `_domainconnect`, `_dmarc`, or the
-`qodex` tunnel unless the system that owns that record is also being changed.
+Do not remove unrelated DNS records when publishing the portfolio.
 
-## Publishing
+## Build and Validate
 
-GitHub Pages currently publishes from the `gh-pages` branch instead of GitHub
-Actions. The Actions-based Pages deploy was avoided because the GitHub account
-reported a billing lock that prevented jobs from starting.
-
-Before publishing, run the normal release checks:
+Run from the repository root:
 
 ```bash
-npm run check
-npm run test:e2e
+npm ci
+npm run check:ci
 npm run test:e2e:preview
 npm run build
 ```
 
-Then publish the contents of `dist/` to the `gh-pages` branch. The published
-branch must include:
+The final `npm run build` writes `dist/`. Before publishing, confirm it contains
+`index.html`, hashed `assets/`, `images/`, `videos/`, `CNAME`, `.nojekyll`,
+`robots.txt`, `sitemap.xml`, icons, the web manifest, and the social preview.
+These public-root files are source-controlled under [`public/`](../public), so do
+not patch them only on the deployment branch.
 
-- `index.html`
-- hashed files from `assets/`
-- runtime files from `images/`, `videos/`, `favicon.svg`, `robots.txt`, and
-  `social-preview.png`
-- `CNAME` containing exactly `whoamiii.art`
-- `.nojekyll`
-- `sitemap.xml` with `https://whoamiii.art/` as the canonical URL
+## Publish `dist/`
 
-`CNAME`, `.nojekyll`, `robots.txt`, and `sitemap.xml` live in `public/` so a
-normal Vite build copies them into `dist/`. Do not hand-add those files only on
-the `gh-pages` branch; that makes the deployment output drift from source.
+Publishing is a state-changing operation. Run it only with explicit release
+authorization. The current manual branch workflow is:
 
-After pushing `gh-pages`, trigger or verify the Pages build:
+```bash
+DEPLOY_DIR="$(mktemp -d)"
+git fetch origin gh-pages
+git worktree add --detach "$DEPLOY_DIR" origin/gh-pages
+rsync -a --delete --exclude='.git' dist/ "$DEPLOY_DIR"/
+git -C "$DEPLOY_DIR" add -A
+git -C "$DEPLOY_DIR" status --short
+git -C "$DEPLOY_DIR" commit -m "Deploy Wet Signal portfolio"
+git -C "$DEPLOY_DIR" push origin HEAD:gh-pages
+git worktree remove "$DEPLOY_DIR"
+```
+
+Review `status --short` before committing. If it reports no changes, skip the
+commit and push, then remove the worktree. Never publish the development server
+or the source tree in place of `dist/`.
+
+GitHub Pages may build automatically after the branch push. Its state can be
+inspected, and a legacy Pages build can be requested, with:
 
 ```bash
 gh api repos/whoamaiii/whoamiiiport/pages
@@ -72,69 +70,35 @@ gh api repos/whoamaiii/whoamiiiport/pages/builds -X POST
 gh api repos/whoamaiii/whoamiiiport/pages/builds/latest
 ```
 
-The Pages API should report:
-
-- `status`: `built`
-- `build_type`: `legacy`
-- `source.branch`: `gh-pages`
-- `cname`: `whoamiii.art`
-- `https_certificate.state`: `approved`
-- `https_enforced`: `true`
+Expected Pages fields are `status: built`, `build_type: legacy`,
+`source.branch: gh-pages`, `cname: whoamiii.art`, an approved certificate, and
+`https_enforced: true`.
 
 ## Live Verification
-
-Verify DNS first:
 
 ```bash
 dig whoamiii.art +noall +answer -t A
 dig www.whoamiii.art +noall +answer -t CNAME
-```
-
-Expected result:
-
-- `whoamiii.art` resolves to the four GitHub Pages A records.
-- `www.whoamiii.art` resolves to `whoamaiii.github.io`.
-
-Then verify the live site and representative assets:
-
-```bash
 curl -I --max-time 15 https://whoamiii.art/
 curl -I --max-time 15 https://www.whoamiii.art/
 curl -s --max-time 15 https://whoamiii.art/ | rg 'assets/index-.*\.(js|css)'
 curl -I --max-time 15 https://whoamiii.art/images/liquid-perception-hero-960.webp
+curl -I --max-time 15 https://whoamiii.art/social-preview.png
 curl -I --max-time 15 https://whoamiii.art/sitemap.xml
 ```
 
-Expected result:
+Confirm the apex returns `200`, `www` and HTTP redirect to the HTTPS apex, the
+HTML references the newly built asset hashes, representative media returns
+successfully, and a real browser shows the current “Wet Signal” interface. A
+successful status code alone is not visual verification.
 
-- `https://whoamiii.art/` returns `200 OK`.
-- `https://www.whoamiii.art/` redirects to `https://whoamiii.art/`.
-- `http://whoamiii.art/` redirects to HTTPS.
-- The HTML references the current hashed JS and CSS assets.
-- Image and video assets return `200 OK`.
-- `sitemap.xml` returns `200 OK`, and `robots.txt` points crawlers to it.
-- A real browser render check shows the portfolio content, not only a server
-  status code.
-
-## HTTPS
-
-HTTPS is currently active for `whoamiii.art`; GitHub Pages reports the
-certificate as `approved` and `https_enforced` as `true`.
-
-If DNS changes are made later, GitHub may temporarily reject HTTPS enforcement
-with:
-
-```text
-The certificate does not exist yet
-```
-
-That means the domain is pointed correctly but GitHub has not finished issuing
-the certificate. Wait and retry:
+If DNS changes trigger a temporary certificate delay, wait for issuance and
+retry HTTPS enforcement:
 
 ```bash
 gh api repos/whoamaiii/whoamiiiport/pages -X PUT -F https_enforced=true
 curl -I --max-time 15 https://whoamiii.art/
 ```
 
-Do not claim HTTPS is complete until `https://whoamiii.art/` returns a valid
-certificate and `200 OK`.
+Do not declare deployment complete until the certificate is valid and the
+browser render matches the reviewed production build.

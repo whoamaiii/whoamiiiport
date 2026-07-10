@@ -26,6 +26,16 @@ const SiteFooter = lazy(() => import('./sections/SiteFooter'));
 
 export { FIRST_GALLERY_PRELOAD_IMAGE_URL } from './utils/sectionLoading';
 
+function SectionFallback({ label }: { readonly label: string }) {
+  return (
+    <div className="section-loading" role="status" aria-label={`Loading ${label}`}>
+      <span />
+      <span />
+      <span />
+    </div>
+  );
+}
+
 export default function App() {
   const mainRef = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
@@ -73,7 +83,7 @@ export default function App() {
 
   return (
     <MotionFeatureProvider>
-      <div className="relative min-h-screen bg-zinc-950 font-sans selection:bg-cyan-300/25">
+      <div className="portfolio-root">
         <RenderErrorBoundary context="scroll-progress" fallback={null}>
           <ScrollProgress />
         </RenderErrorBoundary>
@@ -83,7 +93,7 @@ export default function App() {
           onClick={handleSkipLinkClick}
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-white focus:text-black focus:rounded-lg"
         >
-          Hopp til innhold
+          Skip to content
         </a>
 
         <SiteHeader
@@ -106,7 +116,7 @@ export default function App() {
             heroReveal={heroReveal}
           />
           {loadGallerySection ? (
-            <Suspense fallback={null}>
+            <Suspense fallback={<SectionFallback label="selected work" />}>
               <GallerySection
                 reducedMotion={prefersReducedMotion}
                 onNavigateToSection={handleSectionNavigation}
@@ -114,20 +124,22 @@ export default function App() {
             </Suspense>
           ) : null}
           {loadLibrarySection ? (
-            <Suspense fallback={null}>
+            <Suspense fallback={<SectionFallback label="archive" />}>
               <LibrarySection reducedMotion={prefersReducedMotion} />
             </Suspense>
           ) : null}
           {loadDeferredSections ? (
-            <Suspense fallback={null}>
-              <AboutSection />
-              <ContactSection reducedMotion={prefersReducedMotion} />
-            </Suspense>
+            <RenderErrorBoundary context="deferred-sections" fallback={null}>
+              <Suspense fallback={<SectionFallback label="artist information" />}>
+                <AboutSection />
+                <ContactSection reducedMotion={prefersReducedMotion} />
+              </Suspense>
+            </RenderErrorBoundary>
           ) : null}
         </main>
 
         {loadDeferredSections ? (
-          <Suspense fallback={null}>
+          <Suspense fallback={<SectionFallback label="footer" />}>
             <SiteFooter />
           </Suspense>
         ) : null}

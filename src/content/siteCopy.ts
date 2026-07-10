@@ -3,6 +3,7 @@ interface HeroCopy {
   titleSemantic: string;
   titleLines: readonly [string, string];
   subtitle: string;
+  cta: string;
 }
 
 interface GalleryCopy {
@@ -21,33 +22,36 @@ interface ContactCopy {
 }
 
 export const HERO_COPY: HeroCopy = {
-  eyebrow: 'Psychedelic art portfolio',
+  eyebrow: 'Digital artist / visual experiments',
   titleSemantic: 'Altered perception.',
   titleLines: ['Altered', 'Perception'],
-  subtitle: '',
+  subtitle: 'Personal photographs pushed into unstable encounters between the organic and the synthetic.',
+  cta: 'Enter the archive',
 } as const;
 
 export const GALLERY_COPY: GalleryCopy = {
-  eyebrow: 'KURATERT UTVALG',
-  heading: 'Utvalgte verk.',
-  subtitle: 'Første inngang til de sorterte seriene: rom, hjemlige flater, hender og ritualobjekter.',
+  eyebrow: 'Curated sequence / 01—04',
+  heading: 'Selected work',
+  subtitle: 'Rooms become skin. Hands become interfaces. Familiar images drift into living surfaces.',
 } as const;
 
 export const ABOUT_COPY = {
-  heading: 'Sinnet bak bildet',
+  heading: 'The mind behind the image',
   intro:
-    'Dette er meg inne i arbeidet: et modifisert selvportrett presset gjennom det samme kromet, skogslyset og altered-perception-språket som former resten av porteføljen.',
+    'I turn personal photographs into unstable encounters between the organic and the synthetic.',
   body:
-    'Jeg bruker digital manipulasjon, malerisk logikk og psykedelisk bildearbeid til å gjøre personlige fotografier om til verk som føles organiske, syntetiske, intime og litt ustabile samtidig.',
+    'My practice moves between digital manipulation, AI-assisted image research, painterly logic and psychedelic image-making. I build from real rooms, hands, bodies and rituals, then push the familiar until it starts behaving like memory.',
+  identity: 'Quentin / Whoamiii',
+  location: 'Oslo, Norway / available worldwide',
 } as const;
 
 const CONTACT_HEADING_PARTS = {
-  lead: 'La oss lage noe',
+  lead: 'Make something strange with me.',
 } as const;
 
 export const CONTACT_COPY: ContactCopy = {
   heading: CONTACT_HEADING_PARTS.lead,
   headingParts: CONTACT_HEADING_PARTS,
-  body: 'Åpen for oppdrag, samarbeid og utstillinger.',
-  cta: 'Send melding',
+  body: 'Open for commissions, collaborations and exhibitions.',
+  cta: 'hello@whoamiii.art',
 } as const;

@@ -33,7 +33,7 @@ describe('WorkflowProcessCard video feature', () => {
 
     expect(video).toHaveAttribute('width', String(PROCESS_VIDEO.width));
     expect(video).toHaveAttribute('height', String(PROCESS_VIDEO.height));
-    expect(video).toHaveAttribute('aria-label', 'Prosessvideo med kopp og kaffe');
+    expect(video).toHaveAttribute('aria-label', 'Coffee and cup process study');
 
     await waitFor(() => expect(video).toHaveAttribute('poster', PROCESS_VIDEO.poster));
     expect(video).toHaveAttribute('preload', 'metadata');
@@ -51,18 +51,19 @@ describe('WorkflowProcessCard video feature', () => {
     render(<WorkflowProcessCard reducedMotion />);
 
     const playbackButton = screen.getByRole('button', {
-      name: /spill av prosessvideo med kopp og kaffe/i,
+      name: /^play coffee process study$/i,
     });
 
-    expect(playbackButton).toHaveClass('h-12', 'w-12');
+    expect(playbackButton).toHaveClass('process-playback');
 
     await waitFor(() => expect(playbackButton).not.toBeDisabled());
     fireEvent.click(playbackButton);
 
     expect(playSpy).toHaveBeenCalledTimes(1);
+    fireEvent.play(screen.getByTestId('workflow-process-video'));
     await waitFor(() =>
       expect(
-        screen.getByRole('button', { name: /pause prosessvideo med kopp og kaffe/i }),
+        screen.getByRole('button', { name: /^pause coffee process study$/i }),
       ).toBeVisible(),
     );
   });

@@ -1,15 +1,23 @@
 # Documentation Index
 
-- Baseline and acceptance contract: [implementation-baseline.md](./implementation-baseline.md)
-- Architecture: [architecture.md](./architecture.md)
-- Accessibility: [accessibility.md](./accessibility.md)
-- UI/UX acceptance contract: [uiux-acceptance-contract.md](./uiux-acceptance-contract.md)
-- Testing: [testing.md](./testing.md)
-- Deployment and domain: [deployment.md](./deployment.md)
-- Release checklist: [release-checklist.md](./release-checklist.md)
-- Maintenance: [maintenance.md](./maintenance.md)
-- Hero title system: [hero-title-hybrid.md](./hero-title-hybrid.md)
-- Load performance report: [load-performance-report.md](./load-performance-report.md)
-- Portfolio cleanup map: [portfolio-maintenance-map.md](./portfolio-maintenance-map.md)
-- Architecture decision record: [adr-001-static-portfolio-architecture.md](./adr-001-static-portfolio-architecture.md)
-- Retired component note: [liquid-glass-text.md](./liquid-glass-text.md)
+## Current Guides
+
+- [Architecture](./architecture.md)
+- [Design system](../DESIGN.md)
+- [Accessibility](./accessibility.md)
+- [Testing](./testing.md)
+- [Maintenance](./maintenance.md)
+- [Release checklist](./release-checklist.md)
+- [Deployment and domain](./deployment.md)
+- [Hero title contract](./hero-title-hybrid.md)
+- [UI/UX acceptance contract](./uiux-acceptance-contract.md)
+- [Static architecture decision](./adr-001-static-portfolio-architecture.md)
+
+## Historical Records
+
+- [Implementation baseline](./implementation-baseline.md) records the hardened
+  foundation inherited by the current redesign.
+- [Load performance report](./load-performance-report.md) is a dated measurement
+  from `2026-05-05`; rerun the current performance script before citing numbers.
+- [Portfolio maintenance map](./portfolio-maintenance-map.md) summarizes current
+  ownership and remaining media/performance risks.

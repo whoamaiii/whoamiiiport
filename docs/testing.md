@@ -7,87 +7,65 @@ npm run test
 npm run test:e2e
 npm run check
 npm run check:ci
+npm run test:e2e:preview
 npm run perf:mobile
 ```
 
-## Test Layers
+## Vitest
 
-### Unit and Integration: Vitest
+Tests under [`tests/`](../tests) cover:
 
-Files live in [`tests/`](../tests).
+- reduced-motion, media-query, and section-loading helpers
+- hero semantic/decorative separation and fallback behavior
+- selected-work and six-chapter archive semantics
+- progressive chapter rendering and expansion state
+- artwork trigger, dialog, notes, image, and video contracts
+- process-film metadata, loading, playback, and reduced-motion behavior
+- generated image/srcset paths and same-origin video paths
+- metadata and the no-JavaScript static shell
 
-Primary responsibilities:
+Shared DOM/browser mocks live in [`tests/setup.ts`](../tests/setup.ts).
 
-- hook behavior such as reduced motion and media query updates
-- shader heading readiness and semantic wrappers
-- `HeroTitleHybrid` semantic, reduced-motion, and fallback behavior
-- structured hero copy consumption and hero-title regression coverage
-- image/media manifest and srcset contracts
-- component-level accessibility expectations
+## Playwright
 
-Shared browser primitive mocks live in [`tests/setup.ts`](../tests/setup.ts). Shared match-media mocking lives in [`tests/helpers/matchMedia.ts`](../tests/helpers/matchMedia.ts).
+Tests under [`tests/e2e/`](../tests/e2e) run in `desktop-chromium` and a touch
+`mobile-390` project at `390x844`. They cover:
 
-### Browser Regression: Playwright
+- first-viewport hero hierarchy and horizontal overflow
+- skip-link focus and named section landmarks
+- progressive archive entry and chapter expansion
+- fresh direct hashes for lazy sections and chapter anchors
+- mobile index focus trap, Escape, and focus restoration
+- image/video artwork modal behavior and focus restoration
+- about/contact geometry and complete mobile scrolling
+- axe scans for the base page and modal
 
-Files live in [`tests/e2e/`](../tests/e2e).
+`fullyParallel` stays false because both projects share one web server. The normal
+suite reuses `http://127.0.0.1:3000`; the preview config builds and tests
+`http://127.0.0.1:4173`.
 
-Primary responsibilities:
+## Test Policy
 
-- skip-link focus transfer
-- named-region and heading verification
-- hero lockup verification through the accessible heading plus `data-testid="hero-title-visual"`
-- eyebrow and subtitle presence within the first viewport
-- gallery eyebrow, heading, and subtitle presence within the artwork section
-- modal open/close and focus restoration
-- video artwork modal behavior, including autoplay, muted playback, poster-backed loading, and expected source paths
-- mobile menu focus trap behavior
-- mobile-first viewport checks for header, hero lockup, menu, modal coverage, and horizontal overflow
-- axe accessibility scans
+- Assert behavior and semantics before classes or animation frames.
+- Keep locators scoped to the relevant section/dialog.
+- Use reduced motion where timing would create flakes.
+- Add a regression test for every user-facing bug.
+- When section IDs or loading order changes, test both in-page navigation and a
+  fresh direct hash.
+- When media changes, update source, manifest, generated asset, and contract test
+  in the same change.
 
-Playwright configuration lives in [`playwright.config.ts`](../playwright.config.ts). The suite has separate `desktop-chromium` and `mobile-390` projects. `fullyParallel` intentionally stays `false` because the suite currently shares one dev server on port 3000. Do not enable full parallelism unless each worker gets an isolated server or port.
+## Performance
 
-## Regression Policy
+Development Vite modules are not representative of the shipped site. Measure a
+fresh production build:
 
-Every fixed user-facing bug should have at least one automated regression case. The current suite protects:
+```bash
+npm run build
+npx vite preview --host=0.0.0.0 --port=4173
+npm run perf:mobile
+```
 
-- skip link changing only the hash
-- missing gallery landmark name
-- gallery intro copy drifting away from the live region heading
-- unstable animated heading semantics
-- hero title semantics staying separate from decorative rendering
-- hero-title visual selector stability for browser checks
-- gallery video manifest paths resolving to files in `public/videos/`
-- broken modal focus restoration
-- featured video artworks accidentally losing autoplay/muted modal behavior or pointing at the wrong MP4
-- first mobile viewport regressions such as horizontal overflow, broken header/menu layout, or unreadable hero lockup
-- mobile menu focus trapping
-- accessibility violations on base page and modal
-
-## Writing New Tests
-
-- Prefer behavior assertions over implementation details.
-- For animation-heavy UI, assert stable semantic outcomes, not transient pixel states.
-- For hero tests, assert the heading by role and accessible name first. Use `data-testid="hero-title-visual"` only for decorative subtree presence.
-- For gallery tests, assert the `h2`, the named region, and the supporting eyebrow/subtitle before reaching for variant-specific attributes.
-- Use reduced-motion mode or direct mocking when timing would otherwise cause flakes.
-- Scope Playwright locators to the relevant region or dialog to avoid ambiguous matches.
-- Markdown docs are intentionally outside the ESLint boundary. If a docs change includes runnable JS/TS examples, add targeted tests or move the example into a linted fixture.
-
-## Local Verification Sequence
-
-Run this order before opening a PR:
-
-1. `npm run check`
-2. `npm run test:e2e`
-
-For performance regressions, measure the built preview instead of the dev server:
-
-1. `npm run build`
-2. `npx vite preview --host=0.0.0.0 --port=4173`
-3. `npm run perf:mobile`
-
-`npm run dev` is intentionally optimized for editing feedback. It serves unbundled Vite development modules, so slow-load results there can exaggerate what real visitors see after the production bundle is built.
-
-If a browser test fails, inspect `test-results/` and the Playwright trace zip.
-
-If the failure touches the hero, follow up with the manual checks in [`docs/release-checklist.md`](./release-checklist.md), especially subtitle readability, reduced-motion behavior, and fallback visibility.
+If Playwright fails, inspect the retained trace and artifacts under
+`test-results/`, then repeat the relevant manual pass from
+[`release-checklist.md`](./release-checklist.md).

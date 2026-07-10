@@ -1,7 +1,4 @@
-import { Instagram, Twitter } from 'lucide-react';
 import { ImageReveal } from '../components/ImageReveal';
-import { MagneticButton } from '../components/MagneticButton';
-import { ShaderHeading } from '../components/ShaderHeading';
 import { ABOUT_COPY } from '../content/siteCopy';
 import {
   getAboutSizes,
@@ -13,15 +10,23 @@ import {
 
 export const ABOUT_SLUG = 'liquid-perception' as const;
 
-function AboutPortrait({ className = '' }: { className?: string }) {
+function DiagonalArrow() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 19 19 5M8 5h11v11" />
+    </svg>
+  );
+}
+
+function AboutPortrait() {
   return (
     <ImageReveal
-      className={`glass relative mx-auto aspect-[4/5] w-full max-w-sm rounded-[1.35rem] p-2 md:mx-0 md:ml-auto md:rounded-3xl ${className}`.trim()}
+      className="about-portrait"
       delay={0}
       direction="up"
-      duration={0.48}
+      duration={0.52}
     >
-      <picture className="block h-full w-full">
+      <picture>
         <source
           type="image/avif"
           srcSet={getGalleryAvifSrcset(ABOUT_SLUG)}
@@ -32,22 +37,12 @@ function AboutPortrait({ className = '' }: { className?: string }) {
           srcSet={getGallerySrcset(ABOUT_SLUG)}
           sizes={getAboutSizes()}
           alt={getImageMetadata(ABOUT_SLUG).alt}
-          loading="eager"
-          fetchPriority="high"
+          loading="lazy"
           decoding="async"
           width={800}
           height={1200}
-          className="h-full w-full rounded-[1rem] object-cover object-[50%_50%] contrast-105 saturate-110 md:rounded-2xl"
         />
       </picture>
-      <div
-        className="pointer-events-none absolute inset-2 rounded-[1rem] opacity-[0.16] mix-blend-screen md:rounded-2xl"
-        style={{
-          backgroundImage:
-            'repeating-linear-gradient(180deg, rgba(255,255,255,0.18) 0 1px, rgba(255,255,255,0) 1px 7px)',
-        }}
-        aria-hidden="true"
-      />
     </ImageReveal>
   );
 }
@@ -58,55 +53,40 @@ export default function AboutSection() {
       id="about"
       tabIndex={-1}
       aria-labelledby="about-heading"
-      className="section-anchor-target deferred-section relative z-20 bg-zinc-950 px-4 py-16 focus:outline-none sm:px-6 md:py-32"
+      className="section-anchor-target deferred-section about-section"
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="glass relative overflow-hidden rounded-[1.75rem] p-5 sm:p-8 md:rounded-[3rem] md:p-16">
-          <div className="absolute top-0 right-0 h-96 w-96 -translate-y-1/2 translate-x-1/2 rounded-full bg-[radial-gradient(circle,rgba(103,232,249,0.16),rgba(245,222,192,0.08)_38%,rgba(148,68,104,0.10)_58%,transparent_72%)] blur-[80px]" />
-          <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/60 to-transparent" />
+      <div className="editorial-section-shell">
+        <header className="about-header">
+          <span className="section-signal" aria-hidden="true" />
+          <h2 id="about-heading" className="editorial-display about-title">
+            {ABOUT_COPY.heading}
+          </h2>
+        </header>
 
-          <div className="relative z-10 grid gap-8 md:grid-cols-2 md:gap-16">
-            <div className="about-copy-stack">
-              <ShaderHeading
-                id="about-heading"
-                delay={0}
-                className="about-heading mb-8 text-center text-[2.62rem] font-display tracking-tight md:text-left md:text-5xl"
-                visualLines={[ABOUT_COPY.heading]}
-              >
-                {ABOUT_COPY.heading}
-              </ShaderHeading>
-              <AboutPortrait className="mb-7 md:hidden" />
-              <p className="about-body-copy mb-5 text-[1.02rem] leading-[1.68] text-zinc-200/88 md:text-lg md:leading-relaxed">
-                {ABOUT_COPY.intro}
-              </p>
-              <p className="about-body-copy mb-7 text-[1.02rem] leading-[1.68] text-zinc-400 md:mb-8 md:text-lg md:leading-relaxed">
-                {ABOUT_COPY.body}
-              </p>
-              <div className="about-social-row flex gap-4">
-                <MagneticButton
-                  strength={0.4}
-                  href="https://instagram.com/whoamiii"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  ariaLabel="Instagram"
-                  className="social-orb-link"
-                >
-                  <Instagram size={20} />
-                </MagneticButton>
-                <MagneticButton
-                  strength={0.4}
-                  href="https://twitter.com/whoamiii"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  ariaLabel="Twitter"
-                  className="social-orb-link"
-                >
-                  <Twitter size={20} />
-                </MagneticButton>
-              </div>
-            </div>
-            <AboutPortrait className="hidden md:block" />
+        <div className="about-composition">
+          <AboutPortrait />
+
+          <div className="about-copy">
+            <span className="editorial-link-mark" aria-hidden="true" />
+            <p className="about-intro">{ABOUT_COPY.intro}</p>
+            <p className="about-body">{ABOUT_COPY.body}</p>
           </div>
+
+          <div className="about-identity">
+            <p>{ABOUT_COPY.identity}</p>
+            <span>{ABOUT_COPY.location}</span>
+          </div>
+
+          <nav className="about-links" aria-label="Whoamiii social profiles">
+            <a href="https://instagram.com/whoamiii" target="_blank" rel="noopener noreferrer">
+              <span>Instagram</span>
+              <DiagonalArrow />
+            </a>
+            <a href="https://twitter.com/whoamiii" target="_blank" rel="noopener noreferrer">
+              <span>X</span>
+              <DiagonalArrow />
+            </a>
+          </nav>
         </div>
       </div>
     </section>

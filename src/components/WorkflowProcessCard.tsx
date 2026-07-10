@@ -1,8 +1,7 @@
-import { useCallback, useEffect, useReducer, useRef } from 'react';
-import { Pause, Play } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 interface WorkflowProcessCardProps {
-  reducedMotion: boolean;
+  readonly reducedMotion: boolean;
 }
 
 export const PROCESS_VIDEO = {
@@ -11,214 +10,186 @@ export const PROCESS_VIDEO = {
   type: 'video/mp4',
   width: 720,
   height: 1160,
-  durationLabel: '15 sek',
+  durationLabel: '15 sec',
 } as const;
 
-interface WorkflowVideoState {
-  readonly shouldLoadVideo: boolean;
-  readonly isPlaying: boolean;
+const PROCESS_STAGES = [
+  { index: '01', label: 'Ordinary image' },
+  { index: '02', label: 'Perceptual drift' },
+  { index: '03', label: 'Living surface' },
+] as const;
+
+function PlaybackIcon({ isPlaying }: { readonly isPlaying: boolean }) {
+  return (
+    <svg viewBox="0 0 20 20" aria-hidden="true">
+      {isPlaying ? (
+        <path d="M6 4.5v11M14 4.5v11" />
+      ) : (
+        <path d="m7 4.5 8 5.5-8 5.5z" />
+      )}
+    </svg>
+  );
 }
 
-type WorkflowVideoAction =
-  | { readonly type: 'loadVideo' }
-  | { readonly type: 'playing' }
-  | { readonly type: 'paused' };
-
-function getInitialVideoState(): WorkflowVideoState {
-  return {
-    shouldLoadVideo:
-      typeof window !== 'undefined' && typeof window.IntersectionObserver !== 'function',
-    isPlaying: false,
-  };
-}
-
-function workflowVideoReducer(
-  state: WorkflowVideoState,
-  action: WorkflowVideoAction,
-): WorkflowVideoState {
-  switch (action.type) {
-    case 'loadVideo':
-      return state.shouldLoadVideo ? state : { ...state, shouldLoadVideo: true };
-    case 'playing':
-      return state.isPlaying ? state : { ...state, isPlaying: true };
-    case 'paused':
-      return state.isPlaying ? { ...state, isPlaying: false } : state;
-    default: {
-      const unreachable: never = action;
-      return unreachable;
-    }
-  }
+function DiagonalArrow() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 19 19 5M8 5h11v11" />
+    </svg>
+  );
 }
 
 export function WorkflowProcessCard({ reducedMotion }: WorkflowProcessCardProps) {
   const articleRef = useRef<HTMLElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [{ shouldLoadVideo, isPlaying }, dispatch] = useReducer(
-    workflowVideoReducer,
-    undefined,
-    getInitialVideoState,
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(
+    () => typeof window !== 'undefined' && typeof window.IntersectionObserver !== 'function',
   );
+  const [isInView, setIsInView] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [userPaused, setUserPaused] = useState(false);
 
   useEffect(() => {
-    if (shouldLoadVideo) {
-      return;
-    }
-
     const article = articleRef.current;
 
-    if (!article || typeof window.IntersectionObserver !== 'function') {
-      dispatch({ type: 'loadVideo' });
+    if (!article || shouldLoadVideo || typeof IntersectionObserver !== 'function') {
+      if (!shouldLoadVideo) setShouldLoadVideo(true);
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
-          dispatch({ type: 'loadVideo' });
+          setShouldLoadVideo(true);
           observer.disconnect();
         }
       },
-      { rootMargin: '640px 0px', threshold: 0.01 },
+      { rootMargin: '480px 0px', threshold: 0.01 },
     );
 
     observer.observe(article);
-
     return () => observer.disconnect();
   }, [shouldLoadVideo]);
 
   useEffect(() => {
+    const article = articleRef.current;
+
+    if (!article || typeof IntersectionObserver !== 'function') {
+      setIsInView(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry?.isIntersecting && entry.intersectionRatio >= 0.24),
+      { threshold: [0, 0.24, 0.65] },
+    );
+
+    observer.observe(article);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
     const video = videoRef.current;
 
-    if (!video || !shouldLoadVideo) {
-      return;
-    }
+    if (!video || !shouldLoadVideo) return;
 
-    if (reducedMotion) {
+    if (reducedMotion || !isInView || userPaused) {
       video.pause();
-      dispatch({ type: 'paused' });
+      setIsPlaying(false);
       return;
     }
 
-    void video
-      .play()
-      .then(() => dispatch({ type: 'playing' }))
-      .catch(() => dispatch({ type: 'paused' }));
-  }, [reducedMotion, shouldLoadVideo]);
+    void video.play().catch(() => setIsPlaying(false));
+  }, [isInView, reducedMotion, shouldLoadVideo, userPaused]);
 
   const togglePlayback = useCallback(() => {
     const video = videoRef.current;
-
-    if (!video || !shouldLoadVideo) {
-      return;
-    }
+    if (!video || !shouldLoadVideo) return;
 
     if (video.paused) {
-      void video
-        .play()
-        .then(() => dispatch({ type: 'playing' }))
-        .catch(() => dispatch({ type: 'paused' }));
+      setUserPaused(false);
+      void video.play().catch(() => setIsPlaying(false));
       return;
     }
 
+    setUserPaused(true);
     video.pause();
-    dispatch({ type: 'paused' });
   }, [shouldLoadVideo]);
 
   return (
     <article
       ref={articleRef}
       data-testid="workflow-process-card"
-      className="relative mx-auto mt-14 max-w-5xl overflow-hidden rounded-[1.45rem] border border-white/12 bg-black/54 shadow-[0_24px_90px_-52px_rgba(34,211,238,0.54)] backdrop-blur-2xl sm:mt-[4.5rem] sm:rounded-[1.65rem]"
+      className="process-lab"
       aria-labelledby="workflow-process-heading"
     >
-      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
-      <div className="absolute -top-24 right-[-22%] h-56 w-56 rounded-full bg-cyan-400/14 blur-3xl" />
-      <div className="workflow-warm-bloom absolute -bottom-28 left-[-18%] h-60 w-60 rounded-full blur-3xl" />
+      <header className="process-lab-header">
+        <span className="section-signal" aria-hidden="true" />
+        <div>
+          <p className="editorial-kicker">Process / {PROCESS_VIDEO.durationLabel}</p>
+          <h3 id="workflow-process-heading" className="editorial-display process-lab-title">
+            Coffee in motion
+          </h3>
+        </div>
+      </header>
 
-      <div className="relative grid gap-5 px-4 pb-5 pt-4 sm:px-6 sm:pb-7 sm:pt-6 lg:grid-cols-[minmax(0,0.92fr)_minmax(18rem,0.58fr)] lg:items-end lg:gap-8 lg:px-8">
-        <figure className="relative overflow-hidden rounded-[1.05rem] border border-white/10 bg-zinc-950/72 p-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] sm:rounded-[1.15rem] sm:p-3">
-          <div className="relative mx-auto aspect-[18/29] max-h-[72dvh] min-h-[26rem] overflow-hidden rounded-[0.85rem] border border-white/10 bg-[radial-gradient(circle_at_50%_0%,rgba(34,211,238,0.16),transparent_34%),linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0))] sm:min-h-[34rem]">
-            <video
-              ref={videoRef}
-              data-testid="workflow-process-video"
-              width={PROCESS_VIDEO.width}
-              height={PROCESS_VIDEO.height}
-              poster={shouldLoadVideo ? PROCESS_VIDEO.poster : undefined}
-              muted
-              playsInline
-              autoPlay={!reducedMotion && shouldLoadVideo}
-              loop={!reducedMotion}
-              preload={shouldLoadVideo ? 'metadata' : 'none'}
-              aria-label="Prosessvideo med kopp og kaffe"
-              onPlay={() => dispatch({ type: 'playing' })}
-              onPause={() => dispatch({ type: 'paused' })}
-              className="h-full w-full object-cover"
-            >
-              {shouldLoadVideo ? (
-                <source src={PROCESS_VIDEO.src} type={PROCESS_VIDEO.type} />
-              ) : null}
-            </video>
+      <div className="process-lab-stage">
+        <ol className="process-timeline" aria-label="Transformation stages">
+          {PROCESS_STAGES.map((stage) => (
+            <li key={stage.index}>
+              <span>{stage.index} —</span>
+              <strong>{stage.label}</strong>
+            </li>
+          ))}
+        </ol>
 
-            {!shouldLoadVideo ? (
-              <div
-                className="absolute inset-0 grid place-items-center bg-zinc-950/70 text-center text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-cyan-100/70"
-                aria-hidden="true"
-              >
-                Laster film
-              </div>
-            ) : null}
+        <figure className="process-media">
+          <video
+            ref={videoRef}
+            data-testid="workflow-process-video"
+            width={PROCESS_VIDEO.width}
+            height={PROCESS_VIDEO.height}
+            poster={PROCESS_VIDEO.poster}
+            muted
+            playsInline
+            loop={!reducedMotion}
+            preload={shouldLoadVideo ? 'metadata' : 'none'}
+            aria-label="Coffee and cup process study"
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+          >
+            {shouldLoadVideo ? <source src={PROCESS_VIDEO.src} type={PROCESS_VIDEO.type} /> : null}
+          </video>
 
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-zinc-950/82 via-zinc-950/24 to-transparent" />
-
-            <button
-              type="button"
-              onClick={togglePlayback}
-              disabled={!shouldLoadVideo}
-              className="absolute bottom-3 right-3 inline-flex h-12 w-12 items-center justify-center rounded-full border border-white/18 bg-zinc-950/58 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.14)] backdrop-blur-xl transition hover:bg-white/14 active:scale-95 focus:outline-none focus:ring-2 focus:ring-cyan-200 disabled:pointer-events-none disabled:opacity-45"
-              aria-label={`${isPlaying ? 'Pause' : 'Spill av'} prosessvideo med kopp og kaffe`}
-            >
-              {isPlaying ? (
-                <Pause size={18} aria-hidden="true" />
-              ) : (
-                <Play size={18} aria-hidden="true" />
-              )}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={togglePlayback}
+            disabled={!shouldLoadVideo}
+            className="process-playback"
+            aria-label={`${isPlaying ? 'Pause' : 'Play'} coffee process study`}
+          >
+            <PlaybackIcon isPlaying={isPlaying} />
+          </button>
 
           <figcaption className="sr-only">
-            En prosessvideo laget av Quentin, vist som en bevegelig studie i
-            utvalgte verk-seksjonen.
+            A short process film in which coffee, heat, surface and colour drift into
+            a tactile image.
           </figcaption>
         </figure>
+      </div>
 
-        <div className="grid gap-4 pb-1 lg:pb-5">
-          <div>
-            <p className="mb-2 text-[0.65rem] font-semibold uppercase tracking-[0.32em] text-cyan-200/75">
-              Kunstprosess
-            </p>
-            <h3
-              id="workflow-process-heading"
-              className="max-w-[11ch] text-3xl font-black uppercase italic leading-[0.88] text-white sm:max-w-[12ch] sm:text-5xl"
-            >
-              Kaffe i bevegelse
-            </h3>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-cyan-200/22 bg-cyan-200/10 px-3 py-1 text-[0.62rem] font-bold uppercase tracking-[0.26em] text-cyan-50">
-              Prosessfilm
-            </span>
-            <span className="rounded-full border border-white/12 bg-white/8 px-3 py-1 text-xs font-semibold tabular-nums text-zinc-100">
-              {PROCESS_VIDEO.durationLabel}
-            </span>
-          </div>
-
-          <p className="max-w-[29ch] text-base leading-7 text-zinc-300/92 sm:text-lg sm:leading-8">
-            En liten bevegelig studie av varme, kopp, overflate og farge som blir
-            til et taktilt bildefragment. Prosessdelen får være visuell først,
-            nærmere måten arbeidet faktisk kjennes på.
-          </p>
-        </div>
+      <div className="process-lab-footer">
+        <p>A small study in heat, cup, texture and colour.</p>
+        <button
+          type="button"
+          onClick={togglePlayback}
+          disabled={!shouldLoadVideo}
+          className="editorial-link process-study-link"
+        >
+          <span className="editorial-link-mark" aria-hidden="true" />
+          <span>{isPlaying ? 'Pause the study' : 'Play the study'}</span>
+          <DiagonalArrow />
+        </button>
       </div>
     </article>
   );

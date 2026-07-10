@@ -1,165 +1,120 @@
-# Whoamiii Portfolio Design System
+# Wet Signal Design System
 
-## 1. Atmosphere & Identity
+## Direction
 
-This portfolio should feel like stepping into a living altered-state archive: intimate, dark, liquid, and image-led. The signature is refracted glass over psychedelic portraiture, with cyan-white caustics and restrained warm spectral notes carrying the identity. Mobile clarity outranks desktop spectacle until the mobile version is explicitly finished.
+Whoamiii should feel like a living archive encountered at night: cinematic,
+personal, tactile, and slightly unstable. The art is the spectacle. Interface
+elements behave like an editorial index—lines, numbers, captions, generous dark
+space, and abrupt changes of scale—rather than a product dashboard.
 
-## 2. Color
+The design must remain handcrafted. Avoid repeated panels, generic gradients,
+decorative technology, and interchangeable portfolio cards.
 
-### Palette
+## Typography
 
-| Role | Token | Light | Dark | Usage |
-|------|-------|-------|------|-------|
-| Surface/primary | --surface-primary | #09090b | #09090b | Page background and dark sections |
-| Surface/secondary | --surface-secondary | #111216 | #111216 | Glass interiors and section cards |
-| Surface/elevated | --surface-elevated | #18181b | #18181b | Modal and overlay depth |
-| Surface/glass | --surface-glass | rgba(255,255,255,0.10) | rgba(255,255,255,0.10) | Refracted panels, buttons, artwork frames |
-| Text/primary | --text-primary | #f6f2ee | #f6f2ee | Headlines and primary copy |
-| Text/secondary | --text-secondary | #e8e5e2 | #e8e5e2 | Kicker text and body copy |
-| Text/muted | --text-muted | #a1a1aa | #a1a1aa | Captions, footer text, secondary labels |
-| Border/glass | --border-glass | rgba(255,255,255,0.18) | rgba(255,255,255,0.18) | Glass edge refraction |
-| Border/subtle | --border-subtle | rgba(255,255,255,0.10) | rgba(255,255,255,0.10) | Dividers and low-emphasis frames |
-| Accent/primary | --accent-primary | #67e8f9 | #67e8f9 | Focus rings, active controls, primary CTA |
-| Accent/secondary | --accent-secondary | #a8d6d4 | #a8d6d4 | Gallery headings and soft spectral highlights |
-| Accent/warm | --accent-warm | #f5dec0 | #f5dec0 | Warm caustic highlights |
-| Accent/rose | --accent-rose | #d68a78 | #d68a78 | Human warmth in shader gradients |
-| Spectral/deep | --spectral-deep | #944468 | #944468 | Rare low-opacity undertone, never a primary CTA |
-| Spectral/blue | --spectral-blue | #7ea9b6 | #7ea9b6 | Cool secondary shader endpoint |
+- **Display:** Barlow Condensed, bundled through `@fontsource/barlow-condensed`.
+  Use it for large uppercase headings, chapter titles, and the hero wordmark.
+- **Body:** Manrope Variable, bundled through `@fontsource-variable/manrope`.
+  Use it for navigation, captions, prose, and controls.
+- **Fallbacks:** `Arial Narrow` for display and the system sans-serif stack for
+  body copy.
 
-### Rules
+Display typography is narrow, uppercase, light-to-regular in weight, and tightly
+set. Body copy stays sentence case with generous line height. Kicker labels use
+small uppercase text with wide tracking. Do not substitute local platform fonts;
+the bundled files make the composition deterministic.
 
-- The primary accent is cyan. Purple and fuchsia may appear only as low-opacity spectral undertones tied to artwork or shader texture.
-- CTAs and focus states use cyan, glass, or warm caustic tones rather than purple-pink gradients.
-- Page-level surfaces stay dark zinc/off-black. Avoid pure black except inside image overlays where existing artwork contrast requires it.
+## Color and Material
 
-## 3. Typography
+The active tokens are defined in [`src/index.css`](./src/index.css):
 
-### Scale
+| Role | Value | Use |
+| --- | --- | --- |
+| `--surface-primary` | `#08090b` | Page and primary section ground |
+| `--surface-secondary` | `#0d1116` | Tonal section separation |
+| `--surface-elevated` | `#141920` | Functional overlay depth |
+| `--text-primary` | `#eee5d8` | Display and primary copy |
+| `--text-secondary` | `#d8d2ca` | Body copy |
+| `--text-muted` | `#8f949b` | Captions and metadata |
+| `--line-primary` | `rgba(238, 229, 216, 0.72)` | Major rules and controls |
+| `--line-subtle` | `rgba(238, 229, 216, 0.18)` | Quiet dividers |
+| `--accent-primary` | `#79b7c7` | Cool focus and rare emphasis |
+| `--accent-warm` | `#c89b79` | Warm secondary emphasis |
 
-| Level | Size | Weight | Line Height | Tracking | Usage |
-|-------|------|--------|-------------|----------|-------|
-| Display/mobile | clamp(3.02rem, 16.2vw, 4.72rem) | 900 italic | 0.78 | -0.055em | Hero wordmark |
-| Display/desktop | clamp(3.1rem, 8vw, 7.4rem) | 900 italic | 0.88 | -0.055em | Hero fallback |
-| Section/mobile | 2.2rem to 3rem | 700 | 0.9 to 1.05 | -0.055em | Section shader headings |
-| Section/desktop | 4.9rem to 6rem | 700 | 0.9 to 1.0 | -0.055em | Section headings |
-| Body/lead | 1.02rem to 1.125rem | 400 to 500 | 1.55 to 1.7 | -0.01em | About and gallery support copy |
-| Body | 1rem | 400 | 1.6 | 0 | Standard copy |
-| Caption | 0.62rem to 0.76rem | 600 to 700 | 1.3 | 0.18em to 0.32em | Kicker labels and step labels |
+Artwork supplies the saturated color. Interface color stays restrained. A fixed,
+low-opacity grain layer adds physical texture; it must remain pointer-inert and
+must not reduce text or image clarity.
 
-### Font Stack
+## Composition
 
-- Primary: Avenir Next, Helvetica Neue, ui-sans-serif, system-ui, sans-serif.
-- Display: Avenir Next Condensed, Avenir Next, Helvetica Neue, sans-serif.
-- Mono: system monospace only when numeric alignment is needed.
+- Mobile is the primary design surface, with a minimum supported width of
+  `320px` and routine QA at `390x844`.
+- Section content uses fluid side gutters and a maximum width of `90rem`.
+- Full-bleed artwork alternates with dense editorial labels and open negative
+  space.
+- Ruled links use a mark, label, and diagonal arrow. They are navigation or
+  playback controls, never decorative boxes.
+- Image ratios vary deliberately—portrait, square, landscape, and tall—to avoid
+  a template grid.
+- Desktop may become more asymmetric, but it must preserve the mobile reading
+  order and not weaken touch clarity.
 
-### Rules
+## Section Language
 
-- Hero and section headings can be expressive, but mobile headings must stay readable in the first pass without requiring scroll.
-- Body text should stay sentence case unless a short label needs uppercase tracking.
-- Long mobile paragraphs should use line heights near 1.6 and max widths near 24 to 32 characters.
+### Hero
 
-## 4. Spacing & Layout
+The hero is a static, responsive photograph with controlled parallax, a localized
+scrim, restrained grain, the semantic title, and a hero-only decorative wordmark.
+The eyebrow, title, subtitle, and archive entry link must read in the first mobile
+viewport.
 
-### Base Unit
+### Selected Work
 
-All spacing derives from a base of 4px.
+Four works form an intentionally staggered editorial sequence. Captions live
+outside the media frame. The entire media trigger opens the artwork modal; it
+must expose the work title and media type to assistive technology.
 
-| Token | Value | Usage |
-|-------|-------|-------|
-| --space-1 | 4px | Hairline gaps and optical adjustments |
-| --space-2 | 8px | Icon-label gaps |
-| --space-3 | 12px | Compact internal padding |
-| --space-4 | 16px | Mobile page gutters and card padding |
-| --space-5 | 20px | Comfortable mobile panel padding |
-| --space-6 | 24px | Standard component separation |
-| --space-8 | 32px | Section lockup gaps |
-| --space-12 | 48px | Mobile section rhythm |
-| --space-16 | 64px | Large mobile section rhythm |
-| --space-20 | 80px | Desktop section rhythm |
+### Process Laboratory
 
-### Grid
+One vertical film communicates the transformation from ordinary image to living
+surface. It loads near the viewport, pauses offscreen, exposes a visible playback
+control, and does not autoplay for reduced-motion users.
 
-- Max content width: 80rem for navigation, 72rem to 80rem for main content, 64rem for artwork-heavy grids.
-- Mobile: single column, 16px to 24px side gutters, no horizontal overflow.
-- Desktop: asymmetric grids are allowed after `md`, but mobile must collapse to a stable single column.
+### Living Archive
 
-### Rules
+The archive is an index of six numbered chapters. One chapter may be open at a
+time. Each closed chapter retains a lead image, title, count, and action; opening
+it progressively mounts that chapter's artwork grid and notes.
 
-- Full-height hero sections use `min-height: 100dvh`.
-- Mobile screenshots around 390px wide are the default validation surface.
-- Keep first-viewport text within the viewport and clear of the header.
+### About and Contact
 
-## 5. Components
+The artist portrait and statement use image scale and typography rather than a
+profile card. Contact ends the narrative with a large invitation and a direct,
+full-width email action.
 
-### Glass Shell
+## Interaction and Motion
 
-- **Structure**: dark translucent background, 1px glass border, backdrop blur, inner highlight, tinted shadow.
-- **Variants**: default glass, dark glass, artwork frame.
-- **Spacing**: 16px to 24px on mobile, 32px to 64px on desktop.
-- **States**: hover may shift border/light by opacity only; active uses a small scale or translate.
-- **Accessibility**: content contrast must remain readable against active artwork.
-- **Motion**: transform and opacity only.
+- Motion must explain reveal, hierarchy, or spatial continuity.
+- Prefer transforms and opacity; avoid layout-thrashing animation.
+- Fine-pointer and large-viewport effects stay gated by capability.
+- `prefers-reduced-motion` removes non-essential movement and automatic video
+  playback without hiding information.
+- Artwork modal and mobile menu are true overlays: focus enters, remains trapped,
+  closes with Escape, and returns to the trigger.
+- Hover has a corresponding focus state; touch targets remain comfortably
+  operable on mobile.
 
-### Shader Heading
+## Visual QA
 
-- **Structure**: semantic heading with decorative shader/canvas/fallback layers.
-- **Variants**: hero, gallery, default section.
-- **Spacing**: heading margin uses 24px to 32px from following content.
-- **States**: reduced motion disables non-essential flow.
-- **Accessibility**: semantic text remains available through the heading content or aria label.
-- **Motion**: caustic animation and shader frame rate respect reduced motion and mobile performance.
+For every material design change:
 
-### Artwork Card
+1. Review the first viewport at `390x844`.
+2. Scroll the complete mobile sequence and inspect wrapping, framing, rhythm,
+   touch targets, and horizontal overflow.
+3. Open the menu, an artwork modal, the process controls, and an archive chapter.
+4. Repeat with reduced motion.
+5. Perform one desktop regression pass after mobile is coherent.
 
-- **Structure**: button-wrapped image card with glass frame, overlay title, optional video marker, modal portal.
-- **Variants**: artwork and video.
-- **Spacing**: 8px glass inset, 16px to 24px overlay padding.
-- **States**: hover/focus scale on fine pointer, focus ring in cyan, modal restores focus.
-- **Accessibility**: button labels name the artwork and media type.
-- **Motion**: glare and tilt disabled for reduced motion.
-
-### Social Orb Link
-
-- **Structure**: circular glass icon link, 48px touch target minimum.
-- **Variants**: icon-only social, mail.
-- **Spacing**: 16px gap between links.
-- **States**: hover shifts toward cyan/warm spectral fill, active compresses slightly, focus ring in cyan.
-- **Accessibility**: each link has an explicit accessible label.
-- **Motion**: magnetic motion only where the existing `MagneticButton` wrapper provides it.
-
-## 6. Motion & Interaction
-
-### Timing
-
-| Type | Duration | Easing | Usage |
-|------|----------|--------|-------|
-| Micro | 120-200ms | ease-out | Button hover, active, icon color |
-| Standard | 220-320ms | cubic-bezier(0.16, 1, 0.3, 1) | Glass hover, menu transitions |
-| Emphasis | 480-700ms | cubic-bezier(0.25, 0.46, 0.45, 0.94) | Section reveal |
-| Hero shader shell | immediate first render | n/a | Mobile hero wordmark visual shell |
-| Section shader canvas | idle after first paint | n/a | Heavier canvas enhancement after the shell is visible |
-
-### Rules
-
-- Animate transform, opacity, and filter only.
-- Respect `prefers-reduced-motion` for shader, reveal, and scroll behavior.
-- Mobile animation should preserve first paint clarity; the hero wordmark shell appears immediately and must not show a text fallback during shader preparation.
-
-## 7. Depth & Surface
-
-### Strategy
-
-Depth strategy is mixed, but constrained: glass refraction for intentional surfaces, tonal dark shifts for sections, and tinted shadows only when elevation is functional.
-
-| Level | Value | Usage |
-|-------|-------|-------|
-| Glass edge | inset 0 1px 0 rgba(255,255,255,0.4) | Header, card, and social refraction |
-| Low frame | 1px solid rgba(255,255,255,0.10) | Card and workflow dividers |
-| Elevated tint | 0 18px 54px -40px rgba(0,0,0,0.86) | Artwork cards |
-| Spectral tint | 0 16px 42px -24px rgba(34,211,238,0.48) | Primary CTA and rare active controls |
-
-### Rules
-
-- Avoid large generic neon glows. When glow exists, it should feel like light leaking from glass or artwork.
-- Fixed decorative blobs are acceptable only when subtle and anchored to artwork atmosphere. Do not add loose orb decorations as a default pattern.
-- Cards should reveal actual artwork or useful content, not serve as empty decoration.
+The release bar is not only “works.” The page should still feel authored when
+motion is disabled, images are loading, a chapter is closed, or a deep link opens
+before lower sections have mounted.

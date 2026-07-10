@@ -1,14 +1,28 @@
 import { m } from 'motion/react';
 import InteractiveArtworkCard from '../components/InteractiveArtworkCard';
 import { StaggerContainer, StaggerItem } from '../components/StaggerContainer';
-import { ShaderHeading } from '../components/ShaderHeading';
 import { WorkflowProcessCard } from '../components/WorkflowProcessCard';
 import { FEATURED_ARTWORKS } from '../content/featuredArtworks';
 import { GALLERY_COPY } from '../content/siteCopy';
 
 interface GallerySectionProps {
-  reducedMotion: boolean;
-  onNavigateToSection?: (id: string) => void;
+  readonly reducedMotion: boolean;
+  readonly onNavigateToSection?: (id: string) => void;
+}
+
+const FEATURED_LAYOUTS = [
+  { className: 'selected-work-item selected-work-item--one', frame: 'portrait' },
+  { className: 'selected-work-item selected-work-item--two', frame: 'square' },
+  { className: 'selected-work-item selected-work-item--three', frame: 'landscape' },
+  { className: 'selected-work-item selected-work-item--four', frame: 'portrait' },
+] as const;
+
+function DiagonalArrow() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 19 19 5M8 5h11v11" />
+    </svg>
+  );
 }
 
 export function GallerySection({
@@ -19,75 +33,71 @@ export function GallerySection({
     <section
       id="work"
       tabIndex={-1}
-      className="section-anchor-target relative px-6 py-20 bg-zinc-950 z-20 focus:outline-none md:py-32"
+      className="section-anchor-target selected-work-section"
       aria-labelledby="selected-works-heading"
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="mx-auto mb-16 max-w-5xl">
-          <m.div
-            initial={reducedMotion ? false : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={reducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-            className="gallery-lockup max-w-[38rem]"
-          >
-            <p className="gallery-eyebrow liquid-kicker mb-3 sm:mb-4">{GALLERY_COPY.eyebrow}</p>
-            <ShaderHeading
-              id="selected-works-heading"
-              className="gallery-title"
-              as="h2"
-              variant="gallery"
-            >
+      <div className="editorial-section-shell">
+        <m.header
+          initial={reducedMotion ? false : { opacity: 0, y: 22 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{
+            duration: reducedMotion ? 0 : 0.65,
+            ease: [0.16, 1, 0.3, 1],
+          }}
+          className="selected-work-header"
+        >
+          <span className="section-signal" aria-hidden="true" />
+          <div>
+            <p className="editorial-kicker">{GALLERY_COPY.eyebrow}</p>
+            <h2 id="selected-works-heading" className="editorial-display selected-work-title">
               {GALLERY_COPY.heading}
-            </ShaderHeading>
-            <p className="gallery-subtitle liquid-support-text mt-5 max-w-[27ch] sm:mt-6 sm:max-w-[29ch]">
-              {GALLERY_COPY.subtitle}
-            </p>
-          </m.div>
-        </div>
+            </h2>
+            <p className="editorial-intro">{GALLERY_COPY.subtitle}</p>
+          </div>
+        </m.header>
 
         <StaggerContainer
-          className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto"
-          staggerDelay={0.15}
+          className="selected-work-grid"
+          staggerDelay={0.11}
           mobileFastReveal
         >
-          {FEATURED_ARTWORKS.map(({ id, artwork }, index) => (
-            <StaggerItem key={id} mobileDistance={16}>
-              <InteractiveArtworkCard
-                imageSlug={artwork.imageSlug}
-                videoSrc={artwork.videoSrc}
-                title={artwork.title}
-                sections={artwork.sections}
-                sectionsLang={artwork.sectionsLang ?? 'no'}
-                imageLoading={index === 0 ? 'eager' : 'lazy'}
-                imageFetchPriority={index === 0 ? 'auto' : 'low'}
-                deferImageUntilVisible={index > 0}
-              />
-            </StaggerItem>
-          ))}
+          {FEATURED_ARTWORKS.map(({ id, artwork }, index) => {
+            const layout = FEATURED_LAYOUTS[index] ?? FEATURED_LAYOUTS[0];
+
+            return (
+              <StaggerItem key={id} className={layout.className} mobileDistance={18}>
+                <InteractiveArtworkCard
+                  imageSlug={artwork.imageSlug}
+                  videoSrc={artwork.videoSrc}
+                  title={artwork.title}
+                  sections={artwork.sections}
+                  sectionsLang={artwork.sectionsLang ?? 'no'}
+                  imageLoading={index === 0 ? 'eager' : 'lazy'}
+                  imageFetchPriority={index === 0 ? 'auto' : 'low'}
+                  deferImageUntilVisible={index > 0}
+                  frameVariant={layout.frame}
+                  indexLabel={`${String(index + 1).padStart(2, '0')} —`}
+                  presentation="editorial"
+                />
+              </StaggerItem>
+            );
+          })}
         </StaggerContainer>
 
-        <m.div
-          initial={reducedMotion ? false : { opacity: 0, y: 18 }}
+        <m.button
+          type="button"
+          onClick={() => onNavigateToSection?.('gallery')}
+          initial={reducedMotion ? false : { opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={reducedMotion ? { duration: 0 } : { duration: 0.45, delay: 0.1 }}
-          className="mx-auto mt-10 flex max-w-5xl justify-center"
+          transition={{ duration: reducedMotion ? 0 : 0.48 }}
+          className="editorial-link selected-archive-link"
         >
-          <button
-            type="button"
-            onClick={() => onNavigateToSection?.('gallery')}
-            className="group inline-flex min-h-12 items-center gap-3 rounded-full border border-cyan-100/35 bg-white/8 px-5 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-cyan-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)] transition-[border-color,background-color,transform] duration-200 hover:border-cyan-100/55 hover:bg-cyan-100/12 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-cyan-200 focus:ring-offset-2 focus:ring-offset-zinc-950"
-          >
-            Åpne hele galleriet
-            <span
-              aria-hidden="true"
-              className="transition-transform duration-200 group-hover:translate-x-1"
-            >
-              &rarr;
-            </span>
-          </button>
-        </m.div>
+          <span className="editorial-link-mark" aria-hidden="true" />
+          <span>Open the living archive</span>
+          <DiagonalArrow />
+        </m.button>
 
         <WorkflowProcessCard reducedMotion={reducedMotion} />
       </div>

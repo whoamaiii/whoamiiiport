@@ -1,60 +1,63 @@
 # Accessibility Guide
 
-## Core Rules
+## Core Contract
 
-1. Use native HTML semantics first.
-2. Add ARIA only when native semantics cannot express the required behavior.
-3. Decorative animation must never be the only accessible source of meaning.
-4. Focus movement must be explicit and testable.
+1. Use native semantics before ARIA.
+2. Keep the semantic name independent from decorative rendering.
+3. Make focus movement explicit and testable.
+4. Provide equivalent information and control with reduced motion enabled.
+5. Preserve keyboard and touch operation at the mobile-first layout.
 
-## Skip Link
+## Page Structure and Deep Links
 
-- The skip link lives in [`src/App.tsx`](../src/App.tsx).
-- It targets `#main-content`.
-- The main element is programmatically focusable with `tabIndex={-1}`.
-- Clicking or activating the skip link must both update the hash and move focus to `main`.
+- The skip link in [`src/App.tsx`](../src/App.tsx) targets `#main-content`, moves
+  focus to the programmatically focusable `main`, and updates the hash.
+- Each major section has a stable heading ID and derives its accessible name from
+  the real semantic heading.
+- `#work`, `#gallery`, `#about`, `#contact`, and archive chapter anchors may point
+  to lazily mounted content. [`usePortfolioSectionLoading`](../src/hooks/usePortfolioSectionLoading.ts)
+  mounts the owning section and realigns it while earlier content changes height.
+- A loading fallback uses `role="status"` and an explicit label; it must not
+  replace the final section landmark.
 
-## Heading and Landmark Naming
+## Headings and Artwork
 
-- Named sections use `aria-labelledby` only when the referenced heading ID exists.
-- [`src/sections/GallerySection.tsx`](../src/sections/GallerySection.tsx) uses [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx) with a pass-through `id` and the gallery visual variant.
-- The gallery eyebrow and subtitle are supporting text only. The named artwork region must keep deriving its accessible name from the live `h2`.
-- [`src/sections/AboutSection.tsx`](../src/sections/AboutSection.tsx) uses [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx) with a stable semantic label.
-- [`src/sections/ContactSection.tsx`](../src/sections/ContactSection.tsx) uses [`src/components/ShaderHeading.tsx`](../src/components/ShaderHeading.tsx), keeping decorative visual lines separate from the accessible heading name.
+- The hero `h1` owns the accessible name. Its custom wordmark is decorative and
+  `aria-hidden`.
+- Selected work, archive, about, and contact use plain semantic headings styled
+  through the editorial type system.
+- Artwork triggers name the work, identify video when applicable, and open a
+  labelled dialog. Captions outside the frame do not replace the trigger name.
+- Archive chapter buttons expose `aria-expanded` and `aria-controls`; the panel
+  exists only while its chapter is open.
 
-## Overlay Rules
+## Overlay Behavior
 
-- Mobile menu and artwork modal use [`src/hooks/useOverlayBehavior.ts`](../src/hooks/useOverlayBehavior.ts).
-- When an overlay opens:
-  - focus moves into it
-  - body scrolling is locked
-  - Escape closes it
-  - Tab stays inside it
-- When an overlay closes:
-  - focus returns to the trigger when available
-  - scroll locking is cleaned up
+The mobile menu and artwork modal both use
+[`src/hooks/useOverlayBehavior.ts`](../src/hooks/useOverlayBehavior.ts). When an
+overlay opens, focus moves inside, body scrolling is locked, Tab remains inside,
+and Escape closes it. On close, focus returns to the original trigger and scroll
+locking is removed.
 
-## Motion Policy
+Do not make the fixed page header keyboard-reachable while the mobile menu is
+open. External profile links must retain a readable label, not rely on the arrow
+icon.
 
-- Reduced-motion preference comes from [`src/hooks/useReducedMotion.ts`](../src/hooks/useReducedMotion.ts).
-- Decorative cursor and parallax behavior must not be required for comprehension.
-- Offscreen or hidden shader effects should pause when possible.
+## Motion and Media
 
-## Decorative Text Pattern
+- All decorative JS motion is gated by
+  [`useReducedMotion`](../src/hooks/useReducedMotion.ts); the CSS reduced-motion
+  query disables non-essential transitions and smooth scrolling.
+- The process film does not autoplay for reduced-motion users, pauses offscreen,
+  and always exposes a labelled playback control.
+- Artwork video uses a poster and native controls in the modal. Motion or video
+  must never be the only source of meaning.
+- Decorative SVGs, grain, scrims, and line marks remain hidden from assistive
+  technology and pointer-inert.
 
-Use this pattern for any decorative text effect:
+## Validation
 
-1. The semantic heading or control owns the real accessible name.
-2. A screen-reader-only text node repeats that stable label if needed.
-3. The animated visual subtree is marked `aria-hidden="true"`.
-
-Do not make canvas, shader, or animation output the only heading label.
-
-## Browser Validation
-
-Accessibility regressions are validated in:
-
-- [`tests/e2e/smoke.spec.ts`](../tests/e2e/smoke.spec.ts)
-- [`tests/e2e/accessibility.spec.ts`](../tests/e2e/accessibility.spec.ts)
-
-Those tests cover focus transfer, region naming, modal behavior, mobile menu trapping, and axe scans for the homepage and artwork modal.
+Vitest checks component semantics and overlay contracts. Playwright checks
+skip-link focus, direct hashes, named sections, menu/modal focus behavior, mobile
+overflow, and axe scans on the base page and artwork dialog. See
+[`testing.md`](./testing.md) and [`release-checklist.md`](./release-checklist.md).

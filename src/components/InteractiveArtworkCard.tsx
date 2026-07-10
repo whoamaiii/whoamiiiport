@@ -5,7 +5,11 @@ import { useMediaQuery } from '../hooks/useMediaQuery';
 import { useOverlayBehavior } from '../hooks/useOverlayBehavior';
 import { useReducedMotion } from '../hooks/useReducedMotion';
 import { getInteractiveArtworkCardImages } from './InteractiveArtworkCardImages';
-import { InteractiveArtworkCardPreview } from './InteractiveArtworkCardPreview';
+import {
+  InteractiveArtworkCardPreview,
+  type ArtworkCardPresentation,
+  type ArtworkFrameVariant,
+} from './InteractiveArtworkCardPreview';
 import {
   artworkCardReducer,
   shouldUseMobilePriorityPreview,
@@ -18,9 +22,12 @@ import type { ArtworkSection, ArtworkTitle } from './artworkData';
 type InteractiveArtworkCardProps = {
   readonly deferImageUntilVisible?: boolean;
   readonly eyebrowLabel?: string;
+  readonly frameVariant?: ArtworkFrameVariant;
   readonly imageFetchPriority?: GalleryImageFetchPriority;
   readonly imageLoading?: GalleryImageLoading;
   readonly imageSlug: ModalImageSlug;
+  readonly indexLabel?: string;
+  readonly presentation?: ArtworkCardPresentation;
   readonly sections: readonly ArtworkSection[];
   readonly sectionsLang?: string;
   readonly title: ArtworkTitle;
@@ -29,10 +36,13 @@ type InteractiveArtworkCardProps = {
 
 export default function InteractiveArtworkCard({
   deferImageUntilVisible = false,
-  eyebrowLabel = 'Utvalgt verk',
+  eyebrowLabel = 'Selected work',
+  frameVariant = 'portrait',
   imageFetchPriority = 'auto',
   imageLoading = 'lazy',
   imageSlug,
+  indexLabel,
+  presentation = 'standard',
   sections,
   sectionsLang,
   title,
@@ -66,7 +76,8 @@ export default function InteractiveArtworkCard({
     showInfo,
     useMobilePriorityPreview,
   } = state;
-  const enableCardMotion = !prefersReducedMotion && supportsCardMotion;
+  const enableCardMotion =
+    presentation === 'standard' && !prefersReducedMotion && supportsCardMotion;
   const cardMotion = useInteractiveArtworkCardMotion({
     cardRef,
     enableCardMotion,
@@ -82,7 +93,7 @@ export default function InteractiveArtworkCard({
   });
 
   useEffect(() => {
-    if (!isModalOpen || !videoSrc) {
+    if (!isModalOpen || !videoSrc || prefersReducedMotion) {
       return;
     }
 
@@ -93,7 +104,7 @@ export default function InteractiveArtworkCard({
     });
 
     return () => cancelAnimationFrame(animationFrame);
-  }, [isModalOpen, videoSrc]);
+  }, [isModalOpen, prefersReducedMotion, videoSrc]);
 
   const isVideoArtwork = Boolean(videoSrc);
   const images = getInteractiveArtworkCardImages({
@@ -159,9 +170,7 @@ export default function InteractiveArtworkCard({
     return () => observer.disconnect();
   }, [deferImageUntilVisible, imageLoading, imageSlug, isMobileLayout]);
 
-  const displayTitle = title.secondary
-    ? `${title.primary} — ${title.secondary}`
-    : title.primary;
+  const displayTitle = title.primary;
   const modalTitleId = `artwork-modal-title-${imageSlug}`;
   const infoPanelId = `artwork-info-panel-${imageSlug}`;
 
@@ -183,7 +192,10 @@ export default function InteractiveArtworkCard({
         content={{
           displayTitle,
           eyebrowLabel,
+          frameVariant,
+          indexLabel,
           isVideoArtwork,
+          presentation,
           title,
         }}
         image={{

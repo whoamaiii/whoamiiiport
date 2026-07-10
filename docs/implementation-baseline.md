@@ -1,52 +1,35 @@
 # Implementation Baseline
 
+This file records the hardened foundation inherited by the “Wet Signal” redesign.
+Current design and architecture rules live in [`../DESIGN.md`](../DESIGN.md) and
+[`architecture.md`](./architecture.md).
+
 ## Environment
 
-- Node.js: `24.13.1`
-- npm: `11.8.0`
-- App type: static Vite + React + TypeScript frontend
-- Primary browser regression targets: Playwright desktop Chromium and `mobile-390`
+- Node.js `24.13.1`
+- npm `11.8.0`
+- static React 19 + Vite + TypeScript frontend
+- Playwright targets: desktop Chromium and mobile `390x844`
 
-## Commands Used to Validate the Project
+## Foundation Guardrails
+
+- The skip link updates the hash, scrolls to `#main-content`, and moves keyboard
+  focus there.
+- Semantic headings remain named independently from decorative output.
+- Mobile menu and artwork modal share tested focus trapping, Escape handling,
+  scroll locking, and focus restoration.
+- Reduced-motion users retain all content and controls.
+- Image/video paths, responsive widths, and content manifests are contract-tested.
+- Visual failures degrade to readable content rather than a blank page.
+- The first mobile viewport and complete page remain free of horizontal overflow.
+
+## Current Acceptance Gate
 
 ```bash
-npm install
-npm run lint
-npm run test
-npm run build
+npm run check
 npm run test:e2e
+npm run test:e2e:preview
 ```
 
-## Original Audit Findings
-
-The implementation work started from a verified audit of these issues:
-
-1. The skip link updated the URL hash without moving keyboard focus into `main`.
-2. Decorative animated headings could be unnamed during the first render window.
-3. The gallery section referenced a missing `aria-labelledby` target.
-4. The custom cursor could hide the native cursor before a replacement cursor was visible.
-5. Browser smoke coverage was too weak to catch the skip-link regression.
-6. Shader heading implementations duplicated lifecycle logic and performed avoidable readiness work.
-
-## Acceptance Contract
-
-The project is considered acceptable only when these are true:
-
-- `npm run check` passes.
-- `npm run test:e2e` passes.
-- The skip link moves focus to `#main-content` in [`src/App.tsx`](../src/App.tsx).
-- Major headings and named regions remain discoverable from first render.
-- Modal and menu overlays trap focus and restore it correctly.
-- Reduced-motion users do not depend on decorative motion for readability or navigation.
-- Visual-effect failures degrade to readable static content instead of blank UI.
-- Image URLs, video URLs, `srcset` values, and manifest metadata remain aligned.
-- The first mobile viewport remains free of horizontal overflow and keeps the header, hero lockup, menu, and modal usable.
-
-## Current Guardrails
-
-These acceptance rules are now enforced by:
-
-- ESLint and TypeScript checks in [`package.json`](../package.json)
-- Vitest coverage in [`tests/`](../tests)
-- browser-level regression and accessibility scans in [`tests/e2e/`](../tests/e2e)
-- CI automation in [`.github/workflows/ci.yml`](../.github/workflows/ci.yml)
+The release checklist adds manual checks for visual hierarchy, chapter behavior,
+deep-link alignment, reduced motion, loading states, and production-domain health.

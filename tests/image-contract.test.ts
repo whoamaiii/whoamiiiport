@@ -1,4 +1,4 @@
-import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
@@ -26,14 +26,6 @@ import { LIBRARY_ARTWORKS } from '../src/content/libraryArtworks';
 import { PORTFOLIO_GROUPS } from '../src/content/portfolioGroups';
 import { FIRST_GALLERY_PRELOAD_IMAGE_URL } from '../src/App';
 import { ABOUT_SLUG } from '../src/sections/AboutSection';
-import {
-  WORKFLOW_IMAGE_FILE_WIDTHS,
-  WORKFLOW_STEPS,
-  getWorkflowImageDescriptorWidth,
-  getWorkflowImageDimensions,
-  getWorkflowImageUrl,
-  getWorkflowSrcset,
-} from '../src/content/workflowSteps';
 import { GALLERY_VIDEOS } from '../src/utils/media';
 import { PROCESS_VIDEO } from '../src/components/WorkflowProcessCard';
 
@@ -41,22 +33,8 @@ const generatedImagePath = (urlPath: string) =>
   resolve('public', urlPath.replace(/^\/+/, ''));
 
 const performanceScriptPath = resolve('scripts/measure-load-performance.mjs');
-const workflowImagesDir = resolve('public/images/workflow');
-
-const workflowImageFilename = (stepNumber: number, width: number) =>
-  `workflow-step-${String(stepNumber).padStart(2, '0')}-${width}.webp`;
-
 const splitSrcset = (srcset: string) =>
   srcset.split(',').map((entry) => entry.trim().split(' ')[0]).filter(Boolean);
-
-const splitSrcsetEntries = (srcset: string) =>
-  srcset.split(',').map((entry) => {
-    const [url, descriptor] = entry.trim().split(/\s+/);
-    return {
-      url,
-      descriptorWidth: Number(descriptor.replace(/w$/, '')),
-    };
-  });
 
 const expectedArtworkNoteHeadings = [
   'Mening for meg',
@@ -94,21 +72,19 @@ describe('image contract', () => {
   it('maps the current featured artworks to generated gallery assets', () => {
     const artworks = FEATURED_ARTWORKS.map(({ artwork }) => artwork);
 
-    expect(artworks).toHaveLength(5);
-    expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(5);
+    expect(artworks).toHaveLength(4);
+    expect(new Set(artworks.map((artwork) => artwork.imageSlug)).size).toBe(4);
     expect(FEATURED_ARTWORKS.map(({ id }) => id)).toEqual([
       'video5-optical-focus',
       'kaaffe-texture-motion',
       'living-floor',
       'mushroom-offering',
-      'psych-depth-embed-focus',
     ]);
     expect(artworks.map((artwork) => artwork.imageSlug)).toEqual([
       'video5-optical-focus-poster',
       'kaaffe-texture-motion-poster',
       'living-floor',
       'mushroom-offering',
-      'psych-depth-embed-focus-poster',
     ]);
 
     for (const artwork of artworks) {
@@ -129,7 +105,6 @@ describe('image contract', () => {
     expect(getImageMetadata('kaaffe-texture-motion-poster').galleryObjectPosition).toBe('50% 50%');
     expect(getImageMetadata('living-floor').galleryObjectPosition).toBe('50% 50%');
     expect(getImageMetadata('mushroom-offering').galleryObjectPosition).toBe('50% 48%');
-    expect(getImageMetadata('psych-depth-embed-focus-poster').galleryObjectPosition).toBe('50% 50%');
   });
 
   it('keeps the active image manifest aligned to the curated gallery slugs', () => {
@@ -305,7 +280,7 @@ describe('image contract', () => {
       type: 'video/mp4',
       width: 720,
       height: 1160,
-      durationLabel: '15 sek',
+      durationLabel: '15 sec',
     });
     expect(existsSync(processVideoPath)).toBe(true);
     expect(existsSync(processPosterPath)).toBe(true);
@@ -314,60 +289,6 @@ describe('image contract', () => {
     const posterMetadata = await sharp(processPosterPath).metadata();
     expect(posterMetadata.width).toBe(PROCESS_VIDEO.width);
     expect(posterMetadata.height).toBe(PROCESS_VIDEO.height);
-  });
-
-  it('keeps workflow carousel steps mapped to manually managed runtime assets', async () => {
-    expect(WORKFLOW_STEPS).toHaveLength(15);
-    expect(WORKFLOW_IMAGE_FILE_WIDTHS).toEqual([480, 800, 1200]);
-
-    const expectedFilenames = WORKFLOW_STEPS
-      .flatMap((_, index) => {
-        const stepNumber = index + 1;
-        return WORKFLOW_IMAGE_FILE_WIDTHS.map((fileWidth) => workflowImageFilename(stepNumber, fileWidth));
-      })
-      .sort();
-
-    expect(existsSync(workflowImagesDir)).toBe(true);
-
-    const actualFilenames = readdirSync(workflowImagesDir).sort();
-
-    expect(actualFilenames).toEqual(expectedFilenames);
-
-    for (let index = 0; index < WORKFLOW_STEPS.length; index += 1) {
-      const stepNumber = index + 1;
-      expect(WORKFLOW_STEPS[index].title.length).toBeGreaterThan(0);
-      expect(WORKFLOW_STEPS[index].description.length).toBeGreaterThan(0);
-      expect(WORKFLOW_STEPS[index].detailSections.length).toBeGreaterThanOrEqual(2);
-      WORKFLOW_STEPS[index].detailSections.forEach((section) => {
-        expect(section.heading.length).toBeGreaterThan(0);
-        expect(section.body.length).toBeGreaterThan(90);
-      });
-      expect(WORKFLOW_STEPS[index].alt.length).toBeGreaterThan(0);
-      const expectedSrcsetEntries = WORKFLOW_IMAGE_FILE_WIDTHS.map((fileWidth) => ({
-        url: `/images/workflow/${workflowImageFilename(stepNumber, fileWidth)}`,
-        descriptorWidth: getWorkflowImageDescriptorWidth(stepNumber, fileWidth),
-      }));
-      expect(splitSrcsetEntries(getWorkflowSrcset(stepNumber))).toEqual(expectedSrcsetEntries);
-
-      // Lock the intrinsic width/height hints against the real decoded pixels so
-      // an edit to the dimension arrays cannot silently introduce layout shift.
-      const declaredDimensions = getWorkflowImageDimensions(stepNumber);
-      const largeImagePath = resolve(workflowImagesDir, workflowImageFilename(stepNumber, 1200));
-      const largeMetadata = await sharp(largeImagePath).metadata();
-      expect(largeMetadata.width).toBe(declaredDimensions.width);
-      expect(largeMetadata.height).toBe(declaredDimensions.height);
-
-      for (const fileWidth of WORKFLOW_IMAGE_FILE_WIDTHS) {
-        const filename = workflowImageFilename(stepNumber, fileWidth);
-        const imagePath = resolve(workflowImagesDir, filename);
-        const descriptorWidth = getWorkflowImageDescriptorWidth(stepNumber, fileWidth);
-
-        expect(getWorkflowImageUrl(stepNumber, fileWidth)).toBe(`/images/workflow/${filename}`);
-        expect(existsSync(imagePath)).toBe(true);
-        expect(readFileSync(imagePath).byteLength).toBeGreaterThan(0);
-        expect((await sharp(imagePath).metadata()).width).toBe(descriptorWidth);
-      }
-    }
   });
 
   it('keeps the about portrait on the same generated local asset pipeline', () => {

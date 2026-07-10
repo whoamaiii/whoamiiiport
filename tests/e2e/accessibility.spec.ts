@@ -12,7 +12,9 @@ test('homepage has no detected accessibility violations', async ({ page }) => {
 test('artwork modal has no detected accessibility violations', async ({ page }) => {
   await page.goto('/');
 
-  await page.getByRole('button', { name: /se optisk fokus.*video/i }).click();
+  await page.getByRole('button', {
+    name: /View Optisk fokus video and artist notes/i,
+  }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toBeVisible();
   await expect(dialog).toHaveCSS('opacity', '1');

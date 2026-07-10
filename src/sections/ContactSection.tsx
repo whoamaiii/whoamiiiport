@@ -1,11 +1,16 @@
 import { m } from 'motion/react';
-import { Mail } from 'lucide-react';
-import { MagneticButton } from '../components/MagneticButton';
-import { ShaderHeading } from '../components/ShaderHeading';
 import { CONTACT_COPY } from '../content/siteCopy';
 
 interface ContactSectionProps {
-  reducedMotion: boolean;
+  readonly reducedMotion: boolean;
+}
+
+function DiagonalArrow() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M5 19 19 5M8 5h11v11" />
+    </svg>
+  );
 }
 
 export default function ContactSection({ reducedMotion }: ContactSectionProps) {
@@ -14,44 +19,39 @@ export default function ContactSection({ reducedMotion }: ContactSectionProps) {
       id="contact"
       tabIndex={-1}
       aria-labelledby="contact-heading"
-      className="section-anchor-target deferred-section relative z-20 bg-zinc-950 px-4 py-16 focus:outline-none sm:px-6 md:py-32"
+      className="section-anchor-target deferred-section contact-section"
     >
-      <div className="max-w-3xl mx-auto text-center">
-        <m.div
-          initial={reducedMotion ? false : { opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={reducedMotion ? { duration: 0 } : { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="glass-dark relative pointer-events-auto overflow-hidden rounded-[1.75rem] px-5 py-12 md:rounded-[3rem] md:p-20"
-        >
-          <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
-          <div className="pointer-events-none absolute left-1/2 top-1/2 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-400/10 blur-3xl" />
-          <ShaderHeading
-            id="contact-heading"
-            className="relative z-10 mb-6 text-center text-[2.35rem] font-display tracking-tight md:text-6xl"
-            visualLines={[CONTACT_COPY.headingParts.lead]}
-          >
-            {CONTACT_COPY.heading}
-          </ShaderHeading>
-          <p className="liquid-support-text relative z-10 mx-auto mb-9 max-w-[26ch] text-base leading-7 tracking-[0.01em] md:mb-10 md:text-xl">
-            {CONTACT_COPY.body}
-          </p>
+      <m.div
+        initial={reducedMotion ? false : { opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: reducedMotion ? 0 : 0.68, ease: [0.16, 1, 0.3, 1] }}
+        className="editorial-section-shell contact-shell"
+      >
+        <header className="contact-header">
+          <span className="section-signal" aria-hidden="true" />
+          <div>
+            <p className="editorial-kicker">Commissions / collaborations / exhibitions</p>
+            <h2 id="contact-heading" className="editorial-display contact-title">
+              {CONTACT_COPY.heading}
+            </h2>
+          </div>
+        </header>
 
-          <MagneticButton
-            strength={0.3}
-            href="mailto:hello@whoamiii.art"
-            className="relative z-10 inline-flex"
-          >
-            <span className="group relative inline-flex min-h-12 items-center justify-center gap-3 overflow-hidden rounded-[0.45rem] border border-cyan-100/55 bg-cyan-300 px-8 py-4 font-semibold uppercase tracking-[0.18em] text-cyan-950 shadow-[0_18px_44px_-24px_rgba(34,211,238,0.78),inset_0_1px_0_rgba(255,255,255,0.72)] transition-[box-shadow,transform,background-color] duration-200 hover:bg-cyan-200 hover:shadow-[0_20px_48px_-24px_rgba(103,232,249,0.84),inset_0_1px_0_rgba(255,255,255,0.78)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-100 active:scale-[0.98] pointer-events-auto cursor-pointer">
-              <span className="relative z-10 flex items-center gap-2">
-                <Mail size={20} />
-                {CONTACT_COPY.cta}
-              </span>
-              <div className="contact-cta-sheen" />
-            </span>
-          </MagneticButton>
-        </m.div>
-      </div>
+        <div className="contact-invitation">
+          <span className="editorial-link-mark" aria-hidden="true" />
+          <p>{CONTACT_COPY.body}</p>
+        </div>
+
+        <a
+          href="mailto:hello@whoamiii.art"
+          className="contact-email"
+          aria-label="Email Whoamiii at hello@whoamiii.art"
+        >
+          <span>{CONTACT_COPY.cta}</span>
+          <DiagonalArrow />
+        </a>
+      </m.div>
     </section>
   );
 }

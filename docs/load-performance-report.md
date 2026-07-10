@@ -4,6 +4,11 @@ Date: 2026-05-05
 
 Scope: investigation plus implemented remediation for the portfolio load path.
 
+> Historical measurement: this report describes the pre–Wet Signal interface
+> and its May 2026 dependency graph. Keep it as performance evidence, but do not
+> treat its bundle sizes, component names, typography, or timings as current.
+> Rebuild and rerun `npm run perf:mobile` before citing present performance.
+
 ## What Quentin Reported
 
 The portfolio feels slow when visiting the page. Images, cards, and visual pieces take time before they appear.
@@ -124,7 +129,8 @@ Evidence:
 
 - Console repeatedly showed Chromium warnings: `GPU stall due to ReadPixels`.
 - The warning appears while `ShaderTextWord` renders WebGL output into a 2D canvas path.
-- This affects hero and section shader text, especially on slower devices.
+- At the time, this affected the former animated display text, especially on
+  slower devices.
 
 Relevant files:
 
@@ -267,7 +273,8 @@ Smallest realistic path:
 Implemented on 2026-05-04:
 
 - Added responsive hero image preload in `index.html`.
-- Removed the render-blocking Typekit stylesheet path and kept the site on the local/system font stack.
+- At the time, removed the render-blocking external font stylesheet and kept the
+  interface on its then-current local/system stack.
 - Replaced Lucide barrel imports with direct icon imports.
 - Removed the lazy `InteractiveArtworkCard` chunk and Suspense placeholder from the gallery path.
 - Added `imageLoading` and `imageFetchPriority` controls to `InteractiveArtworkCard`.

@@ -1,17 +1,19 @@
-# Whoamiii Portfolio
+# Whoamiii — Wet Signal
 
-A static React 19 + Vite portfolio for a psychedelic art brand, hardened around accessibility, motion control, rendering fallbacks, and local image contracts.
+An image-led, mobile-first portfolio for [whoamiii.art](https://whoamiii.art). The
+site presents psychedelic digital work as an editorial sequence: a cinematic
+hero, four selected works, one process film, a progressive six-chapter archive,
+an artist statement, and a direct contact invitation.
 
-## Runtime
+The project is a static React 19 + TypeScript application built with Vite. It has
+no backend, CMS, authentication, database, or global state library.
 
-- Recommended Node.js: `24.13.1`
-- Recommended npm: `11.8.0`
-- Version pin: [`.nvmrc`](./.nvmrc)
+## Local Development
 
-## Getting Started
+The pinned runtime is Node `24.13.1` with npm `11.8.0`; see [`.nvmrc`](./.nvmrc).
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -21,104 +23,89 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Command | Purpose |
 | --- | --- |
-| `npm run dev` | Start the Vite dev server on port `3000`. |
-| `npm run build` | Build the production bundle into `dist/`. |
-| `npm run preview` | Preview the production build locally. |
-| `npm run clean` | Remove `dist/`. |
+| `npm run dev` | Start Vite on port `3000`. |
+| `npm run build` | Build the production site into `dist/`. |
+| `npm run preview` | Serve the built site locally. |
 | `npm run typecheck` | Run TypeScript without emitting files. |
-| `npm run lint` | Run ESLint across app, tests, and config files. |
-| `npm run test` | Run the Vitest unit and integration suite. |
-| `npm run test:e2e` | Run the Playwright browser regression suite. |
-| `npm run check` | Run typecheck, lint, unit/integration tests, and build. |
-| `npm run check:ci` | Run the full local CI gate, including Playwright. |
-| `npm run optimize-images` | Regenerate the responsive local image assets in `public/images`. |
-| `npm run perf:mobile` | Measure the built preview at `http://localhost:4173/` with mobile throttling. |
+| `npm run lint` | Run ESLint. |
+| `npm run test` | Run the Vitest suite. |
+| `npm run test:e2e` | Run Playwright against the development server. |
+| `npm run test:e2e:preview` | Build and run Playwright against the production preview. |
+| `npm run check` | Run typecheck, lint, Vitest, and the production build. |
+| `npm run check:ci` | Run the full CI gate, including Playwright and hygiene checks. |
+| `npm run optimize-images` | Regenerate responsive WebP and AVIF artwork assets. |
+| `npm run perf:mobile` | Measure a built preview at `http://localhost:4173/`. |
 
-## Architecture Overview
+## Experience Architecture
 
-- App shell: [`src/App.tsx`](./src/App.tsx) coordinates skip-link focus, background motion, and section composition.
-- Sections: [`src/sections/`](./src/sections) owns page structure and local copy placement.
-- Shared behavior: [`src/hooks/`](./src/hooks) centralizes reduced motion, media queries, document visibility, and overlay focus handling.
-- Visual effects: hero wordmark and shader text live in [`src/components/`](./src/components) and [`src/components/shared/`](./src/components/shared); [`src/glass-effect/`](./src/glass-effect) is intentionally preserved as future/reference infrastructure.
-- Content contracts: section copy lives in [`src/content/siteCopy.ts`](./src/content/siteCopy.ts), featured artwork wiring lives in [`src/content/featuredArtworks.ts`](./src/content/featuredArtworks.ts), and image metadata lives in [`src/utils/images.ts`](./src/utils/images.ts).
-- Fallback and resilience: [`src/components/fallback/RenderErrorBoundary.tsx`](./src/components/fallback/RenderErrorBoundary.tsx) and [`src/lib/reportError.ts`](./src/lib/reportError.ts) keep effect failures from blanking content.
+- [`src/App.tsx`](./src/App.tsx) composes the page, skip link, lazy section
+  boundaries, fallbacks, and global motion inputs.
+- [`src/sections/`](./src/sections) owns the header, hero, selected work, archive,
+  about, contact, and footer compositions.
+- [`src/hooks/usePortfolioSectionLoading.ts`](./src/hooks/usePortfolioSectionLoading.ts)
+  progressively mounts lower sections and realigns hash targets while lazy
+  content changes the document height.
+- [`src/hooks/useOverlayBehavior.ts`](./src/hooks/useOverlayBehavior.ts) provides
+  focus trapping, Escape handling, scroll locking, and focus restoration for
+  both the mobile menu and artwork modal.
+- [`src/components/HeroTitleHybrid.tsx`](./src/components/HeroTitleHybrid.tsx)
+  renders the hero-only decorative wordmark; the semantic `h1` remains in the
+  hero section.
+- [`src/components/WorkflowProcessCard.tsx`](./src/components/WorkflowProcessCard.tsx)
+  owns the single short process film and pauses it when offscreen or when reduced
+  motion is requested.
+- [`src/sections/LibrarySection.tsx`](./src/sections/LibrarySection.tsx) exposes 49
+  works through six controlled chapters and mounts artwork cards only for the
+  open chapter.
 
-## Quality Gates
+Content is local and typed. Site copy lives in
+[`src/content/siteCopy.ts`](./src/content/siteCopy.ts), featured order in
+[`src/content/featuredArtworks.ts`](./src/content/featuredArtworks.ts), chapter
+data in [`src/content/portfolioGroups.ts`](./src/content/portfolioGroups.ts), and
+image/video contracts in [`src/utils/images.ts`](./src/utils/images.ts) and
+[`src/utils/media.ts`](./src/utils/media.ts).
 
-The repo is considered healthy when all of the following pass:
+## Visual System
+
+The active design is documented in [`DESIGN.md`](./DESIGN.md). It uses bundled
+Barlow Condensed for editorial display type and variable Manrope for body text.
+The composition relies on artwork scale, ruled typography, asymmetry, restrained
+grain, and warm off-black surfaces instead of panel-heavy UI.
+
+Mobile is the primary review surface. Validate the first viewport and the full
+sequence at approximately `390x844` before treating desktop polish as complete.
+
+## Quality Gate
+
+For a normal change:
 
 ```bash
 npm run check
 npm run test:e2e
 ```
 
-For load-speed work, use the production build path as the truth:
+For release confidence against shipped output:
 
 ```bash
-npm run build
-npx vite preview --host=0.0.0.0 --port=4173
-npm run perf:mobile
+npm run check:ci
+npm run test:e2e:preview
 ```
 
-`npm run dev` is useful while editing, but it serves many unbundled development modules and is not representative of shipped portfolio performance.
+The browser suite protects skip-link focus, named regions, direct hash
+navigation, menu and modal focus behavior, mobile overflow, and axe accessibility
+scans. Performance work must be measured from the production preview, not the
+unbundled development server.
 
-The browser suite specifically protects:
+## Assets and Deployment
 
-- skip-link focus transfer to `main`
-- stable heading and landmark naming
-- modal focus restoration
-- mobile menu focus trapping
-- first mobile viewport/header/hero/modal regressions at `390x844`
-- base-page and modal accessibility scans
+Artwork sources live in [`src/assets/`](./src/assets); generated runtime images
+live in [`public/images/`](./public/images). Videos are same-origin files under
+[`public/videos/`](./public/videos). Keep manifests, generated widths, alt text,
+and contract tests synchronized when media changes.
 
-## Documentation
+The Vite build copies the static domain files from [`public/`](./public) into
+`dist/`. Production is published from the root of the `gh-pages` branch with the
+custom domain `whoamiii.art`. The exact release and verification procedure is in
+[`docs/deployment.md`](./docs/deployment.md).
 
-The current implementation docs live in [`docs/README.md`](./docs/README.md).
-
-- Baseline and acceptance contract: [`docs/implementation-baseline.md`](./docs/implementation-baseline.md)
-- Architecture: [`docs/architecture.md`](./docs/architecture.md)
-- Accessibility rules: [`docs/accessibility.md`](./docs/accessibility.md)
-- Testing strategy: [`docs/testing.md`](./docs/testing.md)
-- Deployment and domain: [`docs/deployment.md`](./docs/deployment.md)
-- Release workflow: [`docs/release-checklist.md`](./docs/release-checklist.md)
-- Load performance report: [`docs/load-performance-report.md`](./docs/load-performance-report.md)
-- Maintenance and asset updates: [`docs/maintenance.md`](./docs/maintenance.md)
-- Portfolio cleanup map: [`docs/portfolio-maintenance-map.md`](./docs/portfolio-maintenance-map.md)
-- Architecture decision log: [`docs/adr-001-static-portfolio-architecture.md`](./docs/adr-001-static-portfolio-architecture.md)
-
-## Asset Pipeline
-
-- Source inputs live under [`src/assets/`](./src/assets).
-- Generated runtime images live under [`public/images/`](./public/images).
-- The runtime source of truth is the image manifest in [`src/utils/images.ts`](./src/utils/images.ts) plus the video media manifest in [`src/utils/media.ts`](./src/utils/media.ts).
-- When adding or replacing artwork, regenerate responsive WebP and AVIF images with `npm run optimize-images` and then run `npm run test`.
-- Workflow carousel images are the current exception: the WebP files in [`public/images/workflow/`](./public/images/workflow) are manually managed runtime assets, verified by [`tests/image-contract.test.ts`](./tests/image-contract.test.ts), and are not regenerated by `npm run optimize-images` unless matching originals are later added under `src/assets/workflow/` with optimizer support in the same change. Their `srcset` descriptors must match each file's real pixel width, even when a legacy filename contains `1200`.
-
-## CI
-
-GitHub Actions runs the same validation gate in [`.github/workflows/ci.yml`](./.github/workflows/ci.yml):
-
-1. `npm ci`
-2. Playwright browser install
-3. `npm run check:ci`
-
-## Static Deployment Notes
-
-This project is intentionally frontend-only. The expected host should support:
-
-- serving the Vite `dist/` output as a static site
-- immutable caching for hashed assets
-- preview deployments for pull requests if available
-- host-level configurable security headers and CSP, especially for same-origin image/video media plus any `data:` or `blob:` URLs needed by visual effects
-
-Current production deployment details for `whoamiii.art`, including the
-Cloudflare DNS records, GitHub Pages source branch, and HTTPS verification
-steps, live in [`docs/deployment.md`](./docs/deployment.md).
-
-## Troubleshooting
-
-- Missing generated images: run `npm run optimize-images` and then `npm run test`.
-- Missing workflow carousel images: replace the matching files in `public/images/workflow/` and run `npm run test -- tests/image-contract.test.ts`.
-- Browser regression failure: run `npm run test:e2e` locally and inspect the Playwright trace under `test-results/`.
-- Lint or typecheck drift: run `npm run check` before opening a PR.
-- Visual effect fallback issues: inspect [`src/components/HeroTitleHybrid.tsx`](./src/components/HeroTitleHybrid.tsx), [`src/components/shared/ShaderTextWord.tsx`](./src/components/shared/ShaderTextWord.tsx), and [`src/components/ShaderHeading.tsx`](./src/components/ShaderHeading.tsx).
+See [`docs/README.md`](./docs/README.md) for the focused engineering guides.

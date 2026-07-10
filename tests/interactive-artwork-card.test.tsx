@@ -36,7 +36,7 @@ describe('InteractiveArtworkCard image contracts', () => {
       />,
     );
 
-    expect(screen.getByRole('button', { name: /se korridormaster video med notater/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /view korridormaster video and artist notes/i })).toBeInTheDocument();
     expect(getModalSrcset).not.toHaveBeenCalled();
   });
 
@@ -58,7 +58,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     fireEvent.click(
-      screen.getByRole('button', { name: /se soppoffer verk med notater/i }),
+      screen.getByRole('button', { name: /view soppoffer and artist notes/i }),
     );
 
     const noteBody = await screen.findByText('Norsk beskrivelse av verket.');
@@ -87,19 +87,19 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     fireEvent.click(
-      screen.getByRole('button', { name: /se soppoffer verk med notater/i }),
+      screen.getByRole('button', { name: /view soppoffer and artist notes/i }),
     );
 
     const dialog = await screen.findByRole('dialog', {
-      name: /soppoffer verkdetaljer/i,
+      name: /soppoffer artwork details/i,
     });
     expect(dialog).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole('button', { name: /lukk modal/i }));
+    fireEvent.click(screen.getByRole('button', { name: /close artwork/i }));
 
     await waitFor(() => {
       expect(
-        screen.queryByRole('dialog', { name: /soppoffer verkdetaljer/i }),
+        screen.queryByRole('dialog', { name: /soppoffer artwork details/i }),
       ).not.toBeInTheDocument();
     });
   });
@@ -121,11 +121,11 @@ describe('InteractiveArtworkCard image contracts', () => {
     );
 
     fireEvent.click(
-      screen.getByRole('button', { name: /se soppoffer verk med notater/i }),
+      screen.getByRole('button', { name: /view soppoffer and artist notes/i }),
     );
 
     const showInfoButton = await screen.findByRole('button', {
-      name: /les mening \+ prosess/i,
+      name: /read meaning \+ process/i,
     });
     fireEvent.click(showInfoButton);
 
@@ -133,7 +133,7 @@ describe('InteractiveArtworkCard image contracts', () => {
     expect(infoPanel).not.toBeNull();
     await waitFor(() => expect(infoPanel).toHaveFocus());
 
-    const hideInfoButton = screen.getByRole('button', { name: /skjul notater/i });
+    const hideInfoButton = screen.getByRole('button', { name: /hide notes/i });
     expect(hideInfoButton).toHaveAttribute(
       'aria-controls',
       'artwork-info-panel-mushroom-offering',
@@ -142,7 +142,7 @@ describe('InteractiveArtworkCard image contracts', () => {
 
     await waitFor(() =>
       expect(
-        screen.getByRole('button', { name: /les mening \+ prosess/i }),
+        screen.getByRole('button', { name: /read meaning \+ process/i }),
       ).toHaveFocus(),
     );
   });

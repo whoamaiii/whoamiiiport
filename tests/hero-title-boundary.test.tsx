@@ -41,7 +41,7 @@ describe('hero title render boundary', () => {
       screen.getByRole('heading', { level: 1, name: HERO_COPY.titleSemantic }),
     ).toBeInTheDocument();
     expect(screen.getByText(HERO_COPY.eyebrow)).toBeInTheDocument();
-    expect(document.querySelector('.hero-subtitle')).toBeNull();
+    expect(screen.getByText(HERO_COPY.subtitle)).toHaveClass('hero-subtitle');
     expect(screen.getByTestId('hero-title-visual')).toHaveAttribute('data-mode', 'fallback');
     expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Altered');
     expect(screen.getByTestId('hero-title-fallback')).toHaveTextContent('Perception');
